@@ -203,7 +203,7 @@ body audio {
     margin-right: 10px;
     text-decoration: underline;
 }
-#rcl-chat-noread-box {
+#uspc-chat-noread-box {
     bottom: 5px;
     box-sizing: content-box;
     line-height: 1.5;
@@ -211,35 +211,35 @@ body audio {
     right: 5px;
     z-index: 101;
 }
-#rcl-chat-noread-box a {
+#uspc-chat-noread-box a {
 	vertical-align: bottom;
 }
-#rcl-chat-noread-box .rcl-noread-users {
+#uspc-chat-noread-box .rcl-noread-users {
     box-sizing: border-box;
     float: right;
     padding: 1px;
     position: relative;
     width: 50px;
 }
-#rcl-chat-noread-box .messages-icon {
+#uspc-chat-noread-box .messages-icon {
     display: block;
     font-size: 30px;
     line-height: 1;
     margin: 0 0 5px;
     text-align: center;
 }
-#rcl-chat-noread-box .more-contacts {
+#uspc-chat-noread-box .more-contacts {
     color: #fff;
     display: block;
     font-size: 14px;
     font-weight: bold;
     text-align: center;
 }
-#rcl-chat-noread-box .more-contacts a {
+#uspc-chat-noread-box .more-contacts a {
     display: inline-block;
     padding: 0 5px 5px;
 }
-#rcl-chat-noread-box .messages-icon .chat-new-messages {
+#uspc-chat-noread-box .messages-icon .chat-new-messages {
     border-radius: 999px;
     color: #fff;
     font-size: 12px;
@@ -249,22 +249,22 @@ body audio {
     top: 8px;
     width: 18px;
 }
-#rcl-chat-noread-box .messages-icon .rcli {
+#uspc-chat-noread-box .messages-icon .uspi {
     color: #fff;
 }
-#rcl-chat-noread-box .messages-icon a:hover {
+#uspc-chat-noread-box .messages-icon a:hover {
     opacity: 0.8;
 }
-#rcl-chat-noread-box.active-chat .messages-icon {
+#uspc-chat-noread-box.active-chat .messages-icon {
     margin-bottom: 30px;
 }
-#rcl-chat-noread-box .rcl-chat-user {
+#uspc-chat-noread-box .rcl-chat-user {
     display: block;
     margin: 0 auto 5px;
     position: relative;
     width: 40px;
 }
-#rcl-chat-noread-box .rcl-chat-user .fa-times {
+#uspc-chat-noread-box .rcl-chat-user .fa-times {
     background: rgba(0, 0, 0, 0.6);
     color: #fff;
     display: none;
@@ -274,10 +274,10 @@ body audio {
     position: absolute;
     top: 0;
 }
-#rcl-chat-noread-box .rcl-chat-user:hover .fa-times {
+#uspc-chat-noread-box .rcl-chat-user:hover .fa-times {
     display: block;
 }
-#rcl-chat-noread-box .rcl-chat-user .fa-commenting {
+#uspc-chat-noread-box .rcl-chat-user .fa-commenting {
     background: #fff;
     border-radius: 50%;
     color: #ff0000;
@@ -287,7 +287,7 @@ body audio {
     right: -2px;
     top: -2px;
 }
-#rcl-chat-noread-box .rcl-chat-user img {
+#uspc-chat-noread-box .rcl-chat-user img {
     border-radius: 0;
     border: none;
     float: none;
@@ -298,16 +298,16 @@ body audio {
     vertical-align: inherit;
     width: 40px;
 }
-#rcl-chat-noread-box .rcl-chat-user img:hover {
+#uspc-chat-noread-box .rcl-chat-user img:hover {
     box-shadow: none;
     opacity: 1;
 }
-#rcl-chat-noread-box .rcl-mini-chat {
+#uspc-chat-noread-box .rcl-mini-chat {
     animation-duration: 0.5s;
     background: #fff;
     float: left;
 }
-#rcl-chat-noread-box.hidden-contacts .chat-contacts {
+#uspc-chat-noread-box.hidden-contacts .chat-contacts {
     display: none;
 }
 .rcl-mini-chat .rcl-chat {
@@ -341,11 +341,11 @@ body audio {
     margin: 0 13px 0 5px;
     vertical-align: middle;
 }
-#rcl-chat-noread-box.left-panel {
+#uspc-chat-noread-box.left-panel {
     left: 5px;
     right: auto;
 }
-#rcl-chat-noread-box.left-panel .rcl-mini-chat {
+#uspc-chat-noread-box.left-panel .rcl-mini-chat {
     float: right;
 }
 .left-panel .rcl-noread-users a.active-chat::before {
@@ -353,7 +353,7 @@ body audio {
     left: 45px;
     right: initial;
 }
-#rcl-chat-noread-box.left-panel .rcl-mini-chat .rcl-chat-panel {
+#uspc-chat-noread-box.left-panel .rcl-mini-chat .rcl-chat-panel {
     text-align: right;
 }
 .rcl-chat .rcl-pager {
@@ -526,7 +526,7 @@ body audio {
     
 }
 @media screen and (max-width:800px) {
-    #rcl-chat-noread-box .chat-delete-contact {
+    #uspc-chat-noread-box .chat-delete-contact {
         display: none;
     }
 }
@@ -545,13 +545,13 @@ body audio {
         min-width: 80px;
         padding: 10px 0 0 10px;
     }
-    .ssi-modal.rcl-chat-window #ssi-modalWrapper {
+    .ssi-modal.uspc-chat-window #ssi-modalWrapper {
         width: 90%;
     }
-    .ssi-modal.rcl-chat-window .ssi-modalContent {
+    .ssi-modal.uspc-chat-window .ssi-modalContent {
         padding: 5px;
     }
-    .ssi-modal.rcl-chat-window .user-avatar {
+    .ssi-modal.uspc-chat-window .user-avatar {
         width: 30px;
     }
 }

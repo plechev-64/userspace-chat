@@ -1,135 +1,136 @@
-var rcl_chat_last_activity = {}; //последняя запрос новых сообщений
-var rcl_chat_beat = new Array; //массив открытых чатов
-var rcl_chat_write = 0; //юзер пишет
-var rcl_chat_contact_token = 0; //открытый контакт
-var rcl_chat_inactive_counter = -1; //счетчик простоя пользователя
-var rcl_chat_important = 0;
-var rcl_chat_max_words = 300;
-var rcl_chat_sound = {};
+/* global USP, USPUploaders */
+
+var uspc_chat_last_activity = {}; //last request for new messages 
+var uspc_chat_beat = new Array; //array of open chats
+var uspc_chat_write = 0; //user writes
+var uspc_chat_contact_token = 0; //open contact
+var uspc_chat_inactive_counter = -1; //user idle counter
+var uspc_chat_important = 0;
+var uspc_chat_max_words = 300;
+var uspc_chat_sound = {};
 
 jQuery(function ($) {
 
-    rcl_chat_init_sound();
+    uspc_chat_init_sound();
 
-    rcl_chat_inactivity_counter();
+    uspc_chat_inactivity_counter();
 
-    jQuery('.chat-new-messages').parents('#rcl-chat-noread-box').animateCss('tada');
+    jQuery('.chat-new-messages').parents('#uspc-chat-noread-box').animateCss('tada');
 
-    if (RclUploaders.isset('rcl_chat_uploader')) {
+    if (USPUploaders.isset('uspc_chat_uploader')) {
 
-        RclUploaders.get('rcl_chat_uploader').animateLoading = function (status) {
-            status ? rcl_preloader_show(jQuery('.rcl-chat .chat-form')) : rcl_preloader_hide();
+        USPUploaders.get('uspc_chat_uploader').animateLoading = function (status) {
+            status ? usp_preloader_show(jQuery('.rcl-chat .chat-form')) : usp_preloader_hide();
         };
 
     }
 
 });
 
-function rcl_chat_init_sound() {
+function uspc_chat_init_sound() {
 
     var options = {
         sounds: ['e-oh'],
-        path: Rcl.chat.sounds,
+        path: USP.usp_chat.sounds,
         multiPlay: false,
         volume: '0.5'
     };
 
-    rcl_chat_sound = rcl_apply_filters('rcl_chat_sound_options', options);
+    uspc_chat_sound = usp_apply_filters('uspc_chat_sound_options', options);
     if (typeof jQuery.ionSound !== 'undefined') {
-        jQuery.ionSound(rcl_chat_sound);
+        jQuery.ionSound(uspc_chat_sound);
     }
 }
 
-function rcl_chat_inactivity_cancel() {
-    rcl_chat_inactive_counter = -1;
+function uspc_chat_inactivity_cancel() {
+    uspc_chat_inactive_counter = -1;
 }
 
-function rcl_chat_inactivity_counter() {
-    rcl_chat_inactive_counter++;
-    setTimeout('rcl_chat_inactivity_counter()', 60000);
+function uspc_chat_inactivity_counter() {
+    uspc_chat_inactive_counter++;
+    setTimeout('uspc_chat_inactivity_counter()', 60000);
 }
 
-function rcl_chat_scroll_bottom(token) {
+function uspc_scroll_down(token) {
     jQuery('.rcl-chat[data-token="' + token + '"] .chat-messages').scrollTop(jQuery('.rcl-chat[data-token="' + token + '"] .chat-messages').get(0).scrollHeight);
 }
 
-function rcl_reset_active_mini_chat() {
+function uspc_reset_active_mini_chat() {
     jQuery('.rcl-noread-users .rcl-chat-user > a ').removeClass('active-chat');
 }
 
-function rcl_chat_counter_reset(form) {
-    form.children('.words-counter').text(Rcl.chat.words).removeAttr('style');
+function uspc_chat_counter_reset(form) {
+    form.children('.words-counter').text(USP.usp_chat.words).removeAttr('style');
 }
 
-function rcl_chat_add_message(e) {
+function uspc_chat_add_message(e) {
     var form = jQuery(e).parents('form');
-    rcl_chat_add_new_message(form);
+    
+    uspc_chat_add_new_message(form);
 }
 
-function rcl_chat_clear_beat(token) {
+function uspc_chat_clear_beat(token) {
 
-    var all_beats = rcl_beats;
-    var all_chats = rcl_chat_beat;
+    var all_beats = usp_beats;
+    var all_chats = uspc_chat_beat;
 
-    all_beats.forEach(function (beat, index, rcl_beats) {
-        if (beat.beat_name != 'rcl_chat_beat_core')
+    all_beats.forEach(function (beat, index, usp_beats) {
+        if (beat.beat_name != 'uspc_chat_beat_core')
             return;
         if (beat.data.token != token)
             return;
-        delete rcl_beats[index];
+        delete usp_beats[index];
     });
 
     all_chats.forEach(function (chat_token, index, chats) {
         if (chat_token != token)
             return;
-        delete rcl_chat_beat[index];
+        delete uspc_chat_beat[index];
     });
 
     console.log('chat beat ' + token + ' clear');
 
 }
 
-function rcl_set_active_mini_chat(e) {
-    rcl_reset_active_mini_chat();
+function uspc_set_active_mini_chat(e) {
+    uspc_reset_active_mini_chat();
     jQuery(e).addClass('active-chat').children('i').remove();
 }
 
-function rcl_init_chat(chat) {
+function uspc_init_chat(chat) {
     jQuery(function ($) {
 
-        chat = rcl_apply_filters('rcl_init_chat', chat);
+        chat = usp_apply_filters('uspc_init_chat', chat);
 
-        rcl_chat_scroll_bottom(chat.token);
+        uspc_scroll_down(chat.token);
 
-        var user_id = parseInt(Rcl.user_ID);
+        uspc_chat_max_words = chat.max_words;
+        uspc_chat_last_activity[chat.token] = chat.open_chat;
 
-        rcl_chat_max_words = chat.max_words;
-        rcl_chat_last_activity[chat.token] = chat.open_chat;
+        var i = uspc_chat_beat.length;
+        uspc_chat_beat[i] = chat.token;
 
-        var i = rcl_chat_beat.length;
-        rcl_chat_beat[i] = chat.token;
-
-        rcl_do_action('rcl_init_chat', chat);
+        usp_do_action('uspc_init_chat', chat);
 
     });
 }
 
-function rcl_chat_close(e) {
+function uspc_chat_close(e) {
 
-    rcl_reset_active_mini_chat();
+    uspc_reset_active_mini_chat();
     var token = jQuery(e).parents('.rcl-mini-chat').find('.rcl-chat').data('token');
-    rcl_chat_clear_beat(token);
-    var minichat_box = jQuery('#rcl-chat-noread-box');
+    uspc_chat_clear_beat(token);
+    var minichat_box = jQuery('#uspc-chat-noread-box');
     minichat_box.removeClass('active-chat');
     var animationName = minichat_box.hasClass('left-panel') ? 'fadeOutLeft' : 'fadeOutRight';
     minichat_box.children('.rcl-mini-chat').animateCss(animationName, function (e) {
         jQuery(e).empty();
     });
-    rcl_do_action('rcl_chat_close', token);
+    usp_do_action('uspc_chat_close', token);
 
 }
 
-function rcl_chat_write_status(token) {
+function uspc_chat_write_status(token) {
     var chat = jQuery('.rcl-chat[data-token="' + token + '"]');
     var chat_status = chat.find('.chat-status');
     chat_status.css({
@@ -139,70 +140,70 @@ function rcl_chat_write_status(token) {
             width: 35
         },
         1000);
-    rcl_chat_write = setTimeout('rcl_chat_write_status("' + token + '")', 3000);
+    uspc_chat_write = setTimeout('uspc_chat_write_status("' + token + '")', 3000);
 
-    rcl_do_action('rcl_add_chat_write', token);
+    usp_do_action('uspc_add_chat_write', token);
 
 }
 
-function rcl_chat_write_status_cancel(token) {
-    clearTimeout(rcl_chat_write);
+function uspc_chat_write_status_cancel(token) {
+    clearTimeout(uspc_chat_write);
     var chat = jQuery('.rcl-chat[data-token="' + token + '"]');
     var chat_status = chat.find('.chat-status');
     chat_status.css({
         width: 0
     });
 
-    rcl_do_action('rcl_remove_chat_write', token);
+    usp_do_action('uspc_remove_chat_write', token);
 }
 
-function rcl_chat_add_new_message(form) {
+function uspc_chat_add_new_message(form) {
 
-    rcl_chat_inactivity_cancel();
+    uspc_chat_inactivity_cancel();
 
     var token = form.children('[name="chat[token]"]').val();
     var chat = jQuery('.rcl-chat[data-token="' + token + '"]');
     var message_text = form.children('textarea').val();
 
     if (!message_text.length) {
-        rcl_notice(Rcl.local.empty_mess, 'error', 10000);
+        usp_notice(USP.local.uspc_not_written, 'error', 10000);
         return false;
     }
 
-    if (message_text.length > Rcl.chat.words) {
-        rcl_notice(Rcl.local.max_words, 'error', 10000);
+    if (message_text.length > USP.usp_chat.words) {
+        usp_notice(USP.local.uspc_max_words, 'error', 10000);
         return false;
     }
 
-    rcl_preloader_show('.rcl-chat .chat-form > form');
+    usp_preloader_show('.rcl-chat .chat-form > form');
 
-    rcl_ajax({
-        data: 'action=rcl_chat_add_message&'
+    usp_ajax({
+        data: 'action=uspc_chat_add_message&'
             + form.serialize()
-            + '&office_ID=' + Rcl.office_ID
-            + '&last_activity=' + rcl_chat_last_activity[token],
+            + '&office_ID=' + USP.office_ID
+            + '&last_activity=' + uspc_chat_last_activity[token],
         success: function (data) {
 
             if (data['content']) {
                 form.find('textarea').val('');
-                jQuery("#rcl-upload-gallery-rcl_chat_uploader").html('');
+                jQuery("#rcl-upload-gallery-uspc_chat_uploader").html('');
 
                 chat.find('.chat-messages').append(data['content']).find('.chat-message').last().animateCss('zoomIn');
                 chat.find('.rcl-chat-uploader').show();
                 chat.find('.chat-preloader-file').empty();
 
-                rcl_chat_scroll_bottom(token);
-                rcl_chat_counter_reset(form);
+                uspc_scroll_down(token);
+                uspc_chat_counter_reset(form);
 
                 if (data.new_messages) {
                     if (typeof jQuery.ionSound !== 'undefined') {
-                        jQuery.ionSound.play(rcl_chat_sound.sounds[0]);
+                        jQuery.ionSound.play(uspc_chat_sound.sounds[0]);
                     }
                 }
 
-                rcl_chat_last_activity[token] = data.last_activity;
+                uspc_chat_last_activity[token] = data.last_activity;
 
-                rcl_do_action('rcl_chat_add_message', {
+                usp_do_action('uspc_chat_add_message', {
                     token: token,
                     result: data
                 });
@@ -213,22 +214,22 @@ function rcl_chat_add_new_message(form) {
     return false;
 }
 
-function rcl_chat_navi(e) {
+function uspc_chat_navi(e) {
 
-    rcl_chat_inactivity_cancel();
+    uspc_chat_inactivity_cancel();
 
     var token = jQuery(e).parents('.rcl-chat').data('token');
 
-    rcl_preloader_show('.rcl-chat .chat-form > form');
+    usp_preloader_show('.rcl-chat .chat-form > form');
 
-    rcl_ajax({
+    usp_ajax({
         data: {
-            action: 'rcl_get_chat_page',
+            action: 'uspc_get_chat_page',
             token: token,
             page: jQuery(e).data('page'),
             'pager-id': jQuery(e).data('pager-id'),
             in_page: jQuery(e).parents('.rcl-chat').data('in_page'),
-            important: rcl_chat_important
+            important: uspc_chat_important
         },
         success: function (data) {
 
@@ -236,7 +237,7 @@ function rcl_chat_navi(e) {
 
                 jQuery(e).parents('.chat-messages-box').html(data['content']).animateCss('fadeIn');
 
-                rcl_chat_scroll_bottom(token);
+                uspc_scroll_down(token);
 
             }
         }
@@ -245,29 +246,29 @@ function rcl_chat_navi(e) {
     return false;
 }
 
-function rcl_get_mini_chat(e, user_id) {
+function uspc_get_mini_chat(e, user_id) {
 
-    if (rcl_chat_contact_token) {
-        rcl_chat_clear_beat(rcl_chat_contact_token);
+    if (uspc_chat_contact_token) {
+        uspc_chat_clear_beat(uspc_chat_contact_token);
     }
 
-    rcl_preloader_show('#rcl-chat-noread-box > div');
+    usp_preloader_show('#uspc-chat-noread-box > div');
 
-    rcl_ajax({
+    usp_ajax({
         data: {
-            action: 'rcl_get_chat_private_ajax',
+            action: 'uspc_get_chat_private_ajax',
             user_id: user_id
         },
         success: function (data) {
 
             if (data['content']) {
-                var minichat_box = jQuery('#rcl-chat-noread-box');
+                var minichat_box = jQuery('#uspc-chat-noread-box');
                 var animationName = minichat_box.hasClass('left-panel') ? 'fadeInLeft' : 'fadeInRight';
                 minichat_box.children('.rcl-mini-chat').html(data['content']).animateCss(animationName);
                 minichat_box.addClass('active-chat');
-                rcl_chat_contact_token = data['chat_token'];
-                rcl_set_active_mini_chat(e);
-                rcl_chat_scroll_bottom(rcl_chat_contact_token);
+                uspc_chat_contact_token = data['chat_token'];
+                uspc_set_active_mini_chat(e);
+                uspc_scroll_down(uspc_chat_contact_token);
             }
         }
     });
@@ -275,7 +276,7 @@ function rcl_get_mini_chat(e, user_id) {
     return false;
 }
 
-function rcl_chat_words_count(e, elem) {
+function uspc_chat_words_count(e, elem) {
 
     evt = e || window.event;
 
@@ -283,19 +284,19 @@ function rcl_chat_words_count(e, elem) {
 
     if (key == 13 && evt.ctrlKey) {
         var form = jQuery(elem).parents('form');
-        rcl_chat_add_new_message(form);
+        uspc_chat_add_new_message(form);
         return false;
     }
 
     var words = jQuery(elem).val();
-    var counter = rcl_chat_max_words - words.length;
+    var counter = uspc_chat_max_words - words.length;
     var color;
 
-    if (counter > (rcl_chat_max_words - 1))
+    if (counter > (uspc_chat_max_words - 1))
         return false;
 
     if (counter < 0) {
-        jQuery(elem).val(words.substr(0, (rcl_chat_max_words - 1)));
+        jQuery(elem).val(words.substr(0, (uspc_chat_max_words - 1)));
         return false;
     }
 
@@ -309,15 +310,15 @@ function rcl_chat_words_count(e, elem) {
     jQuery(elem).parent('form').children('.words-counter').css('color', color).text(counter);
 }
 
-function rcl_chat_remove_contact(e, chat_id) {
+function uspc_chat_remove_contact(e, chat_id) {
 
-    rcl_preloader_show('.rcl-chat-contacts');
+    usp_preloader_show('.rcl-chat-contacts');
 
     var contact = jQuery(e).parents('.contact-box').data('contact');
 
-    rcl_ajax({
+    usp_ajax({
         data: {
-            action: 'rcl_chat_remove_contact',
+            action: 'uspc_chat_remove_contact',
             chat_id: chat_id
         },
         success: function (data) {
@@ -327,8 +328,7 @@ function rcl_chat_remove_contact(e, chat_id) {
                     jQuery(e).remove();
                 });
 
-                rcl_do_action('rcl_chat_remove_contact', chat_id);
-
+                usp_do_action('uspc_chat_remove_contact', chat_id);
             }
         }
     });
@@ -336,13 +336,13 @@ function rcl_chat_remove_contact(e, chat_id) {
     return false;
 }
 
-function rcl_chat_message_important(message_id) {
+function uspc_chat_message_important(message_id) {
 
-    rcl_preloader_show('.chat-message[data-message="' + message_id + '"] > div');
+    usp_preloader_show('.chat-message[data-message="' + message_id + '"] > div');
 
-    rcl_ajax({
+    usp_ajax({
         data: {
-            action: 'rcl_chat_message_important',
+            action: 'uspc_chat_message_important',
             message_id: message_id
         },
         success: function (data) {
@@ -355,17 +355,17 @@ function rcl_chat_message_important(message_id) {
     return false;
 }
 
-function rcl_chat_important_manager_shift(e, status) {
+function uspc_chat_important_manager_shift(e, status) {
 
-    rcl_preloader_show('.rcl-chat');
+    usp_preloader_show('.rcl-chat');
 
-    rcl_chat_important = status;
+    uspc_chat_important = status;
 
     var token = jQuery(e).parents('.rcl-chat').data('token');
 
-    rcl_ajax({
+    usp_ajax({
         data: {
-            action: 'rcl_chat_important_manager_shift',
+            action: 'uspc_chat_important_manager_shift',
             token: token,
             status_important: status
         },
@@ -375,7 +375,7 @@ function rcl_chat_important_manager_shift(e, status) {
 
                 jQuery(e).parents('.chat-messages-box').html(data['content']).animateCss('fadeIn');
 
-                rcl_chat_scroll_bottom(token);
+                uspc_scroll_down(token);
 
             }
         }
@@ -384,13 +384,13 @@ function rcl_chat_important_manager_shift(e, status) {
     return false;
 }
 
-function rcl_chat_delete_message(message_id) {
+function uspc_chat_delete_message(message_id) {
 
-    rcl_preloader_show('.chat-message[data-message="' + message_id + '"] > div');
+    usp_preloader_show('.chat-message[data-message="' + message_id + '"] > div');
 
-    rcl_ajax({
+    usp_ajax({
         data: {
-            action: 'rcl_chat_ajax_delete_message',
+            action: 'uspc_chat_ajax_delete_message',
             message_id: message_id
         },
         success: function (data) {
@@ -400,8 +400,7 @@ function rcl_chat_delete_message(message_id) {
                     jQuery(e).remove();
                 });
 
-                rcl_do_action('rcl_chat_delete_message', message_id);
-
+                usp_do_action('uspc_chat_delete_message', message_id);
             }
         }
     });
@@ -409,13 +408,13 @@ function rcl_chat_delete_message(message_id) {
     return false;
 }
 
-function rcl_chat_delete_attachment(e, attachment_id) {
+function uspc_chat_delete_attachment(e, attachment_id) {
 
-    rcl_preloader_show('.chat-form > form');
+    usp_preloader_show('.chat-form > form');
 
-    rcl_ajax({
+    usp_ajax({
         data: {
-            action: 'rcl_chat_delete_attachment',
+            action: 'uspc_chat_delete_attachment',
             attachment_id: attachment_id
         },
         success: function (data) {
@@ -431,14 +430,14 @@ function rcl_chat_delete_attachment(e, attachment_id) {
     return false;
 }
 
-function rcl_chat_shift_contact_panel() {
+function uspc_chat_shift_contact_panel() {
 
-    var box = jQuery('#rcl-chat-noread-box');
+    var box = jQuery('#uspc-chat-noread-box');
 
     if (box.hasClass('active-chat'))
         return true;
 
-    var view = (jQuery.cookie('rcl_chat_contact_panel') == 1) ? 0 : 1;
+    var view = (jQuery.cookie('uspc_chat_contact_panel') == 1) ? 0 : 1;
 
     if (view) {
         box.removeClass('hidden-contacts').animateCss('slideInUp');
@@ -446,7 +445,7 @@ function rcl_chat_shift_contact_panel() {
         box.addClass('hidden-contacts');
     }
 
-    jQuery.cookie('rcl_chat_contact_panel', view, {
+    jQuery.cookie('uspc_chat_contact_panel', view, {
         expires: 30,
         path: '/'
     });
@@ -454,18 +453,17 @@ function rcl_chat_shift_contact_panel() {
     return false;
 }
 
-rcl_add_action('rcl_init_chat', 'rcl_chat_init_beat');
-
-function rcl_chat_init_beat(chat) {
-    var delay = (chat.delay != 0) ? chat.delay : Rcl.chat.delay, chat;
-    rcl_add_beat('rcl_chat_beat_core', delay, chat);
+usp_add_action('uspc_init_chat', 'uspc_chat_init_beat');
+function uspc_chat_init_beat(chat) {
+    var delay = (chat.delay != 0) ? chat.delay : USP.usp_chat.delay, chat;
+    usp_add_beat('uspc_chat_beat_core', delay, chat);
 }
 
-function rcl_chat_beat_core(chat) {
+function uspc_chat_beat_core(chat) {
 
     if (chat.timeout == 1) {
-        if (rcl_chat_inactive_counter >= Rcl.chat.inactivity) {
-            console.log('inactive:' + rcl_chat_inactive_counter);
+        if (uspc_chat_inactive_counter >= USP.usp_chat.inactivity) {
+            console.log('inactive:' + uspc_chat_inactive_counter);
             return false;
         }
     }
@@ -475,10 +473,10 @@ function rcl_chat_beat_core(chat) {
     var chat_form = chatBox.find('form');
 
     var beat = {
-        action: 'rcl_chat_get_new_messages',
-        success: 'rcl_chat_beat_success',
+        action: 'uspc_chat_get_new_messages',
+        success: 'uspc_chat_beat_success',
         data: {
-            last_activity: rcl_chat_last_activity[chat.token],
+            last_activity: uspc_chat_last_activity[chat.token],
             token: chat.token,
             update_activity: 1,
             user_write: (chat_form.find('textarea').val()) ? 1 : 0
@@ -489,28 +487,28 @@ function rcl_chat_beat_core(chat) {
 
 }
 
-function rcl_chat_beat_success(data) {
+function uspc_chat_beat_success(data) {
 
     var chat = jQuery('.rcl-chat[data-token="' + data.token + '"]');
 
     if (!chat.length) {
-        rcl_chat_clear_beat(data.token);
+        uspc_chat_clear_beat(data.token);
         return;
     }
 
     var user_write = 0;
     chat.find('.chat-users').html('');
-    rcl_chat_write_status_cancel(data.token);
+    uspc_chat_write_status_cancel(data.token);
 
     if (data['errors']) {
         jQuery.each(data['errors'], function (index, error) {
-            rcl_notice(error, 'error', 10000);
+            usp_notice(error, 'error', 10000);
         });
     }
 
     if (data['success']) {
 
-        rcl_chat_last_activity[data.token] = data['current_time'];
+        uspc_chat_last_activity[data.token] = data['current_time'];
 
         if (data['users']) {
             jQuery.each(data['users'], function (index, data) {
@@ -522,32 +520,32 @@ function rcl_chat_beat_success(data) {
 
         if (data['content']) {
             if (typeof jQuery.ionSound !== 'undefined') {
-                jQuery.ionSound.play(rcl_chat_sound.sounds[0]);
+                jQuery.ionSound.play(uspc_chat_sound.sounds[0]);
             }
             chat.find('.chat-messages').append(data['content']);
-            rcl_chat_scroll_bottom(data.token);
+            uspc_scroll_down(data.token);
         } else {
             if (user_write)
-                rcl_chat_write_status(data.token);
+                uspc_chat_write_status(data.token);
         }
     }
 
-    rcl_do_action('rcl_chat_get_messages', {
+    usp_do_action('uspc_chat_get_messages', {
         token: data.token,
         result: data
     });
 
 }
 
-function rcl_get_chat_window(e, user_id) {
+function uspc_get_chat_window(e, user_id) {
 
     if (e && jQuery(e).parents('.preloader-parent')) {
-        rcl_preloader_show(jQuery(e).parents('.preloader-parent'));
+        usp_preloader_show(jQuery(e).parents('.preloader-parent'));
     }
 
-    rcl_ajax({
+    usp_ajax({
         data: {
-            action: 'rcl_get_ajax_chat_window',
+            action: 'uspc_get_ajax_chat_window',
             user_id: user_id
         }
     });
