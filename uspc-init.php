@@ -27,10 +27,10 @@ function uspc_chat_scripts() {
     usp_enqueue_style( 'uspc-chat', USPC_URL . 'assets/css/uspc-chat.css' );
     usp_enqueue_script( 'uspc-chat', USPC_URL . 'assets/js/uspc-chat.js' );
 
-    if ( ! usp_get_option( 'file_upload' ) )
+    if ( ! usp_get_option( [ 'uspc_opt', 'file_upload' ], 0 ) )
         return;
 
-    if ( usp_get_option( 'contact_panel', 1 ) || usp_is_office() ) {
+    if ( usp_get_option( [ 'uspc_opt', 'contact_panel' ], 1 ) || usp_is_office() ) {
         usp_fileupload_scripts();
     }
 }
@@ -42,9 +42,9 @@ function uspc_init_js_chat_variables( $data ) {
         return $data;
 
     $data['usp_chat']['sounds']     = USPC_URL . 'assets/audio/';
-    $data['usp_chat']['delay']      = usp_get_option( 'delay', 15 );
-    $data['usp_chat']['inactivity'] = usp_get_option( 'inactivity', 10 );
-    $data['usp_chat']['file_size']  = usp_get_option( 'file_size', 2 );
+    $data['usp_chat']['delay']      = usp_get_option( [ 'uspc_opt', 'delay' ], 15 );
+    $data['usp_chat']['inactivity'] = usp_get_option( [ 'uspc_opt', 'inactivity' ], 10 );
+    $data['usp_chat']['file_size']  = usp_get_option( [ 'uspc_opt', 'file_size' ], 2 );
 
     $data['local']['uspc_not_written'] = __( 'Write something', 'userspace-chat' );
     $data['local']['uspc_max_words']   = __( 'Exceeds the maximum message size', 'userspace-chat' );
@@ -75,7 +75,7 @@ function uspc_bar_add_chat_icon() {
         return;
 
     // if the contact panel is displayed
-    if ( usp_get_option( 'contact_panel', 1 ) )
+    if ( usp_get_option( [ 'uspc_opt', 'contact_panel' ], 1 ) )
         return;
 
     global $user_ID;
@@ -109,7 +109,7 @@ function uspc_chat_add_inline_styles( $styles, $rgb ) {
 
     $styles .= '.rcl-chat .important-shift{background:rgba(' . $rs . ',' . $gs . ',' . $bs . ',.85);}';
 
-    if ( usp_get_option( 'contact_panel', 1 ) == 0 )
+    if ( usp_get_option( [ 'uspc_opt', 'contact_panel' ], 1 ) == 0 )
         return $styles;
 
     $styles .= '.rcl-noread-users,.rcl-chat-panel{background:rgba(' . $rs . ',' . $gs . ',' . $bs . ',.85);}'
@@ -188,7 +188,7 @@ function uspc_get_chat_private( $user_id, $args = array() ) {
 function uspc_get_the_chat_by_room( $chat_room, $args = array() ) {
     $args = array_merge( array(
         'userslist'   => 1,
-        'file_upload' => usp_get_option( 'file_upload', 0 ),
+        'file_upload' => usp_get_option( [ 'uspc_opt', 'file_upload' ], 0 ),
         'chat_status' => 'private',
         'chat_room'   => $chat_room
         ), $args );
@@ -394,7 +394,7 @@ function uspc_get_last_chats_box() {
     if ( ! is_user_logged_in() )
         return;
 
-    if ( ! usp_get_option( 'contact_panel', 1 ) )
+    if ( ! usp_get_option( [ 'uspc_opt', 'contact_panel' ], 1 ) )
         return;
 
     global $user_ID;
@@ -414,7 +414,7 @@ function uspc_get_last_chats_box() {
 
     $class = array();
 
-    $class[] = ( ! usp_get_option( 'place_contact_panel', 0 ) ) ? 'right-panel' : 'left-panel';
+    $class[] = ( ! usp_get_option( [ 'uspc_opt', 'set_chat_bar' ], 0 ) ) ? 'left-panel' : 'right-panel';
 
     $class[] = (isset( $_COOKIE['uspc_chat_contact_panel'] ) && $_COOKIE['uspc_chat_contact_panel']) ? '' : 'hidden-contacts';
 
@@ -446,7 +446,7 @@ function uspc_get_last_chats_box() {
         echo '<a class="chat-delete-contact" href="#" title="' . __( 'Delete contact', 'userspace-chat' ) . '" onclick="uspc_chat_remove_contact(this,' . $data['chat_id'] . ');return false;"><i class="uspi fa-times" aria-hidden="true"></i></a>';
         echo '<a href="#" onclick="uspc_get_mini_chat(this,' . $user_id . '); return false;">';
         if ( ! $data['status'] )
-            echo '<i class="uspi fa-commenting" aria-hidden="true"></i>';
+            echo '<i class="uspi fa-comment-dots" aria-hidden="true"></i>';
         echo get_avatar( $user_id, 40 );
         echo '</a>';
         echo '</span>';

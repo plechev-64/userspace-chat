@@ -75,14 +75,14 @@ function uspc_chat_add_message() {
     if ( ! uspc_get_chat_by_room( $chat_room ) )
         return false;
 
-    $antispam = usp_get_option( 'antispam', 5 );
+    $antispam = usp_get_option( [ 'uspc_opt', 'antispam' ], 0 );
 
     if ( $antispam = apply_filters( 'uspc_chat_antispam_option', $antispam ) ) {
         global $user_ID;
 
         $query = new USPC_Chat_Messages_Query();
 
-        $cntLastMess = $query->count( [
+        $args = [
             'user_id'                => $user_ID,
             'private_key__not_in'    => [ 0 ],
             'message_status__not_in' => [ 1 ],
@@ -94,7 +94,9 @@ function uspc_chat_add_message() {
                 ]
             ],
             'groupby'                => 'private_key'
-            ] );
+        ];
+
+        $cntLastMess = $query->parse( $args )->get_count();
 
         if ( $cntLastMess > $antispam )
             wp_send_json( [

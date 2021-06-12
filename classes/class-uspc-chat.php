@@ -29,7 +29,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
         parent::__construct();
 
-        $args['return_as'] = ARRAY_A;
+        $this->return_as = ARRAY_A;
 
         if ( ! isset( $args['per_page'] ) )
             $args['per_page'] = (isset( $rcl_options['chat']['in_page'] )) ? $rcl_options['chat']['in_page'] : 50;
@@ -39,7 +39,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
         $this->init_properties( $args );
 
-        $this->set_query( $args );
+        $this->parse( $args );
 
         add_filter( 'uspc_chat_message', 'wpautop', 11 );
 
@@ -375,9 +375,6 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
         $content = apply_filters( 'uspc_chat_before_form', '', $this->chat );
 
         if ( $this->file_upload ) {
-
-            $chatOptions = usp_get_option( 'chat', array() );
-
             $uploader = new USP_Uploader( 'uspc_chat_uploader', array(
                 'multiple'     => 0,
                 'max_files'    => 1,
@@ -385,8 +382,8 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
                 'temp_media'   => 1,
                 'mode_output'  => 'list',
                 'input_attach' => 'chat[attachment]',
-                'file_types'   => isset( $chatOptions['file_types'] ) ? $chatOptions['file_types'] : 'png, jpeg, gif',
-                'max_size'     => isset( $chatOptions['file_size'] ) ? $chatOptions['file_size'] * 1024 : 1024
+                'file_types'   => usp_get_option( [ 'uspc_opt', 'file_types' ], 'jpeg, jpg, png' ),
+                'max_size'     => usp_get_option( [ 'uspc_opt', 'file_size' ], 2 ) * 1024
                 ) );
         }
 
@@ -428,7 +425,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
         $content .= '<div class="chat-preloader-file"></div>'
             . usp_get_button( array(
                 'label'   => __( 'Send', 'userspace-chat' ),
-                'icon'    => 'fa-reply',
+                'icon'    => 'fa-paper-plane',
                 'class'   => 'chat-submit',
                 'onclick' => 'uspc_chat_add_message(this);return false;'
             ) )
@@ -528,7 +525,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
     function count_messages() {
 
-        $count = $this->count();
+        $count = $this->get_count();
 
         return $count;
     }
@@ -565,7 +562,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
         $content .= '</div>'
             . '</div>'
-            . '<span class="message-time"><i class="uspi fa-clock-o" aria-hidden="true"></i> ' . $message['message_time'] . '</span>'
+            . '<span class="message-time"><i class="uspi fa-clock" aria-hidden="true"></i> ' . $message['message_time'] . '</span>'
             . '</div>'
             . '</div>';
 

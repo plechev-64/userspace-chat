@@ -2,7 +2,7 @@
 
 add_action( 'usp_cron_daily', 'uspc_chat_daily_delete_messages', 10 );
 function uspc_chat_daily_delete_messages() {
-    $max = usp_get_option( 'messages_amount', 100 );
+    $max = usp_get_option( [ 'uspc_opt', 'messages_amount' ], 100 );
 
     if ( ! $max )
         return false;
@@ -59,7 +59,7 @@ add_action( 'usp_cron_hourly', 'uspc_chat_send_notify_messages', 10 );
 function uspc_chat_send_notify_messages() {
     global $wpdb;
 
-    $mailtext = usp_get_option( 'messages_mail' );
+    $mailtext = usp_get_option( [ 'uspc_opt', 'messages_mail' ], 0 );
 
     $mess = $wpdb->get_results( "SELECT * FROM " . USPC_PREF . "chat_messages WHERE message_status='0' && private_key!='0' && message_time  > date_sub('" . current_time( 'mysql' ) . "', interval 1 hour)" );
 

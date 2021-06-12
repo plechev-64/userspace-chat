@@ -277,7 +277,7 @@ body audio {
 #uspc-chat-noread-box .rcl-chat-user:hover .fa-times {
     display: block;
 }
-#uspc-chat-noread-box .rcl-chat-user .fa-commenting {
+#uspc-chat-noread-box .rcl-chat-user .fa-comment-dots {
     background: #fff;
     border-radius: 50%;
     color: #ff0000;

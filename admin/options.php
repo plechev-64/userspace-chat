@@ -11,86 +11,92 @@ function uspc_chat_options( $options ) {
     ) )->add_options( array(
         [
             'type'      => 'runner',
-            'title'     => __( 'Delay between requests', 'userspace-chat' ),
+            'title'     => __( 'Delay between requests for new messages', 'userspace-chat' ),
+            'group'     => 'uspc_opt',
             'slug'      => 'delay',
-            'group'     => 'chat',
             'value_min' => 5,
             'value_max' => 60,
             'default'   => 15,
-            'notice'    => __( 'In seconds. It is recommended to choose at '
-                . 'least 10 seconds', 'userspace-chat' ),
+            'help'      => __( 'It is recommended to choose at least 10 seconds', 'userspace-chat' ),
+            'notice'    => __( 'In seconds.', 'userspace-chat' ) . ' ' . __( 'Default:', 'userspace-chat' ) . ' 10'
         ],
         [
             'type'      => 'runner',
-            'title'     => __( 'User Downtime', 'userspace-chat' ),
+            'title'     => __( 'User downtime', 'userspace-chat' ),
             'slug'      => 'inactivity',
-            'group'     => 'chat',
+            'group'     => 'uspc_opt',
             'value_min' => 1,
             'value_max' => 20,
             'default'   => 10,
-            'notice'    => __( 'In minutes. The time of user inactivity '
-                . 'after which he ceases to receive new messages in chat', 'userspace-chat' )
+            'help'      => __( "User's inactivity time after which he stops receiving new messages in the chat", 'userspace-chat' ),
+            'notice'    => __( 'In minutes.', 'userspace-chat' ) . ' ' . __( 'Default:', 'userspace-chat' ) . ' 10'
         ],
         [
             'type'      => 'runner',
             'title'     => __( 'Antispam', 'userspace-chat' ),
             'slug'      => 'antispam',
-            'group'     => 'chat',
+            'group'     => 'uspc_opt',
             'value_min' => 0,
-            'value_max' => 20,
-            'default'   => 5,
-            'notice'    => __( 'Specify a number of users, who other user will '
-                . 'be able to send an unread private message for a day. If its '
-                . 'value is exceeded the sending of messages will be blocked. If zero, this function is disabled', 'userspace-chat' )
+            'value_max' => 50,
+            'default'   => 0,
+            'help'      => __( 'Specify a number of users, who other user will be able to send an unread private message for a day. '
+                . 'If its value is exceeded the sending of messages will be blocked.', 'userspace-chat' ) . ' ' . __( 'If 0 - this function is disabled', 'userspace-chat' ),
+            'notice'    => __( 'If 0 - this function is disabled', 'userspace-chat' ),
         ],
         [
             'type'      => 'runner',
-            'title'     => __( 'The number of characters in the message', 'userspace-chat' ),
+            'title'     => __( 'Maximum number of characters in a message', 'userspace-chat' ),
             'slug'      => 'words',
-            'group'     => 'chat',
+            'group'     => 'uspc_opt',
             'value_min' => 100,
             'value_max' => 1000,
-            'default'   => 300
+            'default'   => 300,
+            'notice'    => __( 'Default:', 'userspace-chat' ) . ' 300',
         ],
         [
             'type'      => 'runner',
             'title'     => __( 'Posts per page', 'userspace-chat' ),
             'slug'      => 'in_page',
-            'group'     => 'chat',
+            'group'     => 'uspc_opt',
             'value_min' => 10,
             'value_max' => 200,
-            'default'   => 50
+            'default'   => 50,
+            'notice'    => __( 'Default:', 'userspace-chat' ) . ' 50',
         ],
         [
-            'type'   => 'select',
-            'title'  => __( 'Using OEMBED', 'userspace-chat' ),
-            'slug'   => 'oembed',
-            'group'  => 'chat',
-            'values' => [
-                __( 'No', 'userspace-chat' ),
-                __( 'Yes', 'userspace-chat' )
+            'type'    => 'switch',
+            'title'   => __( 'Using oEmbed', 'userspace-chat' ),
+            'slug'    => 'oembed',
+            'group'   => 'uspc_opt',
+            'text'    => [
+                'off' => __( 'No', 'userspace-chat' ),
+                'on'  => __( 'Yes', 'userspace-chat' )
             ],
-            'notice' => __( 'Option is responsible for the incorporation of '
-                . 'media content, such as from Youtube or Twitter from the link', 'userspace-chat' ),
+            'default' => 0,
+            'help'    => __( 'Includes support for WordPress oEmbed in chat. '
+                . 'Option is responsible for the incorporation of media content, such as from Youtube or Twitter from the link.', 'userspace-chat' ) . '<br>'
+            . __( 'Note: If the page has a lot of embedded content, this may reduce the page loading speed.', 'userspace-chat' ),
         ],
         [
-            'type'      => 'select',
+            'type'      => 'switch',
             'title'     => __( 'Attaching files', 'userspace-chat' ),
             'slug'      => 'file_upload',
-            'group'     => 'chat',
-            'values'    => [
-                __( 'No', 'userspace-chat' ),
-                __( 'Yes', 'userspace-chat' )
+            'group'     => 'uspc_opt',
+            'text'      => [
+                'off' => __( 'No', 'userspace-chat' ),
+                'on'  => __( 'Yes', 'userspace-chat' )
             ],
+            'default'   => 0,
             'childrens' => array(
                 1 => array(
                     [
                         'type'    => 'text',
                         'title'   => __( 'Allowed file types', 'userspace-chat' ),
                         'slug'    => 'file_types',
-                        'group'   => 'chat',
-                        'default' => 'jpeg, jpg, png, zip, mp3',
-                        'notice'  => __( 'By default: jpeg, jpg, png, zip, mp3', 'userspace-chat' )
+                        'group'   => 'uspc_opt',
+                        'default' => 'jpeg, jpg, png',
+                        'notice'  => __( 'Default:', 'userspace-chat' ) . ' jpeg, jpg, png',
+                        'help'    => __( 'File extension (without dot). For example:', 'userspace-chat' ) . ' jpeg, jpg, png, gif, zip, mp3'
                     ],
                     [
                         'type'       => 'runner',
@@ -100,8 +106,9 @@ function uspc_chat_options( $options ) {
                         'default'    => 2,
                         'title'      => __( 'Maximum file size, MB', 'userspace-chat' ),
                         'slug'       => 'file_size',
-                        'group'      => 'chat',
-                        'default'    => 2
+                        'group'      => 'uspc_opt',
+                        'default'    => 2,
+                        'notice'     => __( 'Default:', 'userspace-chat' ) . ' 2',
                     ]
                 )
             )
@@ -115,40 +122,46 @@ function uspc_chat_options( $options ) {
             'type'    => 'number',
             'title'   => __( 'Number of messages in the conversation', 'userspace-chat' ),
             'slug'    => 'messages_amount',
-            'group'   => 'chat',
+            'group'   => 'uspc_opt',
             'default' => 100,
-            'notice'  => __( 'The maximum number of messages in the '
-                . 'conversation between two users. Default: 100', 'userspace-chat' )
+            'help'    => __( 'The maximum number of messages in a conversation between two users. WordPress cron clears this value once a day.', 'userspace-chat' ),
+            'notice'  => __( 'Default:', 'userspace-chat' ) . ' 100',
         ],
         [
-            'type'   => 'select',
-            'slug'   => 'messages_mail',
-            'title'  => __( 'Mail alert', 'userspace-chat' ),
-            'values' => [
+            'type'    => 'radio',
+            'slug'    => 'messages_mail',
+            'group'   => 'uspc_opt',
+            'title'   => __( 'Email alert', 'userspace-chat' ),
+            'values'  => [
                 __( 'Without the text of the message', 'userspace-chat' ),
                 __( 'Full text of the message', 'userspace-chat' )
-            ]
+            ],
+            'default' => 0,
+            'help'    => __( 'Unread messages are sent to mail once an hour via WordPress cron', 'userspace-chat' ),
         ],
         [
-            'type'      => 'select',
-            'title'     => __( 'Contacts bar', 'userspace-chat' ),
+            'type'      => 'switch',
+            'title'     => __( 'Contacts panel', 'userspace-chat' ),
             'slug'      => 'contact_panel',
-            'group'     => 'chat',
-            'values'    => [
-                __( 'No', 'userspace-chat' ),
-                __( 'Yes', 'userspace-chat' )
+            'group'     => 'uspc_opt',
+            'text'      => [
+                'off' => __( 'No', 'userspace-chat' ),
+                'on'  => __( 'Yes', 'userspace-chat' )
             ],
+            'default'   => 0,
+            'help'      => __( 'Includes a fixed contact bar for private messaging at the bottom of all site pages.', 'userspace-chat' ),
             'childrens' => array(
                 1 => array(
                     [
-                        'type'   => 'select',
-                        'title'  => __( 'Output location', 'userspace-chat' ),
-                        'slug'   => 'place_contact_panel',
-                        'group'  => 'chat',
-                        'values' => [
-                            __( 'Right', 'userspace-chat' ),
-                            __( 'Left', 'userspace-chat' )
-                        ]
+                        'type'    => 'radio',
+                        'title'   => __( 'Output location', 'userspace-chat' ),
+                        'slug'    => 'set_chat_bar',
+                        'group'   => 'uspc_opt',
+                        'values'  => [
+                            __( 'Left', 'userspace-chat' ),
+                            __( 'Right', 'userspace-chat' )
+                        ],
+                        'default' => 0,
                     ]
                 )
             )
