@@ -1,7 +1,7 @@
-.rcl-chat {
+.uspc-chat {
     padding: 5px;
 }
-.rcl-chat.chat-general {
+.uspc-chat.chat-general {
     background: #fbfbfb;
     box-shadow: 0 0 1px 1px #ccc;
     box-sizing: border-box;
@@ -9,7 +9,7 @@
     overflow: hidden;
     width: 100%;
 }
-body .rcl-chat .message-text iframe {
+body .uspc-chat .message-text iframe {
     display: block;
     margin: 10px auto;
     max-width: 100%;
@@ -18,14 +18,14 @@ body .rcl-chat .message-text iframe {
 body audio {
     visibility: visible !important;
 }
-.rcl-chat .message-wrapper {
+.uspc-chat .message-wrapper {
     overflow: hidden;
     padding-left: 15px;
 }
-.rcl-chat .chat-messages-box {
+.uspc-chat .chat-messages-box {
     animation-duration: 0.5s;
 }
-.rcl-chat .chat-messages {
+.uspc-chat .chat-messages {
     background: #fff;
     border: 1px solid #ddd;
     box-sizing: border-box;
@@ -34,42 +34,42 @@ body audio {
     overflow-x: hidden;
     padding: 10px 10px 30px;
 }
-.rcl-chat .chat-messages .anons-message {
+.uspc-chat .chat-messages .anons-message {
     display: block;
     padding: 20px;
     text-align: center;
 }
-.rcl-chat .chat-messages .chat-message {
+.uspc-chat .chat-messages .chat-message {
     animation-duration: 0.5s;
     margin: 10px 0;
     overflow: hidden;
     position: relative;
 }
-.rcl-chat .chat-message .message-meta {
+.uspc-chat .chat-message .message-meta {
     font-size: 12px;
 }
-.rcl-chat .chat-message .author-name {
+.uspc-chat .chat-message .author-name {
     color: #777;
     display: inline-block;
     font-size: 12px;
     margin: 0 0 5px;
 }
-.rcl-chat .chat-message .message-time {
+.uspc-chat .chat-message .message-time {
     color: #8a8a8a;
     float: right;
     font-size: 11px;
 }
-.rcl-chat .chat-messages .chat-message .user-avatar {
+.uspc-chat .chat-messages .chat-message .user-avatar {
     display: inline-block;
     float: left;
 }
-.rcl-chat .chat-messages .chat-message .message-box {
+.uspc-chat .chat-messages .chat-message .message-box {
     color: #333;
     line-height: 1;
     padding: 5px 5px 5px 10px;
     position: relative;
 }
-.rcl-chat .message-box::before {
+.uspc-chat .message-box::before {
     border-color: transparent;
     border-style: solid;
     border-width: 10px 10px 10px 0;
@@ -80,11 +80,11 @@ body audio {
     top: 10px;
     width: 0;
 }
-.rcl-chat .chat-messages .chat-message .message-box .message-text {
+.uspc-chat .chat-messages .chat-message .message-box .message-text {
     line-height: 1.2;
     overflow: hidden;
 }
-.rcl-chat .chat-messages .chat-message .message-box .message-text p {
+.uspc-chat .chat-messages .chat-message .message-box .message-text p {
     margin: 0;
     padding: 0 0 5px;
 }
@@ -94,49 +94,49 @@ body audio {
     max-height: initial;
     padding: 0;
 }
-.rcl-chat .chat-form {
+.uspc-chat .chat-form {
     position: relative;
 }
-.rcl-chat .chat-form .chat-preloader-file {
+.uspc-chat .chat-form .chat-preloader-file {
     background: #e6e6e6;
     clear: both;
     position: relative;
 }
-.rcl-chat .chat-form .chat-preloader-file .chat-delete-attachment {
+.uspc-chat .chat-form .chat-preloader-file .chat-delete-attachment {
     color: #aaa;
     position: absolute;
     right: 10px;
     top: 5px;
 }
-.rcl-chat .chat-form .chat-preloader-file img {
+.uspc-chat .chat-form .chat-preloader-file img {
     margin: 10px;
     max-width: 70px;
 }
-.rcl-mini-chat .chat-form .chat-preloader-file img {
+.uspc-mini-chat .chat-form .chat-preloader-file img {
     margin: 5px;
     max-width: 40px;
 }
-.rcl-chat .message-attachment {
+.uspc-chat .message-attachment {
     background: #f1f1f1;
     margin-top: 5px;
     padding: 5px;
 }
-.rcl-chat .message-attachment .image-attachment {
+.uspc-chat .message-attachment .image-attachment {
     text-align: center;
 }
-.rcl-chat .message-attachment .archive-attachment img {
+.uspc-chat .message-attachment .archive-attachment img {
     width: 30px;
 }
-.rcl-chat .chat-form .chat-form-media {
+.uspc-chat .chat-form .chat-form-media {
     position: absolute;
     right: 5px;
     top: 5px;
 }
-.rcl-chat .rcl-smiles > i {
+.uspc-chat .usp-smiles > i {
     font-size: 22px;
     line-height: 1.4;
 }
-.rcl-chat .rcl-chat-uploader {
+.uspc-chat .uspc-chat-uploader {
     clear: both;
     color: #4c8cc5;
     display: block;
@@ -145,7 +145,7 @@ body audio {
     overflow: hidden;
     position: relative;
 }
-.rcl-chat .rcl-chat-uploader input {
+.uspc-chat .uspc-chat-uploader input {
     bottom: 0;
     cursor: pointer;
     height: 26px;
@@ -155,8 +155,8 @@ body audio {
     position: absolute;
     right: 0;
 }
-.rcl-chat .chat-form textarea,
-#rcl-office .rcl-chat .chat-form textarea {
+.uspc-chat .chat-form textarea,
+#usp-office .uspc-chat .chat-form textarea {
     background: #f6f6f6;
     border: 1px solid #ddd;
     box-shadow: none;
@@ -171,7 +171,7 @@ body audio {
     padding: 3px 30px 3px 5px;
     width: 100%;
 }
-.rcl-chat .chat-form .chat-submit {
+.uspc-chat .chat-form .chat-submit {
     float: right;
     margin: 5px 0;
 }
@@ -185,21 +185,21 @@ body audio {
 .chat-notice .notice-error {
     background: #fce6db;
 }
-.rcl-chat .chat-users-box {
+.uspc-chat .chat-users-box {
     background: #efefef;
     font-size: 12px;
     margin: 0 0 6px;
     overflow: hidden;
     padding: 10px;
 }
-.rcl-chat .chat-users-box > span {
+.uspc-chat .chat-users-box > span {
     margin-right: 5px;
 }
-.rcl-chat .chat-users-box .chat-users {
+.uspc-chat .chat-users-box .chat-users {
     display: inline-block;
 }
-.rcl-chat .chat-users-box .chat-users a,
-.rcl-chat .chat-users-box .chat-users span {
+.uspc-chat .chat-users-box .chat-users a,
+.uspc-chat .chat-users-box .chat-users span {
     margin-right: 10px;
     text-decoration: underline;
 }
@@ -214,7 +214,7 @@ body audio {
 #uspc-chat-noread-box a {
 	vertical-align: bottom;
 }
-#uspc-chat-noread-box .rcl-noread-users {
+#uspc-chat-noread-box .uspc-noread-users {
     box-sizing: border-box;
     float: right;
     padding: 1px;
@@ -258,13 +258,13 @@ body audio {
 #uspc-chat-noread-box.active-chat .messages-icon {
     margin-bottom: 30px;
 }
-#uspc-chat-noread-box .rcl-chat-user {
+#uspc-chat-noread-box .uspc-chat-user {
     display: block;
     margin: 0 auto 5px;
     position: relative;
     width: 40px;
 }
-#uspc-chat-noread-box .rcl-chat-user .fa-times {
+#uspc-chat-noread-box .uspc-chat-user .fa-times {
     background: rgba(0, 0, 0, 0.6);
     color: #fff;
     display: none;
@@ -274,10 +274,10 @@ body audio {
     position: absolute;
     top: 0;
 }
-#uspc-chat-noread-box .rcl-chat-user:hover .fa-times {
+#uspc-chat-noread-box .uspc-chat-user:hover .fa-times {
     display: block;
 }
-#uspc-chat-noread-box .rcl-chat-user .fa-comment-dots {
+#uspc-chat-noread-box .uspc-chat-user .fa-comment-dots {
     background: #fff;
     border-radius: 50%;
     color: #ff0000;
@@ -287,7 +287,7 @@ body audio {
     right: -2px;
     top: -2px;
 }
-#uspc-chat-noread-box .rcl-chat-user img {
+#uspc-chat-noread-box .uspc-chat-user img {
     border-radius: 0;
     border: none;
     float: none;
@@ -298,11 +298,11 @@ body audio {
     vertical-align: inherit;
     width: 40px;
 }
-#uspc-chat-noread-box .rcl-chat-user img:hover {
+#uspc-chat-noread-box .uspc-chat-user img:hover {
     box-shadow: none;
     opacity: 1;
 }
-#uspc-chat-noread-box .rcl-mini-chat {
+#uspc-chat-noread-box .uspc-mini-chat {
     animation-duration: 0.5s;
     background: #fff;
     float: left;
@@ -310,31 +310,31 @@ body audio {
 #uspc-chat-noread-box.hidden-contacts .chat-contacts {
     display: none;
 }
-.rcl-mini-chat .rcl-chat {
+.uspc-mini-chat .uspc-chat {
     border: 2px solid #ccc;
     overflow: hidden;
 }
-.rcl-mini-chat .chat-messages {
+.uspc-mini-chat .chat-messages {
     box-sizing: content-box;
     max-height: 300px;
     width: 265px;
 }
-.rcl-mini-chat .rcl-chat .chat-messages .chat-message .user-avatar img {
+.uspc-mini-chat .uspc-chat .chat-messages .chat-message .user-avatar img {
     height: auto;
     width: 30px;
 }
-.rcl-mini-chat .rcl-chat .chat-messages .chat-message .message-box .message-text {
+.uspc-mini-chat .uspc-chat .chat-messages .chat-message .message-box .message-text {
     font-size: 12px;
 }
-.rcl-mini-chat .rcl-chat .chat-form textarea {
+.uspc-mini-chat .uspc-chat .chat-form textarea {
     min-height: 70px;
     resize: none;
 }
-.rcl-mini-chat .rcl-chat-panel {
+.uspc-mini-chat .uspc-chat-panel {
     line-height: 1;
     padding: 5px;
 }
-.rcl-mini-chat .rcl-chat-panel a {
+.uspc-mini-chat .uspc-chat-panel a {
     color: #fff;
     font-size: 20px;
     line-height: normal;
@@ -345,18 +345,18 @@ body audio {
     left: 5px;
     right: auto;
 }
-#uspc-chat-noread-box.left-panel .rcl-mini-chat {
+#uspc-chat-noread-box.left-panel .uspc-mini-chat {
     float: right;
 }
-.left-panel .rcl-noread-users a.active-chat::before {
+.left-panel .uspc-noread-users a.active-chat::before {
     border-width: 12px 0 12px 12px;
     left: 45px;
     right: initial;
 }
-#uspc-chat-noread-box.left-panel .rcl-mini-chat .rcl-chat-panel {
+#uspc-chat-noread-box.left-panel .uspc-mini-chat .uspc-chat-panel {
     text-align: right;
 }
-.rcl-chat .rcl-pager {
+.uspc-chat .usp-pager {
     box-shadow: none;
     clear: none;
     float: right;
@@ -366,15 +366,15 @@ body audio {
     text-align: right;
     width: initial;
 }
-.rcl-mini-chat .rcl-pager .pager-item a,
-.rcl-mini-chat .rcl-pager .pager-item span {
+.uspc-mini-chat .usp-pager .pager-item a,
+.uspc-mini-chat .usp-pager .pager-item span {
     margin: 0 2px;
     padding: 2px 5px;
 }
-.rcl-mini-chat .rcl-smiles .smiles {
+.uspc-mini-chat .usp-smiles .smiles {
     width: 245px;
 }
-.rcl-noread-users a.active-chat::before {
+.uspc-noread-users a.active-chat::before {
     border-color: transparent;
     border-style: solid;
     border-width: 12px 12px 12px 0;
@@ -385,10 +385,10 @@ body audio {
     top: 10px;
     width: 0;
 }
-.rcl-chat .chat-content {
+.uspc-chat .chat-content {
     position: relative;
 }
-.rcl-chat .chat-status {
+.uspc-chat .chat-status {
     bottom: 10px;
     color: #aaa;
     height: 18px;
@@ -398,15 +398,15 @@ body audio {
     white-space: nowrap;
     width: 0;
 }
-.rcl-chat .chat-status span {
+.uspc-chat .chat-status span {
     display: inline-block;
     position: absolute;
     right: 0;
 }
-#rcl-office .rcl-chat-contacts {
+#usp-office .uspc-chat-contacts {
     margin: 10px 0;
 }
-#rcl-office .rcl-chat-contacts .chat-contact {
+#usp-office .uspc-chat-contacts .chat-contact {
     border: 1px solid #ddd;
     color: inherit;
     display: block;
@@ -414,14 +414,14 @@ body audio {
     overflow: hidden;
     padding: 8px;
 }
-#rcl-office .contacts-counter {
+#usp-office .contacts-counter {
     padding: 0 0 5px;
 }
-#rcl-office .rcl-chat-contacts .chat-window-restore,
-#rcl-office .rcl-chat-contacts .chat-remove {
+#usp-office .uspc-chat-contacts .chat-window-restore,
+#usp-office .uspc-chat-contacts .chat-remove {
     position: absolute;
 }
-#rcl-office .rcl-chat-contacts .chat-remove {
+#usp-office .uspc-chat-contacts .chat-remove {
     background: rgba(0, 0, 0, 0.6);
     color: #fff;
     display: none;
@@ -432,7 +432,7 @@ body audio {
     position: absolute;
     top: 9px;
 }
-#rcl-office .rcl-chat-contacts .chat-window-restore {
+#usp-office .uspc-chat-contacts .chat-window-restore {
     color: #4c8cbd;
     right: 10px;
     top: 5px;
@@ -445,84 +445,84 @@ body audio {
 .chat-window-restore:hover {
     opacity: .7;
 }
-#rcl-office .rcl-chat-contacts .contact-box:hover .chat-remove {
+#usp-office .uspc-chat-contacts .contact-box:hover .chat-remove {
     display: block;
 }
-#rcl-office .rcl-chat-contacts .chat-contact .avatar-contact {
+#usp-office .uspc-chat-contacts .chat-contact .avatar-contact {
     float: left;
     margin-right: 15px;
 }
-#rcl-office .rcl-chat-contacts .chat-contact .message-meta {
+#usp-office .uspc-chat-contacts .chat-contact .message-meta {
     display: inline-block;
     float: left;
     font-size: 12px;
     width: 165px;
 }
-#rcl-office .rcl-chat-contacts .chat-contact .message-meta span {
+#usp-office .uspc-chat-contacts .chat-contact .message-meta span {
     display: block;
 }
-#rcl-office .rcl-chat-contacts .chat-contact .message-content {
+#usp-office .uspc-chat-contacts .chat-contact .message-content {
     overflow: hidden;
 }
-#rcl-office .rcl-chat-contacts .chat-contact .message-content .time-message {
+#usp-office .uspc-chat-contacts .chat-contact .message-content .time-message {
     font-size: 12px;
 }
-#rcl-office .rcl-chat-contacts .chat-contact .message-content .author-name {
+#usp-office .uspc-chat-contacts .chat-contact .message-content .author-name {
     font-weight: bold;
     line-height: 1.1;
 }
-#rcl-office .rcl-chat-contacts .chat-contact .message-content .message-text {
+#usp-office .uspc-chat-contacts .chat-contact .message-content .message-text {
     font-size: 14px;
     overflow: hidden;
     padding: 0 20px 0 8px;
 }
-#rcl-office .rcl-chat-contacts .chat-contact .message-content .message-text .master-avatar {
+#usp-office .uspc-chat-contacts .chat-contact .message-content .message-text .master-avatar {
     margin-right: 10px;
     vertical-align: middle;
 }
-#rcl-office .rcl-chat-contacts .chat-contact .message-content .message-text .master-avatar img {
+#usp-office .uspc-chat-contacts .chat-contact .message-content .message-text .master-avatar img {
     box-shadow: none;
 }
-#rcl-office .rcl-chat-contacts .noread-message {
+#usp-office .uspc-chat-contacts .noread-message {
     background: rgba(229, 57, 53, 0.1);
     border-color: rgba(229, 57, 53, 0.15);
 }
-.rcl-chat .words-counter {
+.uspc-chat .words-counter {
     font-size: 12px;
 }
-.rcl-chat .message-manager {
+.uspc-chat .message-manager {
     float: right;
     padding: 0 0 0 10px;
     text-align: center;
 }
-.rcl-chat .chat-message .message-manager > span {
+.uspc-chat .chat-message .message-manager > span {
     display: block;
     line-height: 1;
     opacity: 0;
     padding: 5px 0;
 }
-.rcl-chat .chat-message:hover .message-manager > span {
+.uspc-chat .chat-message:hover .message-manager > span {
     opacity: 0.5;
 }
-.rcl-chat .message-manager a {
+.uspc-chat .message-manager a {
     border: none;
     box-shadow: none;
 }
-.rcl-chat .chat-message .message-manager .active-important,
-.rcl-chat .chat-message:hover .message-manager .message-delete,
-.rcl-chat .chat-message:hover .message-manager .active-important {
+.uspc-chat .chat-message .message-manager .active-important,
+.uspc-chat .chat-message:hover .message-manager .message-delete,
+.uspc-chat .chat-message:hover .message-manager .active-important {
     opacity: 1;
 }
-.rcl-chat .chat-meta {
+.uspc-chat .chat-meta {
     line-height: 1.5;
     overflow: hidden;
     padding: 0 0 6px;
 }
-.rcl-chat .important-manager {
+.uspc-chat .important-manager {
     float: right;
     font-size: 14px;
 }
-.rcl-chat .important-manager .important-shift {
+.uspc-chat .important-manager .important-shift {
     
 }
 @media screen and (max-width:800px) {
@@ -531,17 +531,17 @@ body audio {
     }
 }
 @media screen and (max-width:768px) {
-    #rcl-office .rcl-chat-contacts .chat-remove {
+    #usp-office .uspc-chat-contacts .chat-remove {
         display: block;
         font-size: 18px;
     }
 }
 @media screen and (max-width:480px) {
-    #rcl-office .rcl-chat-contacts .chat-contact .message-meta {
+    #usp-office .uspc-chat-contacts .chat-contact .message-meta {
         display: block;
         width: calc(100% - 25px);
     }
-    #rcl-office .rcl-chat-contacts .chat-contact .message-content .message-text {
+    #usp-office .uspc-chat-contacts .chat-contact .message-content .message-text {
         min-width: 80px;
         padding: 10px 0 0 10px;
     }
@@ -556,7 +556,7 @@ body audio {
     }
 }
 @media screen and (max-width:320px) {
-    .rcl-mini-chat .chat-messages {
+    .uspc-mini-chat .chat-messages {
         width: 225px;
     }
 }

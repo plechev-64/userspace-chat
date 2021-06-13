@@ -25,14 +25,14 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
     public $allowed_tags;
 
     function __construct( $args = array() ) {
-        global $user_ID, $rcl_options;
+        global $user_ID;
 
         parent::__construct();
 
         $this->return_as = ARRAY_A;
 
         if ( ! isset( $args['per_page'] ) )
-            $args['per_page'] = (isset( $rcl_options['chat']['in_page'] )) ? $rcl_options['chat']['in_page'] : 50;
+            $args['per_page'] = usp_get_option( [ 'uspc_opt', 'in_page' ], 50 );
 
         if ( ! isset( $args['orderby'] ) )
             $args['orderby'] = 'message_time';
@@ -50,7 +50,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
             $this->office_id = (isset( $_POST['office_ID'] )) ? $_POST['office_ID'] : 0;
 
         if ( ! $this->max_words )
-            $this->max_words = (isset( $rcl_options['chat']['words'] )) ? $rcl_options['chat']['words'] : 300;
+            $this->max_words = usp_get_option( [ 'uspc_opt', 'words' ], 300 );
 
         if ( ! $this->chat_room )
             return;
@@ -342,7 +342,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
                 . '</script>';
         }
 
-        $content .= '<div class="rcl-chat chat-' . $this->chat_status . ' chat-room-' . $this->chat_room . '" data-token="' . $this->chat_token . '" data-in_page="' . $this->query['number'] . '">';
+        $content .= '<div class="uspc-chat chat-' . $this->chat_status . ' chat-room-' . $this->chat_room . '" data-token="' . $this->chat_token . '" data-in_page="' . $this->query['number'] . '">';
 
         $content .= $this->get_messages_box();
 
@@ -392,7 +392,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
             . usp_get_smiles( 'chat-area-' . $this->chat_id );
 
         if ( $this->file_upload ) {
-            $content .= '<span class="rcl-chat-uploader">'
+            $content .= '<span class="uspc-chat-uploader">'
                 . '<i class="uspi fa-paperclip" aria-hidden="true"></i>'
                 . $uploader->get_input()
                 . '</span>';
@@ -466,13 +466,14 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
         $content .= '<div class="chat-messages">';
 
         if ( $amount_messages ) {
-            //  $pagenavi = new Rcl_PageNavi( 'rcl-chat', $amount_messages, array( 'in_page' => $this->query['number'], 'ajax' => true, 'current_page' => $this->paged ) );
+            //  $pagenavi = new Rcl_PageNavi( 'uspc-chat', $amount_messages, array( 'in_page' => $this->query['number'], 'ajax' => true, 'current_page' => $this->paged ) );
 
             $pagenavi = new USP_Pager( array(
                 'total'   => $amount_messages,
                 'number'  => $this->query['number'],
                 'current' => $this->paged,
-                'class'   => 'rcl-chat',
+                'class'   => 'uspc-chat-navi',
+                'onclick' => 'uspc_chat_navi(this); return false;'
                 ) );
 
             $this->query['offset'] = $pagenavi->offset;
@@ -606,14 +607,12 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
         return apply_filters( 'uspc_chat_check_user_can', $user_can );
     }
 
-    function the_content( $content ) {
-        global $rcl_options;
+    function the_content( $content_in ) {
+        $content_target = links_add_target( make_clickable( $content_in ) );
 
-        $content = links_add_target( make_clickable( $content ) );
+        $content = apply_filters( 'uspc_chat_message', wp_kses( $content_target, $this->allowed_tags ) );
 
-        $content = apply_filters( 'uspc_chat_message', wp_kses( $content, $this->allowed_tags ) );
-
-        $oembed = (isset( $rcl_options['chat']['oembed'] )) ? $rcl_options['chat']['oembed'] : 0;
+        $oembed = usp_get_option( [ 'uspc_opt', 'oembed' ], 0 );
 
         if ( $oembed && function_exists( 'wp_oembed_get' ) ) {
             $links = '';

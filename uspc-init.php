@@ -83,7 +83,7 @@ function uspc_bar_add_chat_icon() {
     $args = [
         'type'    => 'clear',
         'icon'    => 'fa-envelope',
-        'class'   => 'rcl-messages',
+        'class'   => 'uspc-notify',
         'href'    => usp_get_tab_permalink( $user_ID, 'chat' ),
         'counter' => uspc_chat_noread_messages_amount( $user_ID ),
     ];
@@ -99,22 +99,22 @@ function uspc_chat_add_inline_styles( $styles, $rgb ) {
     $gs = round( $g * 0.95 );
     $bs = round( $b * 0.95 );
 
-    $styles .= '.rcl-chat .message-box::before{border-right-color:rgba(' . $r . ',' . $g . ',' . $b . ',.15);}'
-        . '.rcl-chat .message-box{background:rgba(' . $r . ',' . $g . ',' . $b . ',.15);}'
-        . '.rcl-chat .nth .message-box::before{border-right-color:rgba(' . $r . ',' . $g . ',' . $b . ',.35);}'
-        . '.rcl-chat .nth .message-box {background:rgba(' . $r . ',' . $g . ',' . $b . ',.35);}';
+    $styles .= '.uspc-chat .message-box::before{border-right-color:rgba(' . $r . ',' . $g . ',' . $b . ',.15);}'
+        . '.uspc-chat .message-box{background:rgba(' . $r . ',' . $g . ',' . $b . ',.15);}'
+        . '.uspc-chat .nth .message-box::before{border-right-color:rgba(' . $r . ',' . $g . ',' . $b . ',.35);}'
+        . '.uspc-chat .nth .message-box {background:rgba(' . $r . ',' . $g . ',' . $b . ',.35);}';
 
     if ( ! is_user_logged_in() )
         return $styles;
 
-    $styles .= '.rcl-chat .important-shift{background:rgba(' . $rs . ',' . $gs . ',' . $bs . ',.85);}';
+    $styles .= '.uspc-chat .important-shift{background:rgba(' . $rs . ',' . $gs . ',' . $bs . ',.85);}';
 
     if ( usp_get_option( [ 'uspc_opt', 'contact_panel' ], 1 ) == 0 )
         return $styles;
 
-    $styles .= '.rcl-noread-users,.rcl-chat-panel{background:rgba(' . $rs . ',' . $gs . ',' . $bs . ',.85);}'
-        . '.rcl-noread-users a.active-chat::before{border-right-color:rgba(' . $rs . ',' . $gs . ',' . $bs . ',.85);}'
-        . '.left-panel .rcl-noread-users a.active-chat::before{border-left-color:rgba(' . $rs . ',' . $gs . ',' . $bs . ',.85);}'
+    $styles .= '.uspc-noread-users,.uspc-chat-panel{background:rgba(' . $rs . ',' . $gs . ',' . $bs . ',.85);}'
+        . '.uspc-noread-users a.active-chat::before{border-right-color:rgba(' . $rs . ',' . $gs . ',' . $bs . ',.85);}'
+        . '.left-panel .uspc-noread-users a.active-chat::before{border-left-color:rgba(' . $rs . ',' . $gs . ',' . $bs . ',.85);}'
         . '.messages-icon .chat-new-messages{background:rgb(' . $rs . ',' . $gs . ',' . $bs . ');}';
 
     return $styles;
@@ -203,16 +203,6 @@ function uspc_get_the_chat_by_room( $chat_room, $args = array() ) {
     );
 }
 
-function uspc_chat_add_page_link_attributes( $attrs ) {
-
-    $attrs['onclick']      = 'uspc_chat_navi(this); return false;';
-    $attrs['class']        = 'rcl-chat-page-link';
-    $attrs['href']         = '#';
-    $attrs['data']['post'] = false;
-
-    return $attrs;
-}
-
 function uspc_get_tab_user_contacts() {
     global $user_ID;
 
@@ -293,7 +283,7 @@ function uspc_get_user_contacts_list( $user_id ) {
         $messages[$k]['author_id'] = $message['user_id'];
     }
 
-    $content = '<div class="rcl-chat-contacts">';
+    $content = '<div class="uspc-chat-contacts">';
 
     $content .= '<div class="contacts-counter"><span>' . __( 'Total number of contacts', 'userspace-chat' ) . ': ' . $amount . '</span></div>';
 
@@ -348,7 +338,7 @@ function uspc_get_tab_user_important( $user_id ) {
 
     $chat = new USPC_Chat();
 
-    $content = '<div class="rcl-chat">';
+    $content = '<div class="uspc-chat">';
 
     $content .= '<div class="chat-content">';
 
@@ -356,12 +346,12 @@ function uspc_get_tab_user_important( $user_id ) {
 
     $content .= '<div class="chat-messages">';
 
-    //$pagenavi = new Rcl_PageNavi( 'rcl-chat', $amount_messages, array( 'in_page' => $chat->query['number'] ) );
+    //$pagenavi = new Rcl_PageNavi( 'uspc-chat', $amount_messages, array( 'in_page' => $chat->query['number'] ) );
 
     $pagenavi = new USP_Pager( array(
         'total'  => $amount_messages,
         'number' => $chat->query['number'],
-        'class'  => 'rcl-chat',
+        'class'  => 'uspc-chat-navi',
         ) );
 
     $chat->offset = $pagenavi->offset;
@@ -420,9 +410,9 @@ function uspc_get_last_chats_box() {
 
     echo '<div id="uspc-chat-noread-box" class="' . implode( ' ', $class ) . '">';
 
-    echo '<div class="rcl-mini-chat"></div>';
+    echo '<div class="uspc-mini-chat"></div>';
 
-    echo '<div class="rcl-noread-users">';
+    echo '<div class="uspc-noread-users">';
     echo '<span class="messages-icon">'
     . '<a href="' . usp_get_tab_permalink( $user_ID, 'chat' ) . '" onclick="return uspc_chat_shift_contact_panel();">'
     . '<i class="uspi fa-envelope" aria-hidden="true"></i>';
@@ -442,7 +432,7 @@ function uspc_get_last_chats_box() {
         if ( $user_id == $user_LK )
             continue;
 
-        echo '<span class="rcl-chat-user contact-box" data-contact="' . $user_id . '">';
+        echo '<span class="uspc-chat-user contact-box" data-contact="' . $user_id . '">';
         echo '<a class="chat-delete-contact" href="#" title="' . __( 'Delete contact', 'userspace-chat' ) . '" onclick="uspc_chat_remove_contact(this,' . $data['chat_id'] . ');return false;"><i class="uspi fa-times" aria-hidden="true"></i></a>';
         echo '<a href="#" onclick="uspc_get_mini_chat(this,' . $user_id . '); return false;">';
         if ( ! $data['status'] )
@@ -474,7 +464,7 @@ function uspc_chat_disable_oembeds() {
     remove_action( 'wp_head', 'wp_oembed_add_host_js' );
 }
 
-add_shortcode( 'rcl-chat', 'uspc_chat_shortcode' );
+add_shortcode( 'userspace-chat', 'uspc_chat_shortcode' );
 function uspc_chat_shortcode( $atts ) {
     if ( ! isset( $atts['chat_room'] ) || empty( $atts['chat_room'] ) ) {
         return __( 'Not set attributes: chat_room', 'userspace-chat' );

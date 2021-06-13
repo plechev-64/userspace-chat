@@ -20,7 +20,7 @@ jQuery(function ($) {
     if (USPUploaders.isset('uspc_chat_uploader')) {
 
         USPUploaders.get('uspc_chat_uploader').animateLoading = function (status) {
-            status ? usp_preloader_show(jQuery('.rcl-chat .chat-form')) : usp_preloader_hide();
+            status ? usp_preloader_show(jQuery('.uspc-chat .chat-form')) : usp_preloader_hide();
         };
 
     }
@@ -52,11 +52,11 @@ function uspc_chat_inactivity_counter() {
 }
 
 function uspc_scroll_down(token) {
-    jQuery('.rcl-chat[data-token="' + token + '"] .chat-messages').scrollTop(jQuery('.rcl-chat[data-token="' + token + '"] .chat-messages').get(0).scrollHeight);
+    jQuery('.uspc-chat[data-token="' + token + '"] .chat-messages').scrollTop(jQuery('.uspc-chat[data-token="' + token + '"] .chat-messages').get(0).scrollHeight);
 }
 
 function uspc_reset_active_mini_chat() {
-    jQuery('.rcl-noread-users .rcl-chat-user > a ').removeClass('active-chat');
+    jQuery('.uspc-noread-users .uspc-chat-user > a ').removeClass('active-chat');
 }
 
 function uspc_chat_counter_reset(form) {
@@ -118,12 +118,12 @@ function uspc_init_chat(chat) {
 function uspc_chat_close(e) {
 
     uspc_reset_active_mini_chat();
-    var token = jQuery(e).parents('.rcl-mini-chat').find('.rcl-chat').data('token');
+    var token = jQuery(e).parents('.uspc-mini-chat').find('.uspc-chat').data('token');
     uspc_chat_clear_beat(token);
     var minichat_box = jQuery('#uspc-chat-noread-box');
     minichat_box.removeClass('active-chat');
     var animationName = minichat_box.hasClass('left-panel') ? 'fadeOutLeft' : 'fadeOutRight';
-    minichat_box.children('.rcl-mini-chat').animateCss(animationName, function (e) {
+    minichat_box.children('.uspc-mini-chat').animateCss(animationName, function (e) {
         jQuery(e).empty();
     });
     usp_do_action('uspc_chat_close', token);
@@ -131,7 +131,7 @@ function uspc_chat_close(e) {
 }
 
 function uspc_chat_write_status(token) {
-    var chat = jQuery('.rcl-chat[data-token="' + token + '"]');
+    var chat = jQuery('.uspc-chat[data-token="' + token + '"]');
     var chat_status = chat.find('.chat-status');
     chat_status.css({
         width: 12
@@ -148,7 +148,7 @@ function uspc_chat_write_status(token) {
 
 function uspc_chat_write_status_cancel(token) {
     clearTimeout(uspc_chat_write);
-    var chat = jQuery('.rcl-chat[data-token="' + token + '"]');
+    var chat = jQuery('.uspc-chat[data-token="' + token + '"]');
     var chat_status = chat.find('.chat-status');
     chat_status.css({
         width: 0
@@ -162,7 +162,7 @@ function uspc_chat_add_new_message(form) {
     uspc_chat_inactivity_cancel();
 
     var token = form.children('[name="chat[token]"]').val();
-    var chat = jQuery('.rcl-chat[data-token="' + token + '"]');
+    var chat = jQuery('.uspc-chat[data-token="' + token + '"]');
     var message_text = form.children('textarea').val();
 
     if (!message_text.length) {
@@ -175,7 +175,7 @@ function uspc_chat_add_new_message(form) {
         return false;
     }
 
-    usp_preloader_show('.rcl-chat .chat-form > form');
+    usp_preloader_show('.uspc-chat .chat-form > form');
 
     usp_ajax({
         data: 'action=uspc_chat_add_message&'
@@ -186,10 +186,10 @@ function uspc_chat_add_new_message(form) {
 
             if (data['content']) {
                 form.find('textarea').val('');
-                jQuery("#rcl-upload-gallery-uspc_chat_uploader").html('');
+                jQuery("#usp-uploader-uspc_chat_uploader").html('');
 
                 chat.find('.chat-messages').append(data['content']).find('.chat-message').last().animateCss('zoomIn');
-                chat.find('.rcl-chat-uploader').show();
+                chat.find('.uspc-chat-uploader').show();
                 chat.find('.chat-preloader-file').empty();
 
                 uspc_scroll_down(token);
@@ -218,9 +218,9 @@ function uspc_chat_navi(e) {
 
     uspc_chat_inactivity_cancel();
 
-    var token = jQuery(e).parents('.rcl-chat').data('token');
+    var token = jQuery(e).parents('.uspc-chat').data('token');
 
-    usp_preloader_show('.rcl-chat .chat-form > form');
+    usp_preloader_show('.uspc-chat .chat-form > form');
 
     usp_ajax({
         data: {
@@ -228,7 +228,7 @@ function uspc_chat_navi(e) {
             token: token,
             page: jQuery(e).data('page'),
             'pager-id': jQuery(e).data('pager-id'),
-            in_page: jQuery(e).parents('.rcl-chat').data('in_page'),
+            in_page: jQuery(e).parents('.uspc-chat').data('in_page'),
             important: uspc_chat_important
         },
         success: function (data) {
@@ -264,7 +264,7 @@ function uspc_get_mini_chat(e, user_id) {
             if (data['content']) {
                 var minichat_box = jQuery('#uspc-chat-noread-box');
                 var animationName = minichat_box.hasClass('left-panel') ? 'fadeInLeft' : 'fadeInRight';
-                minichat_box.children('.rcl-mini-chat').html(data['content']).animateCss(animationName);
+                minichat_box.children('.uspc-mini-chat').html(data['content']).animateCss(animationName);
                 minichat_box.addClass('active-chat');
                 uspc_chat_contact_token = data['chat_token'];
                 uspc_set_active_mini_chat(e);
@@ -312,7 +312,7 @@ function uspc_chat_words_count(e, elem) {
 
 function uspc_chat_remove_contact(e, chat_id) {
 
-    usp_preloader_show('.rcl-chat-contacts');
+    usp_preloader_show('.uspc-chat-contacts');
 
     var contact = jQuery(e).parents('.contact-box').data('contact');
 
@@ -357,11 +357,11 @@ function uspc_chat_message_important(message_id) {
 
 function uspc_chat_important_manager_shift(e, status) {
 
-    usp_preloader_show('.rcl-chat');
+    usp_preloader_show('.uspc-chat');
 
     uspc_chat_important = status;
 
-    var token = jQuery(e).parents('.rcl-chat').data('token');
+    var token = jQuery(e).parents('.uspc-chat').data('token');
 
     usp_ajax({
         data: {
@@ -421,7 +421,7 @@ function uspc_chat_delete_attachment(e, attachment_id) {
 
             if (data['remove']) {
                 var form = jQuery(e).parents('form');
-                form.find('.rcl-chat-uploader').show();
+                form.find('.uspc-chat-uploader').show();
                 form.find('.chat-preloader-file').empty();
             }
         }
@@ -468,7 +468,7 @@ function uspc_chat_beat_core(chat) {
         }
     }
 
-    var chatBox = jQuery('.rcl-chat[data-token="' + chat.token + '"]');
+    var chatBox = jQuery('.uspc-chat[data-token="' + chat.token + '"]');
 
     var chat_form = chatBox.find('form');
 
@@ -489,7 +489,7 @@ function uspc_chat_beat_core(chat) {
 
 function uspc_chat_beat_success(data) {
 
-    var chat = jQuery('.rcl-chat[data-token="' + data.token + '"]');
+    var chat = jQuery('.uspc-chat[data-token="' + data.token + '"]');
 
     if (!chat.length) {
         uspc_chat_clear_beat(data.token);
