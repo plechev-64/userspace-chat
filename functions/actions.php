@@ -1,6 +1,6 @@
 <?php
 
-add_filter( 'uspc_chat_messages', 'uspc_chat_messages_add_important_meta', 10 );
+add_filter( 'uspc_messages', 'uspc_chat_messages_add_important_meta', 10 );
 function uspc_chat_messages_add_important_meta( $messages ) {
     if ( ! $messages )
         return $messages;
@@ -29,7 +29,7 @@ function uspc_chat_messages_add_important_meta( $messages ) {
     return $messages;
 }
 
-add_filter( 'uspc_chat_messages', 'uspc_chat_messages_add_attachments_meta', 10 );
+add_filter( 'uspc_messages', 'uspc_chat_messages_add_attachments_meta', 10 );
 function uspc_chat_messages_add_attachments_meta( $messages ) {
     if ( ! $messages )
         return $messages;
@@ -58,14 +58,14 @@ function uspc_chat_messages_add_attachments_meta( $messages ) {
     return $messages;
 }
 
-add_action( 'uspc_chat_insert_message', 'uspc_chat_add_user_contact', 10 );
+add_action( 'uspc_insert_message', 'uspc_chat_add_user_contact', 10 );
 function uspc_chat_add_user_contact( $message ) {
     $chat = uspc_get_chat( $message['chat_id'] );
 
     if ( $chat->chat_status == 'private' ) {
         global $wpdb;
 
-        $result = $wpdb->update(
+        $wpdb->update(
             USPC_PREF . 'chat_users', array(
             'user_status' => 1
             ), array(
@@ -76,7 +76,7 @@ function uspc_chat_add_user_contact( $message ) {
     }
 }
 
-add_filter( 'uspc_pre_insert_chat_message', 'uspc_chat_check_message_blocked', 10 );
+add_filter( 'uspc_pre_insert_message', 'uspc_chat_check_message_blocked', 10 );
 function uspc_chat_check_message_blocked( $message ) {
     if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX )
         return $message;
@@ -93,15 +93,15 @@ function uspc_chat_check_message_blocked( $message ) {
     return $message;
 }
 
-add_action( 'uspc_chat_add_message', 'uspc_chat_update_attachment_data', 10 );
+add_action( 'uspc_add_new_message', 'uspc_chat_update_attachment_data', 10 );
 function uspc_chat_update_attachment_data( $message ) {
     if ( ! isset( $message['attachment'] ) )
-        return false;
+        return;
 
-    wp_update_post( array(
+    wp_update_post( [
         'ID'           => $message['attachment'],
         'post_excerpt' => 'uspc_chat_attachment:' . $message['message_id']
-    ) );
+    ] );
 }
 
 add_action( 'uspc_insert_chat', 'uspc_chat_insert_private_users', 10 );
@@ -117,7 +117,7 @@ function uspc_chat_insert_private_users( $chat_id ) {
     }
 }
 
-add_action( 'uspc_chat_delete_message', 'uspc_chat_delete_message_data', 10 );
+add_action( 'uspc_delete_message', 'uspc_chat_delete_message_data', 10 );
 function uspc_chat_delete_message_data( $message_id ) {
 
     $attachment_id = uspc_chat_get_message_meta( $message_id, 'attachment' );

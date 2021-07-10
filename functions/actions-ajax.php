@@ -9,14 +9,14 @@ function uspc_get_ajax_chat_window() {
     $chatdata = uspc_get_chat_private( $user_id );
 
     wp_send_json( array(
-        'dialog' => array(
+        'dialog' => [
             'content'     => $chatdata['content'],
-            'title'       => __( 'Chat with', 'userspace-chat' ) . ' ' . get_the_author_meta( 'display_name', $user_id ),
+            'title'       => __( 'Chat with', 'userspace-chat' ) . ' ' . usp_get_username( $user_id ),
             'class'       => 'uspc-chat-window',
             'size'        => 'small',
             'buttonClose' => false,
-            'onClose'     => array( 'uspc_chat_clear_beat', array( $chatdata['token'] ) )
-        )
+            'onClose'     => [ 'uspc_chat_clear_beat', array( $chatdata['token'] ) ]
+        ]
     ) );
 }
 
@@ -24,13 +24,23 @@ usp_ajax_action( 'uspc_chat_remove_contact', false );
 function uspc_chat_remove_contact() {
     usp_verify_ajax_nonce();
 
-    global $user_ID;
-
-    $chat_id = intval( $_POST['chat_id'] );
-
-    uspc_chat_update_user_status( $chat_id, $user_ID, 0 );
+    uspc_chat_update_user_status( intval( $_POST['chat_id'] ), get_current_user_id(), 0 );
 
     $res['remove'] = true;
+
+    wp_send_json( $res );
+}
+
+usp_ajax_action( 'uspc_get_contacts_navi' );
+function uspc_get_contacts_navi() {
+    usp_verify_ajax_nonce();
+
+    require_once USPC_PATH . 'classes/class-uspc-contact-list.php';
+
+    $contactlist = new USPC_Contact_List( [ 'current' => intval( $_POST['page'] ) ] );
+
+    $res['content'] = $contactlist->get_loop();
+    $res['nav']     = $contactlist->get_pagination();
 
     wp_send_json( $res );
 }
@@ -40,10 +50,27 @@ function uspc_get_chat_page() {
     usp_verify_ajax_nonce();
 
     $chat_page  = intval( $_POST['page'] );
-    $in_page    = intval( $_POST['in_page'] );
-    $important  = intval( $_POST['important'] );
     $chat_token = $_POST['token'];
-    $chat_room  = uspc_chat_token_decode( $chat_token );
+
+    // special marker of get all important navi
+    if ( $chat_token == 1 ) {
+        return uspc_get_all_important_navi( $chat_page );
+    }
+
+    $in_page   = intval( $_POST['in_page'] );
+    $important = intval( $_POST['important'] );
+
+    return uspc_get_paged_user_to_user( $chat_token, $chat_page, $important, $in_page );
+}
+
+function uspc_get_all_important_navi( $chat_page ) {
+    $res['content'] = uspc_important_im_talk_box( get_current_user_id(), $chat_page );
+
+    wp_send_json( $res );
+}
+
+function uspc_get_paged_user_to_user( $chat_token, $chat_page, $important, $in_page ) {
+    $chat_room = base64_decode( $chat_token );
 
     if ( ! uspc_get_chat_by_room( $chat_room ) )
         return;
@@ -51,15 +78,16 @@ function uspc_get_chat_page() {
     require_once USPC_PATH . 'classes/class-uspc-chat.php';
 
     $chat = new USPC_Chat(
-        array(
+        [
         'chat_room' => $chat_room,
         'paged'     => $chat_page,
         'important' => $important,
-        'in_page'   => $in_page
-        )
+        'in_page'   => $in_page,
+        'userslist' => 1
+        ]
     );
 
-    $res['content'] = $chat->get_messages_box();
+    $res['content'] = $chat->get_messages_talk();
 
     wp_send_json( $res );
 }
@@ -70,20 +98,19 @@ function uspc_chat_add_message() {
 
     $POST = wp_unslash( $_POST['chat'] );
 
-    $chat_room = uspc_chat_token_decode( $POST['token'] );
+    $chat_room = base64_decode( $POST['token'] );
 
     if ( ! uspc_get_chat_by_room( $chat_room ) )
         return false;
 
-    $antispam = usp_get_option( [ 'uspc_opt', 'antispam' ], 0 );
+    $antispam_opt = usp_get_option( [ 'uspc_opt', 'antispam' ], 0 );
+    $antispam     = apply_filters( 'uspc_antispam_option', $antispam_opt );
 
-    if ( $antispam = apply_filters( 'uspc_chat_antispam_option', $antispam ) ) {
-        global $user_ID;
-
+    if ( $antispam ) {
         $query = new USPC_Chat_Messages_Query();
 
         $args = [
-            'user_id'                => $user_ID,
+            'user_id'                => get_current_user_id(),
             'private_key__not_in'    => [ 0 ],
             'message_status__not_in' => [ 1 ],
             'date_query'             => [
@@ -117,12 +144,13 @@ function uspc_chat_add_message() {
 
     if ( isset( $newMessages['content'] ) && $newMessages['content'] ) {
         $res['new_messages'] = 1;
-        $content             .= $newMessages['content'];
+
+        $content .= $newMessages['content'];
     }
 
     require_once USPC_PATH . 'classes/class-uspc-chat.php';
 
-    $chat = new USPC_Chat( array( 'chat_room' => $chat_room ) );
+    $chat = new USPC_Chat( [ 'chat_room' => $chat_room ] );
 
     $result = $chat->add_message( $POST['message'], $attach );
 
@@ -138,7 +166,7 @@ function uspc_chat_add_message() {
         wp_send_json( $result );
     }
 
-    $res['content']       = $content . $chat->get_message_box( $result );
+    $res['content']       = $content . $chat->include_template_message_item( $result );
     $res['last_activity'] = current_time( 'mysql' );
 
     wp_send_json( $res );
@@ -150,15 +178,17 @@ function uspc_get_chat_private_ajax() {
 
     $user_id = intval( $_POST['user_id'] );
 
-    $chatdata = uspc_get_chat_private( $user_id, array( 'avatar_size' => 30, 'userslist' => 0 ) );
+    $chatdata = uspc_get_chat_private( $user_id, [ 'avatar_size' => 30, 'userslist' => 0 ] );
 
-    $chat = '<div class="uspc-chat-panel">'
-        . '<a href="' . usp_get_tab_permalink( $user_id, 'chat' ) . '"><i class="uspi fa-search-plus" aria-hidden="true"></i></a>'
-        . '<a href="#" onclick="uspc_chat_close(this);return false;"><i class="uspi fa-times" aria-hidden="true"></i></a>'
-        . '</div>';
-    $chat .= $chatdata['content'];
+    $bttn = usp_get_button( [
+        'onclick' => 'uspc_close_minichat(this);return false;',
+        'class'   => 'uspc-im__close',
+        'icon'    => 'fa-times'
+        ] );
 
-    $result['content']    = $chat;
+    $result['name']       = usp_get_username( $user_id, usp_get_tab_permalink( $user_id, 'chat' ), [ 'class' => 'uspc-im__userlink' ] );
+    $result['bttn']       = $bttn;
+    $result['content']    = $chatdata['content'];
     $result['chat_token'] = $chatdata['token'];
 
     wp_send_json( $result );
@@ -191,14 +221,22 @@ function uspc_chat_important_manager_shift() {
 
     $chat_token       = wp_slash( $_POST['token'] );
     $status_important = intval( $_POST['status_important'] );
-    $chat_room        = uspc_chat_token_decode( $chat_token );
+    $chat_room        = base64_decode( $chat_token );
 
     if ( ! uspc_get_chat_by_room( $chat_room ) )
         return false;
 
     require_once USPC_PATH . 'classes/class-uspc-chat.php';
 
-    $chat = new USPC_Chat( array( 'chat_room' => $chat_room, 'important' => $status_important ) );
+    $userlist = ($status_important == 1) ? false : true;
+
+    $chat = new USPC_Chat(
+        [
+        'chat_room' => $chat_room,
+        'important' => $status_important,
+        'userslist' => $userlist
+        ]
+    );
 
     $res['content'] = $chat->get_messages_box();
 
@@ -217,9 +255,7 @@ function uspc_chat_delete_attachment() {
     if ( ! $post = get_post( $attachment_id ) )
         return false;
 
-    global $user_ID;
-
-    if ( $post->post_author != $user_ID )
+    if ( $post->post_author != get_current_user_id() )
         return false;
 
     wp_delete_attachment( $attachment_id );

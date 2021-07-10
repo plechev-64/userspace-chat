@@ -5,7 +5,7 @@ function uspc_chat_daily_delete_messages() {
     $max = usp_get_option( [ 'uspc_opt', 'messages_amount' ], 100 );
 
     if ( ! $max )
-        return false;
+        return;
 
     global $wpdb;
 
@@ -23,7 +23,7 @@ function uspc_chat_daily_delete_messages() {
     );
 
     if ( ! $chats )
-        return false;
+        return;
 
     foreach ( $chats as $chat ) {
 
@@ -59,19 +59,19 @@ add_action( 'usp_cron_hourly', 'uspc_chat_send_notify_messages', 10 );
 function uspc_chat_send_notify_messages() {
     global $wpdb;
 
-    $mailtext = usp_get_option( [ 'uspc_opt', 'messages_mail' ], 0 );
-
     $mess = $wpdb->get_results( "SELECT * FROM " . USPC_PREF . "chat_messages WHERE message_status='0' && private_key!='0' && message_time  > date_sub('" . current_time( 'mysql' ) . "', interval 1 hour)" );
 
     if ( ! $mess )
-        return false;
+        return;
 
-    $messages = array();
+    $messages = [];
     foreach ( $mess as $m ) {
         $messages[$m->private_key][$m->user_id][] = $m->message_content;
     }
 
     usp_add_log( __( 'Send notifications on unread messages', 'userspace-chat' ) );
+
+    $mailtext = usp_get_option( [ 'uspc_opt', 'messages_mail' ], 0 );
 
     foreach ( $messages as $addressat_id => $data ) {
         $content = '';
@@ -81,17 +81,18 @@ function uspc_chat_send_notify_messages() {
 
         foreach ( $data as $author_id => $array_messages ) {
             $url     = usp_get_tab_permalink( $author_id, 'chat' );
-            $content .= '<div style="overflow:hidden;clear:both;">
-                <p>' . __( 'You were sent a private message', 'userspace-chat' ) . '</p>
-                <div style="float:left;margin-right:15px;">' . get_avatar( $author_id, 60 ) . '</div>'
-                . '<p>' . __( 'from the user', 'userspace-chat' ) . ' ' . get_the_author_meta( 'display_name', $author_id ) . '</p>';
+            $content .= '<div style="overflow:hidden;clear:both;">';
+            $content .= '<p>' . __( 'You were sent a private message.', 'userspace-chat' ) . '</p>';
+            $content .= '<div style="float:left;margin-right:18px;">' . usp_get_avatar( $author_id, 60 ) . '</div>';
+            $content .= '<p>' . __( 'From the user:', 'userspace-chat' ) . ' ' . usp_get_username( $author_id ) . '</p>';
 
-            if ( $mailtext )
-                $content .= '<p><b>' . __( 'Message text', 'userspace-chat' ) . ':</b></p>'
-                    . '<p>' . implode( '<br>', $array_messages ) . '</p>';
+            if ( $mailtext ) {
+                $content .= '<p><b>' . __( 'Message text', 'userspace-chat' ) . ':</b></p>';
+                $content .= '<p>' . implode( '<br>', $array_messages ) . '</p>';
+            }
 
-            $content .= '<p>' . __( 'You can read the message by clicking on the link:', 'userspace-chat' ) . ' <a href="' . $url . '">' . $url . '</a></p>'
-                . '</div>';
+            $content .= '<p>' . __( 'You can read the message by clicking on the link:', 'userspace-chat' ) . ' <a href="' . $url . '">' . $url . '</a></p>';
+            $content .= '</div>';
         }
 
         $title = __( 'For you', 'userspace-chat' ) . ' ' . $cnt . ' ' . __( 'new messages', 'userspace-chat' );

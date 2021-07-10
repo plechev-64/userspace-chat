@@ -161,7 +161,7 @@ function uspc_chat_options( $options ) {
                             __( 'Left', 'userspace-chat' ),
                             __( 'Right', 'userspace-chat' )
                         ],
-                        'default' => 0,
+                        'default' => 1,
                     ]
                 )
             )

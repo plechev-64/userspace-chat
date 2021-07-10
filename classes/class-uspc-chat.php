@@ -1,9 +1,11 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 class USPC_Chat extends USPC_Chat_Messages_Query {
 
     public $chat_id     = 0;
-    public $chat        = array();
+    public $chat        = [];
     public $chat_room   = 'default';
     public $chat_token;
     public $chat_status = 'general';
@@ -21,12 +23,10 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
     public $user_can;
     public $form        = true;
     public $beat        = true;
-    public $errors      = array();
+    public $errors      = [];
     public $allowed_tags;
 
-    function __construct( $args = array() ) {
-        global $user_ID;
-
+    function __construct( $args = [] ) {
         parent::__construct();
 
         $this->return_as = ARRAY_A;
@@ -41,13 +41,13 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
         $this->parse( $args );
 
-        add_filter( 'uspc_chat_message', 'wpautop', 11 );
+        add_filter( 'uspc_message', 'wpautop', 11 );
 
         if ( ! $this->user_id )
-            $this->user_id = $user_ID;
+            $this->user_id = get_current_user_id();
 
         if ( ! $this->office_id )
-            $this->office_id = (isset( $_POST['office_ID'] )) ? $_POST['office_ID'] : 0;
+            $this->office_id = (isset( $_POST['office_ID'] )) ? intval( $_POST['office_ID'] ) : 0;
 
         if ( ! $this->max_words )
             $this->max_words = usp_get_option( [ 'uspc_opt', 'words' ], 300 );
@@ -55,7 +55,11 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
         if ( ! $this->chat_room )
             return;
 
-        $this->chat_token = uspc_chat_token_encode( $this->chat_room );
+        USP()->use_module( 'forms' );
+
+        $this->load_resources();
+
+        $this->chat_token = base64_encode( $this->chat_room );
 
         $this->chat = $this->get_chat_data( $this->chat_room );
 
@@ -65,7 +69,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
         if ( ! $this->chat ) {
             $this->setup_chat();
         } else {
-            $this->chat_id = $this->chat['chat_id'];
+            $this->chat_id = $this->chat->chat_id;
         }
 
         $updateActivity = isset( $args['update_activity'] ) ? $args['update_activity'] : 1;
@@ -76,14 +80,14 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
         $this->query['where'][] = "uspc_chat_messages.chat_id = '$this->chat_id'";
 
         if ( $this->important ) {
-            add_filter( 'uspc_chat_query', array( &$this, 'add_important_query' ), 10 );
+            add_filter( 'uspc_main_query', [ &$this, 'add_important_query' ], 10 );
         }
 
         $this->user_can = ($this->is_user_can()) ? 1 : 0;
 
-        $this->query = apply_filters( 'uspc_chat_query', $this->query );
+        $this->query = apply_filters( 'uspc_main_query', $this->query );
 
-        $this->allowed_tags = apply_filters( 'uspc_chat_message_allowed_tags', array(
+        $this->allowed_tags = apply_filters( 'uspc_allowed_tags', array(
             'a'          => array(
                 'href'   => true,
                 'title'  => true,
@@ -112,6 +116,11 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
         do_action( 'uspc_chat_is_load', $this );
     }
 
+    public function load_resources() {
+        usp_enqueue_style( 'uspc-chat', USPC_URL . 'assets/css/uspc-chat.css' );
+        usp_enqueue_script( 'uspc-chat', USPC_URL . 'assets/js/uspc-chat.js' );
+    }
+
     function init_properties( $args ) {
         $properties = get_class_vars( get_class( $this ) );
 
@@ -123,24 +132,18 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
     function get_chat_data( $chat_room ) {
         if ( $chat_room ) {
-            global $wpdb;
-
-            $chat = $wpdb->get_row( "SELECT * FROM " . USPC_PREF . "chats WHERE chat_room = '$chat_room'", ARRAY_A );
+            return uspc_get_chat_by_room( $chat_room );
         }
-
-        return $chat;
     }
 
     function read_chat( $chat_id ) {
-        global $wpdb;
-
-        $wpdb->query( "UPDATE " . USPC_PREF . "chat_messages SET message_status = '1' WHERE chat_id = '$chat_id' AND user_id != '$this->user_id'" );
+        uspc_set_read_chat( $chat_id, $this->user_id );
     }
 
     function set_activity() {
         global $wpdb;
 
-        $result = $wpdb->query( "INSERT INTO " . USPC_PREF . "chat_users "
+        $wpdb->query( "INSERT INTO " . USPC_PREF . "chat_users "
             . "(`room_place`, `chat_id`, `user_id`, `user_activity`, `user_write`, `user_status`) "
             . "VALUES('$this->chat_id:$this->user_id', $this->chat_id, $this->user_id, '" . current_time( 'mysql' ) . "', 0, 1) "
             . "ON DUPLICATE KEY UPDATE user_activity = '" . current_time( 'mysql' ) . "', user_write='$this->user_write'" );
@@ -155,12 +158,9 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
     }
 
     function get_current_activity() {
-
         $users = $this->get_users_activity();
 
-        $res = array(
-            $this->user_id => $this->get_user_activity( $this )
-        );
+        $res = [ $this->user_id => $this->get_user_activity( $this ) ];
 
         if ( $users ) {
             foreach ( $users as $user ) {
@@ -172,7 +172,6 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
     }
 
     function get_user_activity( $user ) {
-
         if ( ! $user->user_id ) {
             return array(
                 'link'  => '<span>' . __( 'Guest', 'userspace-chat' ) . '</span>',
@@ -183,7 +182,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
         $write = ($user->user_id == $this->user_id) ? 0 : $user->user_write;
 
         return array(
-            'link'  => '<a href="' . usp_get_tab_permalink( $user->user_id, 'chat' ) . '">' . get_the_author_meta( 'display_name', $user->user_id ) . '</a>',
+            'link'  => usp_get_username( $user->user_id, usp_get_tab_permalink( $user->user_id, 'chat' ) ),
             'write' => $write
         );
     }
@@ -213,7 +212,6 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
     }
 
     function add_message( $message, $attachment = false ) {
-
         $result = $this->insert_message( $this->chat_id, $this->user_id, $message );
 
         if ( $this->is_errors() )
@@ -225,13 +223,12 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
             $result['attachment'] = $attachment;
         }
 
-        do_action( 'uspc_chat_add_message', $result );
+        do_action( 'uspc_add_new_message', $result );
 
         return $result;
     }
 
     function setup_chat() {
-
         if ( ! $this->chat_id ) {
             $this->chat_id = $this->insert_chat( $this->chat_room, $this->chat_status );
         }
@@ -243,12 +240,12 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
     }
 
     function insert_message( $chat_id, $user_id, $message_text ) {
-        $message_text = wp_slash( $message_text );
+        $message_text_slash = wp_slash( $message_text );
 
         $private_key = 0;
 
-        if ( $this->chat['chat_status'] == 'private' ) {
-            $key         = explode( ':', $this->chat['chat_room'] );
+        if ( $this->chat->chat_status == 'private' ) {
+            $key         = explode( ':', $this->chat->chat_room );
             $private_key = ($key[1] == $this->user_id) ? $key[2] : $key[1];
 
             $user_block = get_user_meta( $private_key, 'usp_black_list:' . $this->user_id );
@@ -260,61 +257,46 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
             }
         }
 
-        $message = array(
+        $message_args = [
             'chat_id'         => $chat_id,
             'user_id'         => $user_id,
-            'message_content' => $message_text,
+            'message_content' => $message_text_slash,
             'message_time'    => current_time( 'mysql' ),
             'private_key'     => $private_key,
             'message_status'  => 0,
-        );
+        ];
 
-        $message = apply_filters( 'uspc_pre_insert_chat_message', $message );
+        $message = apply_filters( 'uspc_pre_insert_message', $message_args );
 
         if ( ! $message ) {
             $this->add_error( 'insert_message', __( 'The message was not added', 'userspace-chat' ) );
             return $this->errors();
         }
 
-        global $wpdb;
-
-        $result = $wpdb->insert(
-            USPC_PREF . 'chat_messages', $message
-        );
+        $result = uspc_add_chat_message( $message );
 
         if ( ! $result ) {
             $this->add_error( 'insert_message', __( 'The message was not added', 'userspace-chat' ) );
             return $this->errors();
         }
 
+        global $wpdb;
+
         $message['message_id'] = $wpdb->insert_id;
 
-        do_action( 'uspc_chat_insert_message', $message, $this );
+        do_action( 'uspc_insert_message', $message, $this );
 
-        $message = wp_unslash( $message );
-
-        return $message;
+        return wp_unslash( $message );
     }
 
     function insert_chat( $chat_room, $chat_status ) {
-        global $wpdb;
+        $chat_id = uspc_insert_chat( $chat_room, $chat_status );
 
-        $result = $wpdb->insert(
-            USPC_PREF . 'chats', array(
-            'chat_room'   => $chat_room,
-            'chat_status' => $chat_status
-            )
-        );
-
-        if ( ! $result ) {
+        if ( ! $chat_id ) {
             $this->add_error( 'insert_chat', __( 'Chat was not created', 'userspace-chat' ) );
 
             return $this->errors();
         }
-
-        $chat_id = $wpdb->insert_id;
-
-        do_action( 'uspc_insert_chat', $chat_id );
 
         return $chat_id;
     }
@@ -331,7 +313,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
         if ( $this->beat ) {
 
             $content = '<script>'
-                . 'uspc_init_chat({'
+                . 'jQuery(function($){uspc_init_chat({'
                 . 'token:"' . $this->chat_token . '",'
                 . 'file_upload:' . $this->file_upload . ','
                 . 'max_words:' . $this->max_words . ','
@@ -339,15 +321,16 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
                 . 'open_chat:"' . current_time( 'mysql' ) . '",'
                 . 'timeout:' . $this->timeout
                 . '});'
-                . '</script>';
+                . '});</script>';
         }
 
-        $content .= '<div class="uspc-chat chat-' . $this->chat_status . ' chat-room-' . $this->chat_room . '" data-token="' . $this->chat_token . '" data-in_page="' . $this->query['number'] . '">';
-
+        $content .= '<div class="uspc-im uspc-chat-' . $this->chat_status . ' uspc-chat__room-' . $this->chat_room . '" data-token="' . $this->chat_token . '" data-in_page="' . $this->query['number'] . '">';
+        $content .= '<div class="uspc-im__box usps__relative">';
         $content .= $this->get_messages_box();
+        $content .= '</div>';
 
         if ( $this->form ) {
-            $content .= '<div class="chat-form">' . $this->get_form() . '</div>';
+            $content .= $this->get_form();
         }
 
         $content .= '</div>';
@@ -358,21 +341,18 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
     }
 
     function get_form() {
-        global $user_ID;
-
-        if ( ! $user_ID ) {
-
-            $content = usp_get_notice( array(
+        if ( ! is_user_logged_in() ) {
+            $content = usp_get_notice( [
                 'type' => 'error',
                 'text' => __( 'To post messages in the chat you need to login', 'userspace-chat' )
-                ) );
+                ] );
 
-            $content .= '<form><input type="hidden" name="chat[token]" value="' . $this->chat_token . '"></form>';
+            //$content .= '<form class="uspc-im__form usps__relative"><input type="hidden" name="chat[token]" value="' . $this->chat_token . '"></form>';
 
             return $content;
         }
 
-        $content = apply_filters( 'uspc_chat_before_form', '', $this->chat );
+        $content = apply_filters( 'uspc_before_form', '', $this->chat );
 
         if ( $this->file_upload ) {
             $uploader = new USP_Uploader( 'uspc_chat_uploader', array(
@@ -387,27 +367,31 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
                 ) );
         }
 
-        $content .= '<form action="" method="post">'
-            . '<div class="chat-form-media">'
-            . usp_get_smiles( 'chat-area-' . $this->chat_id );
+        $content .= '<form class="uspc-im__form usps usps__column usp-field usps__relative" action="" method="post">';
+        $content .= '<div class="uspc-im-form__meta">';
+        $content .= usp_get_emoji( 'uspc-im-form__area-' . $this->chat_id );
 
         if ( $this->file_upload ) {
-            $content .= '<span class="uspc-chat-uploader">'
-                . '<i class="uspi fa-paperclip" aria-hidden="true"></i>'
-                . $uploader->get_input()
-                . '</span>';
+            $args_uploads = [
+                'type'    => 'clear',
+                'size'    => 'no',
+                'class'   => 'uspc-chat-uploader',
+                'content' => $uploader->get_input(),
+                'icon'    => 'fa-paperclip',
+            ];
+            $content      .= usp_get_button( $args_uploads );
         }
 
         $content .= '</div>';
 
-        $content .= '<textarea maxlength="' . $this->max_words . '" onkeyup="uspc_chat_words_count(event,this);" id="chat-area-' . $this->chat_id . '" name="chat[message]"></textarea>';
+        $content .= '<textarea maxlength="' . $this->max_words . '" onkeyup="uspc_chat_words_count(event,this);" id="uspc-im-form__area-' . $this->chat_id . '" class="uspc-im-form__textarea" name="chat[message]" placeholder="' . __( 'Write something', 'userspace-chat' ) . '"></textarea>';
 
         if ( $this->file_upload ) {
             $content .= $uploader->get_gallery();
         }
-        $content .= '<span class="words-counter">' . $this->max_words . '</span>';
+        $content .= '<span class="uspc-im-form__sign-count">' . $this->max_words . '</span>';
 
-        $hiddens = apply_filters( 'uspc_chat_hidden_fields', array(
+        $hiddens = apply_filters( 'uspc_hidden_fields', array(
             'chat[token]'       => $this->chat_token,
             'chat[in_page]'     => $this->query['number'],
             'chat[status]'      => $this->chat_status,
@@ -416,75 +400,79 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
             ) );
 
         if ( $hiddens ) {
-
             foreach ( $hiddens as $name => $val ) {
                 $content .= '<input type="hidden" name="' . $name . '" value="' . $val . '">';
             }
         }
 
-        $content .= '<div class="chat-preloader-file"></div>'
-            . usp_get_button( array(
-                'label'   => __( 'Send', 'userspace-chat' ),
-                'icon'    => 'fa-paper-plane',
-                'class'   => 'chat-submit',
-                'onclick' => 'uspc_chat_add_message(this);return false;'
-            ) )
-            . '</form>';
+        $content .= usp_get_button( [
+            'label'      => __( 'Send', 'userspace-chat' ),
+            'icon'       => 'fa-paper-plane',
+            'icon_align' => 'right',
+            'class'      => 'uspc-im-form__send usps__as-end',
+            'onclick'    => 'uspc_chat_add_message(this);return false;'
+            ] );
+        $content .= '</form>';
 
-        $content .= apply_filters( 'uspc_chat_after_form', '', $this->chat );
+        $content .= apply_filters( 'uspc_after_form', '', $this->chat );
 
         return $content;
     }
 
     function userslist() {
-        $content = '<div class="chat-users-box">'
-            . '<span>' . __( 'In chat', 'userspace-chat' ) . ':</span>'
-            . '<div class="chat-users"></div>'
+        $content = '<div class="uspc-im__online uspc-im-header__title usps__grow">'
+            . '<span class="uspc-im-online__title">' . __( 'In chat', 'userspace-chat' ) . ':</span>'
+            . '<div class="uspc-im-online__items usps__inline"></div>'
             . '</div>';
 
         return $content;
     }
 
     function get_messages_box() {
+        $content = $this->get_messages_header();
+        $content .= $this->get_messages_talk();
 
+        return $content;
+    }
+
+    function get_messages_header() {
+        $meta = '';
+        if ( $this->userslist ) {
+            $meta .= $this->userslist();
+        }
+
+        if ( $this->user_id ) {
+            $meta .= $this->important_manager();
+        }
+
+        $content = '<div class="uspc-im__header usps usps__ai-center usps__jc-end">';
+        $content .= apply_filters( 'uspc_im_meta', $meta );
+        $content .= '</div>';
+
+        return $content;
+    }
+
+    function get_messages_talk() {
         $navi = false;
 
         $amount_messages = $this->count_messages();
 
-        $content = '<div class="chat-content">';
-
-        if ( $this->userslist )
-            $content .= $this->userslist();
-
-        $content .= '<div class="chat-messages-box">';
-
-        $content .= '<div class="chat-meta">';
-        if ( $this->user_id )
-            $content .= $this->important_manager();
-        $content .= '</div>';
-
-        $content .= '<div class="chat-messages">';
+        $content = '<div class="uspc-im__talk">';
 
         if ( $amount_messages ) {
-            //  $pagenavi = new Rcl_PageNavi( 'uspc-chat', $amount_messages, array( 'in_page' => $this->query['number'], 'ajax' => true, 'current_page' => $this->paged ) );
-
-            $pagenavi = new USP_Pager( array(
+            $pagenavi = new USP_Pager( [
                 'total'   => $amount_messages,
                 'number'  => $this->query['number'],
                 'current' => $this->paged,
-                'class'   => 'uspc-chat-navi',
-                'onclick' => 'uspc_chat_navi(this); return false;'
-                ) );
+                'class'   => 'uspc-im__nav',
+                'onclick' => 'uspc_chat_navi'
+                ] );
 
             $this->query['offset'] = $pagenavi->offset;
 
             $messages = $this->get_messages();
 
-            krsort( $messages );
-
-            foreach ( $messages as $k => $message ) {
-                $content .= $this->get_message_box( $message );
-            }
+            $content .= $this->get_loop( $messages );
 
             $navi = $pagenavi->get_navi();
         } else {
@@ -493,14 +481,14 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
             else
                 $notice = __( 'Chat history will be displayed here', 'userspace-chat' );
 
-            $content .= usp_get_notice( [ 'text' => $notice ] );
+            $content .= usp_get_notice( [ 'text' => $notice, 'class' => 'uspc-im-talk__write' ] );
         }
 
-        $content .= '</div>';
+        $content .= '</div>'; // .uspc-im__talk
 
-        $content .= '<div class="chat-meta">';
+        $content .= '<div class="uspc-im__footer usps__relative">';
 
-        $content .= '<div class="chat-status"><span>......<i class="uspi fa-pencil" aria-hidden="true"></i></span></div>';
+        $content .= '<div class="uspc-im__writes"><span>......<i class="uspi fa-pencil" aria-hidden="true"></i></span></div>';
 
         if ( $navi ) {
             $content .= $navi;
@@ -508,95 +496,38 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
         $content .= '</div>';
 
-        $content .= '</div>';
-
-        $content .= '</div>';
-
         return $content;
     }
 
     function get_messages() {
-
         $messages = $this->get_data();
 
-        $messages = apply_filters( 'uspc_chat_messages', $messages );
-
-        return $messages;
+        return apply_filters( 'uspc_messages', $messages );
     }
 
     function count_messages() {
-
-        $count = $this->get_count();
-
-        return $count;
+        return $this->get_count();
     }
 
-    function get_message_box( $message ) {
+    function get_loop( $messages ) {
+        krsort( $messages );
 
-        $class = ($message['user_id'] == $this->user_id) ? 'nth' : '';
-
-        $content = '<div class="chat-message ' . $class . '" data-message="' . $message['message_id'] . '" data-user_id="' . $message['user_id'] . '">'
-            . '<span class="user-avatar">';
-
-        if ( $message['user_id'] != $this->user_id )
-            $content .= '<a href="' . usp_get_tab_permalink( $message['user_id'], 'chat' ) . '">';
-
-        $content .= get_avatar( $message['user_id'], $this->avatar_size );
-
-        if ( $message['user_id'] != $this->user_id )
-            $content .= '</a>';
-
-        $content .= '</span>';
-
-        if ( $this->user_id )
-            $content .= $this->message_manager( $message );
-
-        $content .= '<div class="message-wrapper">'
-            . '<div class="message-box">'
-            . '<span class="author-name">' . get_the_author_meta( 'display_name', $message['user_id'] ) . '</span>'
-            . '<div class="message-text">';
-
-        $content .= $this->the_content( $message['message_content'] );
-
-        if ( isset( $message['attachment'] ) && $message['attachment'] )
-            $content .= $this->the_attachment( $message['attachment'] );
-
-        $content .= '</div>'
-            . '</div>'
-            . '<span class="message-time"><i class="uspi fa-clock" aria-hidden="true"></i> ' . $message['message_time'] . '</span>'
-            . '</div>'
-            . '</div>';
-
-        return $content;
-    }
-
-    function message_manager( $message ) {
-
-        $class = array( 'message-important' );
-
-        if ( isset( $message['important'] ) && $message['important'] )
-            $class[] = 'active-important';
-
-        $content = '<div class="message-manager">';
-
-        $content .= '<span class="' . implode( ' ', $class ) . '">'
-            . '<a href="#" onclick="uspc_chat_message_important(' . $message['message_id'] . '); return false;">'
-            . '<i class="uspi fa-star" aria-hidden="true"></i>'
-            . '</a>'
-            . '</span>';
-
-        if ( $this->user_can ) {
-
-            $content .= '<span class="message-delete">'
-                . '<a href="#" onclick="uspc_chat_delete_message(' . $message['message_id'] . '); return false;">'
-                . '<i class="uspi fa-trash" aria-hidden="true"></i>'
-                . '</a>'
-                . '</span>';
+        $content = '';
+        foreach ( $messages as $k => $message ) {
+            $content .= $this->include_template_message_item( $message );
         }
 
-        $content .= '</div>';
-
         return $content;
+    }
+
+    function include_template_message_item( $message ) {
+        return usp_get_include_template( 'uspc-message-item.php', USPC_PATH . 'templates', [
+            'message'      => $message,
+            'user_id'      => $this->user_id,
+            'avatar_size'  => $this->avatar_size,
+            'user_can'     => $this->user_can,
+            'allowed_tags' => $this->allowed_tags,
+            ] );
     }
 
     function is_user_can() {
@@ -604,88 +535,25 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
         $user_can = ($current_user->user_level >= usp_get_option( 'usp_consol_access', 7 )) ? 1 : 0;
 
-        return apply_filters( 'uspc_chat_check_user_can', $user_can );
-    }
-
-    function the_content( $content_in ) {
-        $content_target = links_add_target( make_clickable( $content_in ) );
-
-        $content = apply_filters( 'uspc_chat_message', wp_kses( $content_target, $this->allowed_tags ) );
-
-        $oembed = usp_get_option( [ 'uspc_opt', 'oembed' ], 0 );
-
-        if ( $oembed && function_exists( 'wp_oembed_get' ) ) {
-            $links = '';
-            preg_match_all( '/href="([^"]+)"/', $content, $links );
-            foreach ( $links[1] as $link ) {
-                $m_lnk = wp_oembed_get( $link, array( 'width' => 300, 'height' => 300 ) );
-                if ( $m_lnk ) {
-                    $content = str_replace( '<a href="' . $link . '" rel="nofollow">' . $link . '</a>', '', $content );
-                    $content .= $m_lnk;
-                }
-            }
-        }
-
-        if ( function_exists( 'convert_smilies' ) )
-            $content = str_replace( 'style="height: 1em; max-height: 1em;"', '', convert_smilies( $content ) );
-
-        return $content;
-    }
-
-    function the_attachment( $attachment_id ) {
-
-        if ( ! $post = get_post( $attachment_id ) )
-            return false;
-
-
-        if ( ! $file = get_attached_file( $attachment_id ) ) {
-            return false;
-        }
-
-        $check = wp_check_filetype( $file );
-        if ( empty( $check['ext'] ) ) {
-            return false;
-        }
-
-        $ext        = $check['ext'];
-        $attach_url = wp_get_attachment_url( $attachment_id );
-
-        if ( in_array( $ext, array( 'jpg', 'jpeg', 'jpe', 'gif', 'png' ) ) ) {
-
-            $type  = 'image';
-            $media = '<a target="_blank" rel="fancybox" href="' . $attach_url . '"><img src="' . wp_get_attachment_image_url( $attachment_id, array( 300, 300 ) ) . '"></a>';
-        } else if ( in_array( $ext, wp_get_audio_extensions() ) ) {
-
-            $type  = 'audio';
-            $media = wp_audio_shortcode( array( 'mp3' => $attach_url ) );
-        } else if ( in_array( $ext, wp_get_video_extensions() ) ) {
-
-            $type  = 'video';
-            $media = wp_video_shortcode( array( 'src' => $attach_url ) );
-        } else {
-            $type  = 'archive';
-            $media = '<a target="_blank" href="' . $attach_url . '">' . wp_get_attachment_image( $attachment_id, array( 30, 30 ), true ) . ' ' . $post->post_title . '.' . $ext . '</a>';
-        }
-
-        $content = '<div class="message-attachment" data-attachment="' . $attachment_id . '">';
-        $content .= '<div class="' . $type . '-attachment">' . $media . '</div>';
-        $content .= '</div>';
-
-        return $content;
+        return apply_filters( 'uspc_check_user_can', $user_can );
     }
 
     function important_manager() {
-
         $status = ($this->important) ? 0 : 1;
-        $class  = ($this->important) ? 'fa-star-half-o' : 'fa-star';
+        $class  = ($this->important) ? 'fa-star-fill' : 'fa-star';
 
-        $content = '<div class="important-manager">'
-            . usp_get_button( array(
+        $content = '';
+
+        if ( $this->important ) {
+            $content .= '<span class="uspc-im-header__title usps__grow">' . __( 'Important messages', 'userspace-chat' ) . '</span>';
+        }
+        $content .= usp_get_button(
+            [
                 'icon'    => $class,
-                'class'   => 'important-shift',
+                'class'   => 'uspc-im__important',
                 'onclick' => 'uspc_chat_important_manager_shift(this,' . $status . ');return false;'
-            ) )
-            . '</div>';
+            ]
+        );
 
         return $content;
     }

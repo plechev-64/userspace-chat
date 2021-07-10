@@ -14,4 +14,3 @@ $tables = [
     $wpdb->base_prefix . 'uspc_chat_messagemeta',
 ];
 $wpdb->query( "DROP TABLE IF EXISTS `" . implode( '`, `', $tables ) . "`" );
-

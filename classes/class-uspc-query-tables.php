@@ -1,9 +1,11 @@
 <?php
 
+defined( 'ABSPATH' ) || exit;
+
 class USPC_Chats_Query extends USP_Query {
     function __construct( $as = false ) {
 
-        $table = array(
+        $table = [
             'name' => USPC_PREF . "chats",
             'as'   => $as ? $as : 'uspc_chats',
             'cols' => [
@@ -11,7 +13,7 @@ class USPC_Chats_Query extends USP_Query {
                 'chat_room',
                 'chat_status'
             ]
-        );
+        ];
 
         parent::__construct( $table );
     }
@@ -21,7 +23,7 @@ class USPC_Chats_Query extends USP_Query {
 class USPC_Chat_Users_Query extends USP_Query {
     function __construct( $as = false ) {
 
-        $table = array(
+        $table = [
             'name' => USPC_PREF . "chat_users",
             'as'   => $as ? $as : 'uspc_chat_users',
             'cols' => [
@@ -32,7 +34,7 @@ class USPC_Chat_Users_Query extends USP_Query {
                 'user_write',
                 'user_status'
             ]
-        );
+        ];
 
         parent::__construct( $table );
     }
@@ -42,7 +44,7 @@ class USPC_Chat_Users_Query extends USP_Query {
 class USPC_Chat_Messages_Query extends USP_Query {
     function __construct( $as = false ) {
 
-        $table = array(
+        $table = [
             'name' => USPC_PREF . "chat_messages",
             'as'   => $as ? $as : 'uspc_chat_messages',
             'cols' => [
@@ -54,7 +56,7 @@ class USPC_Chat_Messages_Query extends USP_Query {
                 'private_key',
                 'message_status'
             ]
-        );
+        ];
 
         parent::__construct( $table );
     }
@@ -64,7 +66,7 @@ class USPC_Chat_Messages_Query extends USP_Query {
 class USPC_Chat_Messagemeta_Query extends USP_Query {
     function __construct( $as = false ) {
 
-        $table = array(
+        $table = [
             'name' => USPC_PREF . "chat_messagemeta",
             'as'   => $as ? $as : 'uspc_chat_messagemeta',
             'cols' => [
@@ -73,7 +75,7 @@ class USPC_Chat_Messagemeta_Query extends USP_Query {
                 'meta_key',
                 'meta_value'
             ]
-        );
+        ];
 
         parent::__construct( $table );
     }
