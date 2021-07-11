@@ -1,16 +1,16 @@
 <?php
 
 function uspc_chat_count_important_messages( $user_id ) {
-    return RQ::tbl( new USPC_Chat_Messages_Query() )
-            ->join( 'message_id', RQ::tbl( new USPC_Chat_Messagemeta_Query() )
+    return ( new USPC_Chat_Messages_Query() )
+            ->join( 'message_id', ( new USPC_Chat_Messagemeta_Query() )
                 ->where( [ 'meta_key' => 'important:' . $user_id ] )
             )
             ->get_count();
 }
 
 function uspc_chat_get_important_messages( $user_id, $limit ) {
-    $messagesData = RQ::tbl( new USPC_Chat_Messages_Query() )
-        ->join( 'message_id', RQ::tbl( new USPC_Chat_Messagemeta_Query() )
+    $messagesData = ( new USPC_Chat_Messages_Query() )
+        ->join( 'message_id', ( new USPC_Chat_Messagemeta_Query() )
             ->where( [ 'meta_key' => 'important:' . $user_id ] )
         )
         ->orderby( 'message_time' )
@@ -21,17 +21,17 @@ function uspc_chat_get_important_messages( $user_id, $limit ) {
 }
 
 function uspc_get_chats( $args ) {
-    return RQ::tbl( new USPC_Chats_Query() )->parse( $args )->get_results();
+    return ( new USPC_Chats_Query() )->parse( $args )->get_results();
 }
 
 function uspc_get_chat( $chat_id ) {
-    return RQ::tbl( new USPC_Chats_Query() )->where( array(
+    return ( new USPC_Chats_Query() )->where( array(
             'chat_id' => $chat_id
         ) )->get_row();
 }
 
 function uspc_get_chat_by_room( $chat_room ) {
-    return RQ::tbl( new USPC_Chats_Query() )->where( array(
+    return ( new USPC_Chats_Query() )->where( array(
             'chat_room' => $chat_room
         ) )->get_row();
 }
@@ -89,7 +89,7 @@ function uspc_chat_delete_user( $chat_id, $user_id ) {
 }
 
 function uspc_chat_get_users( $chat_id ) {
-    return RQ::tbl( new USPC_Chat_Users_Query() )->select( [
+    return ( new USPC_Chat_Users_Query() )->select( [
             'user_id'
         ] )->where( array(
             'chat_id' => $chat_id,
@@ -97,7 +97,7 @@ function uspc_chat_get_users( $chat_id ) {
 }
 
 function uspc_chat_get_user_status( $chat_id, $user_id ) {
-    return RQ::tbl( new USPC_Chat_Users_Query() )->select( [ 'user_status' ] )->where( array(
+    return ( new USPC_Chat_Users_Query() )->select( [ 'user_status' ] )->where( array(
             'chat_id' => $chat_id,
             'user_id' => $user_id
         ) )->get_var();
@@ -141,21 +141,21 @@ function uspc_chat_delete_message( $message_id ) {
 }
 
 function uspc_chat_get_messages( $args ) {
-    return RQ::tbl( new USPC_Chat_Messages_Query() )->parse( $args )->get_results();
+    return ( new USPC_Chat_Messages_Query() )->parse( $args )->get_results();
 }
 
 function uspc_chat_count_messages( $args ) {
-    return RQ::tbl( new USPC_Chat_Messages_Query() )->parse( $args )->get_count();
+    return ( new USPC_Chat_Messages_Query() )->parse( $args )->get_count();
 }
 
 function uspc_chat_get_message( $message_id ) {
-    return RQ::tbl( new USPC_Chat_Messages_Query() )->where( array(
+    return ( new USPC_Chat_Messages_Query() )->where( array(
             'message_id' => $message_id
         ) )->get_row();
 }
 
 function uspc_chat_get_message_meta( $message_id, $meta_key ) {
-    return RQ::tbl( new USPC_Chat_Messagemeta_Query() )->select( [ 'meta_value' ] )->where( array(
+    return ( new USPC_Chat_Messagemeta_Query() )->select( [ 'meta_value' ] )->where( array(
             'message_id' => $message_id,
             'meta_key'   => $meta_key
         ) )->get_var();
@@ -223,7 +223,7 @@ function uspc_chat_noread_messages_amount( $user_id ) {
     global $uspc_counter_unread;
 
     if ( ! $uspc_counter_unread ) {
-        $uspc_counter_unread = RQ::tbl( new USPC_Chat_Messages_Query() )->where(
+        $uspc_counter_unread = ( new USPC_Chat_Messages_Query() )->where(
                 [
                     'private_key'    => $user_id,
                     'message_status' => 0
@@ -236,7 +236,7 @@ function uspc_chat_noread_messages_amount( $user_id ) {
 
 //  count unread messages for an individual contact
 function uspc_count_unread_by_user( $user_id ) {
-    return RQ::tbl( new USPC_Chat_Messages_Query() )->where( array(
+    return ( new USPC_Chat_Messages_Query() )->where( array(
             'user_id'        => $user_id,
             'message_status' => 0,
             'private_key'    => get_current_user_id()

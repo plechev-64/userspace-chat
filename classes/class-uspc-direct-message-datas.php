@@ -74,7 +74,7 @@ class USPC_Direct_Message_Datas {
 
     // count incoming unread messages
     private function count_noread_messages() {
-        return RQ::tbl( new USPC_Chat_Messages_Query() )->where(
+        return ( new USPC_Chat_Messages_Query() )->where(
                 [
                     'private_key'    => $this->user_id,
                     'message_status' => 0

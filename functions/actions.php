@@ -139,12 +139,12 @@ function uspc_chat_delete_message_attachment( $attachment_id ) {
 add_action( 'delete_user', 'uspc_chat_delete_userdata', 10 );
 function uspc_chat_delete_userdata( $user_id ) {
 
-    $chats = RQ::tbl( new USPC_Chats_Query() )
+    $chats = ( new USPC_Chats_Query() )
         ->select( [
             'chat_id',
             'chat_status'
         ] )
-        ->join( 'chat_id', RQ::tbl( new USPC_Chat_Users_Query() )->where( [ 'user_id' => $user_id ] ) )
+        ->join( 'chat_id', ( new USPC_Chat_Users_Query() )->where( [ 'user_id' => $user_id ] ) )
         ->number( -1 )
         ->get_results();
 
