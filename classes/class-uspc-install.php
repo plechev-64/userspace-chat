@@ -3,37 +3,37 @@
 defined( 'ABSPATH' ) || exit;
 
 class USPC_Install {
-    public function create_tables() {
-        if ( ! current_user_can( 'activate_plugins' ) )
-            return;
+	public static function create_tables() {
+		if ( ! current_user_can( 'activate_plugins' ) )
+			return;
 
-        global $wpdb;
+		global $wpdb;
 
-        $wpdb->hide_errors();
+		$wpdb->hide_errors();
 
-        require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 
-        $collate = '';
+		$collate = '';
 
-        if ( $wpdb->has_cap( 'collation' ) ) {
-            if ( ! empty( $wpdb->charset ) ) {
-                $collate .= "DEFAULT CHARACTER SET $wpdb->charset";
-            }
-            if ( ! empty( $wpdb->collate ) ) {
-                $collate .= " COLLATE $wpdb->collate";
-            }
-        }
+		if ( $wpdb->has_cap( 'collation' ) ) {
+			if ( ! empty( $wpdb->charset ) ) {
+				$collate .= "DEFAULT CHARACTER SET $wpdb->charset";
+			}
+			if ( ! empty( $wpdb->collate ) ) {
+				$collate .= " COLLATE $wpdb->collate";
+			}
+		}
 
-        $chats_sql = "CREATE TABLE IF NOT EXISTS " . USPC_PREF . "chats (
+		$chats_sql = "CREATE TABLE IF NOT EXISTS " . USPC_PREF . "chats (
             chat_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             chat_room varchar(100) NOT NULL,
             chat_status varchar(20) NOT NULL,
             PRIMARY KEY  chat_id (chat_id)
         ) $collate;";
 
-        dbDelta( $chats_sql );
+		dbDelta( $chats_sql );
 
-        $chat_users_sql = "CREATE TABLE IF NOT EXISTS " . USPC_PREF . "chat_users (
+		$chat_users_sql = "CREATE TABLE IF NOT EXISTS " . USPC_PREF . "chat_users (
             room_place varchar(20) NOT NULL,
             chat_id bigint(20) UNSIGNED NOT NULL,
             user_id bigint(20) UNSIGNED NOT NULL,
@@ -45,9 +45,9 @@ class USPC_Install {
             KEY user_id (user_id)
         ) $collate;";
 
-        dbDelta( $chat_users_sql );
+		dbDelta( $chat_users_sql );
 
-        $chat_messages_sql = "CREATE TABLE IF NOT EXISTS " . USPC_PREF . "chat_messages (
+		$chat_messages_sql = "CREATE TABLE IF NOT EXISTS " . USPC_PREF . "chat_messages (
             message_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             chat_id  bigint(20) UNSIGNED NOT NULL,
             user_id  bigint(20) UNSIGNED NOT NULL,
@@ -62,9 +62,9 @@ class USPC_Install {
             KEY message_status (message_status)
         ) $collate;";
 
-        dbDelta( $chat_messages_sql );
+		dbDelta( $chat_messages_sql );
 
-        $chat_messagemeta_sql = "CREATE TABLE IF NOT EXISTS " . USPC_PREF . "chat_messagemeta (
+		$chat_messagemeta_sql = "CREATE TABLE IF NOT EXISTS " . USPC_PREF . "chat_messagemeta (
             meta_id bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             message_id bigint(20) UNSIGNED NOT NULL,
             meta_key varchar(255) NOT NULL,
@@ -74,7 +74,7 @@ class USPC_Install {
             KEY meta_key (meta_key)
         ) $collate;";
 
-        dbDelta( $chat_messagemeta_sql );
-    }
+		dbDelta( $chat_messagemeta_sql );
+	}
 
 }
