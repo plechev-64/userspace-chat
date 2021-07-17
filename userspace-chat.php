@@ -30,7 +30,7 @@ function USPC() {
 // Check if UserSpace is active
 if ( in_array( 'userspace/userspace.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
 	// UserSpace is loaded hook
-	add_action( 'usp_init', 'USPC' );
+	add_action( 'usp_before_init', 'USPC' );
 } else {
 	add_action( 'admin_notices', 'uspc_plugin_not_install' );
 	function uspc_plugin_not_install() {

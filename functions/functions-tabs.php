@@ -1,7 +1,7 @@
 <?php
 
 // init Contacts tab
-add_action( 'init', 'uspc_tab_private_contacts', 10 );
+add_action( 'usp_init_tabs', 'uspc_tab_private_contacts', 10 );
 function uspc_tab_private_contacts() {
 	$tab_data = array(
 		'id'		 => 'chat',
