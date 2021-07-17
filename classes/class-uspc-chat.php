@@ -500,7 +500,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	}
 
 	function get_messages() {
-		$messages = $this->get_data();
+		$messages = $this->get_data( 'get_results', false, 'ARRAY_A' );
 
 		return apply_filters( 'uspc_messages', $messages );
 	}
