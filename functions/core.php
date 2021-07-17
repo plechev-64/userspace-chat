@@ -95,8 +95,8 @@ function uspc_chat_get_new_messages( $post ) {
 		$res[ 'users' ]	 = $activity;
 
 	$res[ 'success' ]		 = true;
-	$res[ 'token' ]		 = $post->token;
-	$res[ 'current_time' ] = current_time( 'mysql' );
+	$res[ 'token' ]			 = $post->token;
+	$res[ 'current_time' ]	 = current_time( 'mysql' );
 
 	return $res;
 }

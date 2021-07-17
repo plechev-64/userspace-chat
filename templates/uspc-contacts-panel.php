@@ -33,32 +33,32 @@ defined( 'ABSPATH' ) || exit;
 
     <div class="uspc-mini__wrap">
         <div class="uspc-mini__userlist usps usps__column usps__ai-center usps__relative">
-            <?php
-            $args = [
-                'onclick' => 'return uspc_shift_contacts_panel();',
-                'class'   => 'uspc-mini__count',
-                'size'    => 'no',
-                'type'    => 'clear',
-                'icon'    => 'fa-envelope',
-                'counter' => ($unread ? $unread : ''),
-            ];
-            echo usp_get_button( $args );
-            ?>
+			<?php
+			$args = [
+				'onclick'	 => 'return uspc_shift_contacts_panel();',
+				'class'		 => 'uspc-mini__count',
+				'size'		 => 'no',
+				'type'		 => 'clear',
+				'icon'		 => 'fa-envelope',
+				'counter'	 => ($unread ? $unread : ''),
+			];
+			echo usp_get_button( $args );
+			?>
 
             <div class="uspc-mini__contacts">
-                <?php
-                foreach ( $users as $user_id => $data ) :
-                    if ( $user_id == usp_office_id() )
-                        continue;
-                    ?>
+				<?php
+				foreach ( $users as $user_id => $data ) :
+					if ( $user_id == usp_office_id() )
+						continue;
+					?>
 
-                    <div class="uspc-mini__person usps__relative" data-contact="<?php echo $user_id; ?>" onclick="uspc_get_minichat( this, <?php echo $user_id; ?> ); return false;">
-                        <?php echo usp_get_avatar( $user_id, 42 ); ?>
-                        <?php if ( ! $data['status'] ) : ?>
-                            <i class="uspi fa-comment-dots uspc-mini-person__in usps__radius-50" aria-hidden="true"></i>
-                        <?php endif; ?>
-                    </div>
-                <?php endforeach; ?>
+					<div class="uspc-mini__person usps__relative" data-contact="<?php echo $user_id; ?>" onclick="uspc_get_minichat( this, <?php echo $user_id; ?> ); return false;">
+						<?php echo usp_get_avatar( $user_id, 42 ); ?>
+						<?php if ( ! $data[ 'status' ] ) : ?>
+							<i class="uspi fa-comment-dots uspc-mini-person__in usps__radius-50" aria-hidden="true"></i>
+						<?php endif; ?>
+					</div>
+				<?php endforeach; ?>
             </div>
 
         </div>

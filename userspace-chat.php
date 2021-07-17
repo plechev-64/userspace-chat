@@ -24,24 +24,24 @@ register_activation_hook( __FILE__, [ 'USPC_Install', 'create_tables' ] );
 // instance of Userspace Chat
 require_once USPC_PATH . 'classes/class-uspc-loader.php';
 function USPC() {
-    return USPC_Loader::instance();
+	return USPC_Loader::instance();
 }
 
 // Check if UserSpace is active
 if ( in_array( 'userspace/userspace.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) {
-    // UserSpace is loaded hook
-    add_action( 'usp_init', 'USPC' );
+	// UserSpace is loaded hook
+	add_action( 'usp_init', 'USPC' );
 } else {
-    add_action( 'admin_notices', 'uspc_plugin_not_install' );
-    function uspc_plugin_not_install() {
-        $url = '/wp-admin/plugin-install.php?s=UserSpace&tab=search&type=term';
+	add_action( 'admin_notices', 'uspc_plugin_not_install' );
+	function uspc_plugin_not_install() {
+		$url = '/wp-admin/plugin-install.php?s=UserSpace&tab=search&type=term';
 
-        $notice = '<div class="notice notice-error">';
-        $notice .= '<p>' . __( 'UserSpace plugin not installed!', 'userspace-chat' ) . '</p>';
-        $notice .= sprintf( __( 'Go to the page %sPlugins%s - install and activate the UserSpace plugin', 'userspace-chat' ), '<a href="' . $url . '">', '</a>' );
-        $notice .= '</div>';
+		$notice	 = '<div class="notice notice-error">';
+		$notice	 .= '<p>' . __( 'UserSpace plugin not installed!', 'userspace-chat' ) . '</p>';
+		$notice	 .= sprintf( __( 'Go to the page %sPlugins%s - install and activate the UserSpace plugin', 'userspace-chat' ), '<a href="' . $url . '">', '</a>' );
+		$notice	 .= '</div>';
 
-        echo $notice;
-    }
+		echo $notice;
+	}
 
 }

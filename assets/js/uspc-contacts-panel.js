@@ -48,9 +48,9 @@ function uspc_close_minichat( e ) {
 
     var minichat = jQuery( '#uspc-mini' );
     minichat.removeClass( 'uspc-mini-opened' );
-    
+
     var animate = minichat.hasClass( 'uspc-on-left' ) ? 'fadeOutLeft' : 'fadeOutRight';
-    
+
     minichat.children( '.uspc-mini__im' ).animateCss( animate, function( e ) {
         jQuery( e ).empty();
     } );

@@ -68,7 +68,7 @@ function uspc_clear_notice() {
     jQuery( '.uspc-im-talk__write' ).hide();
 }
 
-function uspc_get_wrap_im_by_token(token) {
+function uspc_get_wrap_im_by_token( token ) {
     return jQuery( '.uspc-im[data-token="' + token + '"]' );
 }
 

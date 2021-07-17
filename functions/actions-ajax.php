@@ -166,7 +166,7 @@ function uspc_chat_add_message() {
 		wp_send_json( $result );
 	}
 
-	$res[ 'content' ]			 = $content . $chat->include_template_message_item( $result );
+	$res[ 'content' ]		 = $content . $chat->include_template_message_item( $result );
 	$res[ 'last_activity' ]	 = current_time( 'mysql' );
 
 	wp_send_json( $res );
@@ -186,9 +186,9 @@ function uspc_get_chat_private_ajax() {
 		'icon'		 => 'fa-times'
 		] );
 
-	$result[ 'name' ]			 = usp_get_username( $user_id, usp_get_tab_permalink( $user_id, 'chat' ), [ 'class' => 'uspc-im__userlink' ] );
-	$result[ 'bttn' ]			 = $bttn;
-	$result[ 'content' ]		 = $chatdata[ 'content' ];
+	$result[ 'name' ]		 = usp_get_username( $user_id, usp_get_tab_permalink( $user_id, 'chat' ), [ 'class' => 'uspc-im__userlink' ] );
+	$result[ 'bttn' ]		 = $bttn;
+	$result[ 'content' ]	 = $chatdata[ 'content' ];
 	$result[ 'chat_token' ]	 = $chatdata[ 'token' ];
 
 	wp_send_json( $result );
