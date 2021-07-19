@@ -43,33 +43,19 @@ function uspc_counter_in_tab() {
 }
 
 function uspc_chat_tab( $office_id ) {
-	global $user_ID;
+	if ( ! is_user_logged_in() ) {
+		return usp_get_notice( [ 'text' => __( 'Sign in to send a message to the user', 'userspace-chat' ) ] );
+	}
 
 	USPC()->chat_resources();
 
-	if ( $office_id == $user_ID ) {
-		return uspc_get_user_contacts_list( get_current_user_id() );
+	if ( USP()->office()->is_owner( get_current_user_id() ) ) {
+		return ( new USPC_Contact_List() )->get_box();
 	}
 
-	if ( $user_ID ) {
-		$chatdata	 = uspc_get_chat_private( $office_id );
-		$chat		 = $chatdata[ 'content' ];
-	} else {
-		$chat = usp_get_notice( array(
-			'type'	 => 'error',
-			'text'	 => __( 'Sign in to send a message to the user', 'userspace-chat' )
-			) );
-	}
+	$chatdata = uspc_get_chat_private( $office_id );
 
-	return $chat;
-}
-
-function uspc_get_user_contacts_list() {
-	require_once USPC_PATH . 'classes/class-uspc-contact-list.php';
-
-	$contactlist = new USPC_Contact_List();
-
-	return $contactlist->get_box();
+	return $chatdata[ 'content' ];
 }
 
 // init important tab
@@ -78,16 +64,14 @@ function uspc_tab_important() {
 	if ( ! usp_is_office( get_current_user_id() ) )
 		return;
 
-	$subtab = [
+	usp_add_sub_tab( 'chat', [
 		'id'		 => 'important-messages',
 		'name'		 => __( 'Important messages', 'userspace-chat' ),
 		'icon'		 => 'fa-star',
 		'callback'	 => [
 			'name' => 'uspc_get_tab_user_important'
 		]
-	];
-
-	usp_add_sub_tab( 'chat', $subtab );
+	] );
 }
 
 function uspc_get_tab_user_important( $user_id ) {

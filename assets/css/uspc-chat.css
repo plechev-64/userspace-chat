@@ -24,7 +24,6 @@
     z-index: 2;
 }
 .uspc-contact__del.usp-bttn {
-    color: var(--uspWhite);
     display: none;
     right: 6px;
     padding: 3px;
@@ -34,6 +33,7 @@
     z-index: 3;
 }
 .uspc-contact:hover .uspc-contact__del {
+    color: var(--uspWhite);
     display: flex;
 }
 .uspc-contact__ava {

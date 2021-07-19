@@ -34,6 +34,10 @@ class USPC_Loader {
 		require_once USPC_PATH . 'functions/actions-cron.php';
 		require_once USPC_PATH . 'functions/actions-ajax.php';
 
+		if ( (usp_is_office() || usp_get_option( 'uspc_contact_panel', 0 )) && is_user_logged_in() ) {
+			require_once USPC_PATH . 'classes/class-uspc-contact-list.php';
+		}
+
 		if ( is_admin() ) {
 			require_once USPC_PATH . 'admin/options.php';
 		}

@@ -1,25 +1,5 @@
 <?php
 
-function uspc_chat_count_important_messages( $user_id ) {
-	return ( new USPC_Chat_Messages_Query() )
-			->join( 'message_id', ( new USPC_Chat_Messagemeta_Query() )
-				->where( [ 'meta_key' => 'important:' . $user_id ] )
-			)
-			->get_count();
-}
-
-function uspc_chat_get_important_messages( $user_id, $limit ) {
-	$messagesData = ( new USPC_Chat_Messages_Query() )
-		->join( 'message_id', ( new USPC_Chat_Messagemeta_Query() )
-			->where( [ 'meta_key' => 'important:' . $user_id ] )
-		)
-		->orderby( 'message_time' )
-		->limit( $limit[ 1 ], $limit[ 0 ] )
-		->get_results( false, ARRAY_A );
-
-	return stripslashes_deep( $messagesData );
-}
-
 function uspc_get_chats( $args ) {
 	return ( new USPC_Chats_Query() )->parse( $args )->get_results();
 }

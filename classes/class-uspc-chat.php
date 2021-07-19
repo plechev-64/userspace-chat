@@ -545,7 +545,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$content = '';
 
 		if ( $this->important ) {
-			$content .= '<span class="uspc-im-header__title usps__grow">' . __( 'Important messages', 'userspace-chat' ) . '</span>';
+			$content .= '<span class="uspc-im-header__title usps__grow">' . __( 'Important messages', 'userspace-chat' ) . ':</span>';
 		}
 		$content .= usp_get_button(
 			[

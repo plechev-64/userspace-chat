@@ -35,8 +35,6 @@ usp_ajax_action( 'uspc_get_contacts_navi' );
 function uspc_get_contacts_navi() {
 	usp_verify_ajax_nonce();
 
-	require_once USPC_PATH . 'classes/class-uspc-contact-list.php';
-
 	$contactlist = new USPC_Contact_List( [ 'current' => intval( $_POST[ 'page' ] ) ] );
 
 	$res[ 'content' ]	 = $contactlist->get_loop();
@@ -198,16 +196,16 @@ usp_ajax_action( 'uspc_chat_message_important', false );
 function uspc_chat_message_important() {
 	usp_verify_ajax_nonce();
 
-	global $user_ID;
-
 	$message_id = intval( $_POST[ 'message_id' ] );
 
-	$important = uspc_chat_get_message_meta( $message_id, 'important:' . $user_ID );
+	$metakey = 'important:' . get_current_user_id();
+
+	$important = uspc_chat_get_message_meta( $message_id, $metakey );
 
 	if ( $important ) {
-		uspc_chat_delete_message_meta( $message_id, 'important:' . $user_ID );
+		uspc_chat_delete_message_meta( $message_id, $metakey );
 	} else {
-		uspc_chat_add_message_meta( $message_id, 'important:' . $user_ID, 1 );
+		uspc_chat_add_message_meta( $message_id, $metakey, 1 );
 	}
 
 	$result[ 'important' ] = ($important) ? 0 : 1;

@@ -5,28 +5,19 @@ function uspc_chat_messages_add_important_meta( $messages ) {
 	if ( ! $messages )
 		return $messages;
 
-	global $wpdb, $user_ID;
+	global $wpdb;
 
-	$ids = array();
-	foreach ( $messages as $message ) {
-		$ids[] = $message[ 'message_id' ];
-	}
-
-	$metas = $wpdb->get_results( "SELECT * FROM " . USPC_PREF . "chat_messagemeta WHERE message_id IN (" . implode( ',', $ids ) . ") AND meta_key = 'important:$user_ID' AND meta_value = '1'" );
+	$metas = $wpdb->get_results(
+		"SELECT * "
+		. "FROM " . USPC_PREF . "chat_messagemeta "
+		. "WHERE message_id IN (" . uspc_separated_ids( $messages ) . ") "
+		. "AND meta_key = 'important:" . get_current_user_id() . "' AND meta_value = '1'"
+	);
 
 	if ( ! $metas )
 		return $messages;
 
-	$important = array();
-	foreach ( $metas as $meta ) {
-		$important[ $meta->message_id ] = $meta->meta_value;
-	}
-
-	foreach ( $messages as $k => $message ) {
-		$messages[ $k ][ 'important' ] = (isset( $important[ $message[ 'message_id' ] ] )) ? 1 : 0;
-	}
-
-	return $messages;
+	return uspc_add_chat_metadata( $messages, $metas, 'important' );
 }
 
 add_filter( 'uspc_messages', 'uspc_chat_messages_add_attachments_meta', 10 );
@@ -36,23 +27,35 @@ function uspc_chat_messages_add_attachments_meta( $messages ) {
 
 	global $wpdb;
 
-	$ids = array();
-	foreach ( $messages as $message ) {
-		$ids[] = $message[ 'message_id' ];
-	}
-
-	$metas = $wpdb->get_results( "SELECT * FROM " . USPC_PREF . "chat_messagemeta WHERE message_id IN (" . implode( ',', $ids ) . ") AND meta_key = 'attachment'" );
+	$metas = $wpdb->get_results( "SELECT * FROM " . USPC_PREF . "chat_messagemeta WHERE message_id IN (" . uspc_separated_ids( $messages ) . ") AND meta_key = 'attachment'" );
 
 	if ( ! $metas )
 		return $messages;
 
-	$attachments = array();
+	return uspc_add_chat_metadata( $messages, $metas, 'attachment' );
+}
+
+function uspc_separated_ids( $messages ) {
+	$ids = [];
+	foreach ( $messages as $message ) {
+		$ids[] = $message[ 'message_id' ];
+	}
+
+	return implode( ',', $ids );
+}
+
+function uspc_add_chat_metadata( $messages, $metas, $type ) {
+	$datas = [];
 	foreach ( $metas as $meta ) {
-		$attachments[ $meta->message_id ] = $meta->meta_value;
+		$datas[ $meta->message_id ] = $meta->meta_value;
 	}
 
 	foreach ( $messages as $k => $message ) {
-		$messages[ $k ][ 'attachment' ] = (isset( $attachments[ $message[ 'message_id' ] ] )) ? $attachments[ $message[ 'message_id' ] ] : 0;
+		if ( $type == 'important' ) {
+			$messages[ $k ][ 'important' ] = (isset( $datas[ $message[ 'message_id' ] ] )) ? 1 : 0;
+		} else {
+			$messages[ $k ][ $type ] = (isset( $datas[ $message[ 'message_id' ] ] )) ? $datas[ $message[ 'message_id' ] ] : 0;
+		}
 	}
 
 	return $messages;
@@ -84,9 +87,7 @@ function uspc_chat_check_message_blocked( $message ) {
 	if ( ! $message[ 'private_key' ] )
 		return $message;
 
-	global $user_ID;
-
-	if ( get_user_meta( $message[ 'private_key' ], 'usp_black_list:' . $user_ID ) ) {
+	if ( get_user_meta( $message[ 'private_key' ], 'usp_black_list:' . get_current_user_id() ) ) {
 		wp_send_json( array( 'error' => __( 'You have been blocked on this chat', 'userspace-chat' ) ) );
 	}
 
