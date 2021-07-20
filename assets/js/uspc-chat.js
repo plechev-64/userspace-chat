@@ -113,6 +113,38 @@ function uspc_init_chat( chat ) {
     usp_do_action( 'uspc_init', chat );
 }
 
+function uspc_disable_button( form ) {
+    jQuery( form ).find( '.uspc-im-form__send' ).addClass( 'usp-bttn__disabled' );
+}
+
+function uspc_enable_button( form ) {
+    jQuery( form ).find( '.uspc-im-form__send' ).removeClass( 'usp-bttn__disabled' );
+}
+
+// send button opening after load file
+usp_add_action( 'usp_uploader_after_done', 'uspc_after_upload' );
+function uspc_after_upload( e ) {
+    var form = jQuery( e.target ).parents( '.uspc-im__form' );
+    uspc_enable_button( form );
+}
+
+// send button opening after insert emoji
+usp_add_action( 'usp_emoji_insert', 'uspc_insert_emoji_enabled_bttn' );
+function uspc_insert_emoji_enabled_bttn( box ) {
+    var form = jQuery( box ).parents( '.uspc-im__form' );
+    uspc_enable_button( form );
+}
+
+// send button disabled after delete file if empty textarea
+usp_add_action( 'usp_uploader_delete', 'uspc_delete_attachment_actions' );
+function uspc_delete_attachment_actions( e ) {
+    var form = jQuery( e ).parents( '.uspc-im__form' );
+
+    if ( !form.find( '.uspc-im-form__textarea' ).val() ) {
+        uspc_disable_button( form );
+    }
+}
+
 usp_add_action( 'uspc_init', 'uspc_chat_init_beat' );
 function uspc_chat_init_beat( chat ) {
     var delay = ( chat.delay != 0 ) ? chat.delay : USP.usp_chat.delay, chat;
@@ -163,9 +195,10 @@ function uspc_chat_add_new_message( form ) {
 
     var token = form.children( '[name="chat[token]"]' ).val(),
         chat = uspc_get_wrap_im_by_token( token ),
-        message_text = form.children( 'textarea' ).val();
+        message_text = form.children( 'textarea' ).val(),
+        file = form.find( '#usp-media-uspc_chat_uploader .usp-media__item' );
 
-    if ( !message_text.length ) {
+    if ( !message_text.length && !file.length ) {
         usp_notice( USP.local.uspc_empty, 'error', 10000 );
         uspc_mark_textarea();
         return false;
@@ -202,6 +235,7 @@ function uspc_chat_add_new_message( form ) {
                 uspc_last_activity[token] = data.last_activity;
 
                 uspc_clear_notice();
+                uspc_disable_button( form );
 
                 usp_do_action( 'uspc_added_message', {
                     token: token,
@@ -271,10 +305,10 @@ function uspc_contacts_navi( page, e ) {
 function uspc_chat_words_count( e, elem ) {
     evt = e || window.event;
 
-    var key = evt.keyCode;
+    var key = evt.keyCode,
+        form = jQuery( elem ).parents( '.uspc-im__form' );
 
     if ( key == 13 && evt.ctrlKey ) {
-        var form = jQuery( elem ).parents( '.uspc-im__form' );
         uspc_chat_add_new_message( form );
         return false;
     }
@@ -282,14 +316,18 @@ function uspc_chat_words_count( e, elem ) {
     var words = jQuery( elem ).val(),
         counter = uspc_max_words - words.length,
         color;
-
-    if ( counter > ( uspc_max_words - 1 ) )
+    
+    if ( counter > ( uspc_max_words - 1 ) ) {
+        uspc_disable_button( form );
         return false;
+    }
 
     if ( counter < 0 ) {
         jQuery( elem ).val( words.substr( 0, ( uspc_max_words - 1 ) ) );
         return false;
     }
+    
+    uspc_enable_button( form );
 
     if ( counter > 150 )
         color = 'green';

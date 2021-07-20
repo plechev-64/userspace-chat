@@ -409,7 +409,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			'label'		 => __( 'Send', 'userspace-chat' ),
 			'icon'		 => 'fa-paper-plane',
 			'icon_align' => 'right',
-			'class'		 => 'uspc-im-form__send usps__as-end',
+			'class'		 => 'uspc-im-form__send usps__as-end usp-bttn__disabled',
 			'onclick'	 => 'uspc_chat_add_message(this);return false;'
 			] );
 		$content .= '</form>';
