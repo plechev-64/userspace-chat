@@ -17,7 +17,6 @@ class USPC_Loader {
 	public function __construct() {
 		$this->includes();
 		$this->init_hooks();
-		$this->init_direct_message_datas();
 	}
 
 	private function includes() {
@@ -34,10 +33,6 @@ class USPC_Loader {
 		require_once USPC_PATH . 'functions/actions-cron.php';
 		require_once USPC_PATH . 'functions/actions-ajax.php';
 
-		if ( (usp_is_office() || usp_get_option( 'uspc_contact_panel', 0 )) && is_user_logged_in() ) {
-			require_once USPC_PATH . 'classes/class-uspc-contact-list.php';
-		}
-
 		if ( is_admin() ) {
 			require_once USPC_PATH . 'admin/options.php';
 		}
@@ -51,6 +46,8 @@ class USPC_Loader {
 		add_action( 'uspc_chat_is_load', [ $this, 'chat_reset_oembed_filter' ] );
 
 		if ( is_user_logged_in() ) {
+			add_action( 'usp_init', [ $this, 'init_contact_list' ] );
+			add_action( 'usp_office_setup', [ $this, 'init_direct_message_datas' ] );
 			add_action( 'usp_enqueue_scripts', [ $this, 'chat_fileupload_scripts' ] );
 			add_filter( 'usp_init_js_variables', [ $this, 'init_js_chat_variables' ] );
 
@@ -68,10 +65,13 @@ class USPC_Loader {
 		add_shortcode( 'userspace-chat', [ $this, 'chat_shortcode' ] );
 	}
 
-	private function init_direct_message_datas() {
-		if ( ! is_user_logged_in() )
-			return;
+	function init_contact_list() {
+		if ( usp_is_office() || usp_get_option( 'uspc_contact_panel', 0 ) ) {
+			require_once USPC_PATH . 'classes/class-uspc-contact-list.php';
+		}
+	}
 
+	function init_direct_message_datas() {
 		require_once USPC_PATH . 'classes/class-uspc-direct-message-datas.php';
 
 		$this->private_messages_data = new USPC_Direct_Message_Datas();
@@ -98,7 +98,7 @@ class USPC_Loader {
 		echo usp_get_button( [
 			'type'		 => 'clear',
 			'icon'		 => 'fa-envelope',
-			'class'		 => 'uspc-notify',
+			'class'		 => 'uspc-notify uspc_js_counter_unread',
 			'href'		 => usp_get_tab_permalink( get_current_user_id(), 'chat' ),
 			'counter'	 => USPC()->private_messages_data->unread,
 		] );
@@ -133,6 +133,7 @@ class USPC_Loader {
 
 		$data[ 'usp_chat' ][ 'delay' ]		 = usp_get_option( 'uspc_delay', 15 );
 		$data[ 'usp_chat' ][ 'inactivity' ]	 = usp_get_option( 'uspc_inactivity', 10 );
+		$data[ 'usp_chat' ][ 'words' ]		 = usp_get_option( 'uspc_words', 300 );
 
 		$data[ 'local' ][ 'uspc_empty' ]		 = __( 'Write something', 'userspace-chat' );
 		$data[ 'local' ][ 'uspc_text_words' ]	 = __( 'Exceeds the maximum message size', 'userspace-chat' );

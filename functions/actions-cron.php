@@ -84,7 +84,7 @@ function uspc_chat_send_notify_messages() {
 			$content .= '<div style="overflow:hidden;clear:both;">';
 			$content .= '<p>' . __( 'You were sent a private message.', 'userspace-chat' ) . '</p>';
 			$content .= '<div style="float:left;margin-right:18px;">' . usp_get_avatar( $author_id, 60 ) . '</div>';
-			$content .= '<p>' . __( 'From the user:', 'userspace-chat' ) . ' ' . usp_get_username( $author_id ) . '</p>';
+			$content .= '<p>' . __( 'From the user:', 'userspace-chat' ) . ' ' . usp_user_get_username( $author_id ) . '</p>';
 
 			if ( $mailtext ) {
 				$content .= '<p><b>' . __( 'Message text', 'userspace-chat' ) . ':</b></p>';

@@ -11,7 +11,7 @@ function uspc_get_ajax_chat_window() {
 	wp_send_json( array(
 		'dialog' => [
 			'content'		 => $chatdata[ 'content' ],
-			'title'			 => __( 'Chat with', 'userspace-chat' ) . ' ' . usp_get_username( $user_id ),
+			'title'			 => __( 'Chat with', 'userspace-chat' ) . ' ' . usp_user_get_username( $user_id ),
 			'class'			 => 'uspc-chat-window',
 			'size'			 => 'small',
 			'buttonClose'	 => false,
@@ -184,7 +184,7 @@ function uspc_get_chat_private_ajax() {
 		'icon'		 => 'fa-times'
 		] );
 
-	$result[ 'name' ]		 = usp_get_username( $user_id, usp_get_tab_permalink( $user_id, 'chat' ), [ 'class' => 'uspc-im__userlink' ] );
+	$result[ 'name' ]		 = usp_user_get_username( $user_id, usp_get_tab_permalink( $user_id, 'chat' ), [ 'class' => 'uspc-im__userlink' ] );
 	$result[ 'bttn' ]		 = $bttn;
 	$result[ 'content' ]	 = $chatdata[ 'content' ];
 	$result[ 'chat_token' ]	 = $chatdata[ 'token' ];
@@ -279,4 +279,24 @@ function uspc_chat_ajax_delete_message() {
 	$result[ 'remove' ] = true;
 
 	wp_send_json( $result );
+}
+
+// from the chat tab went to direct communication
+usp_ajax_action( 'uspc_get_direct_message' );
+function uspc_get_direct_message() {
+	usp_verify_ajax_nonce();
+
+	$user_id = intval( $_POST[ 'user_id' ] );
+
+	$chatdata = uspc_get_chat_private( $user_id );
+
+	$name = '<a href="' . get_author_posts_url( $user_id ) . '" title="' . __( 'Go to the profile', 'userspace-chat' ) . '">' . usp_user_get_username( $user_id ) . '</a>';
+
+	$head = '<div class="uspc-head__top">' . $name . USP()->user( $user_id )->get_action( 'mixed' ) . '</div>';
+
+	$resp[ 'chat_pm' ]	 = $chatdata[ 'content' ];
+	$resp[ 'chat_name' ] = $head;
+	$resp[ 'dm_token' ]	 = $chatdata[ 'token' ];
+
+	wp_send_json( $resp );
 }

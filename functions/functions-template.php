@@ -91,7 +91,7 @@ function uspc_get_the_excerpt( $string ) {
 
 	$max = 100;
 	if ( mb_strlen( $string_kses ) <= $max )
-		return $string_kses;
+		return convert_smilies( $string_kses );
 
 	$string_smilies = convert_smilies( $string_kses );
 

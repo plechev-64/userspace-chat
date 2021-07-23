@@ -81,3 +81,28 @@ function uspc_get_tab_user_important( $user_id ) {
 
 	return $content;
 }
+
+// add in subtab title nuber of contacts
+add_filter( 'usp_subtab_title', 'uspc_add_counter_in_subtitle', 10, 2 );
+function uspc_add_counter_in_subtitle( $title, $subtab_id ) {
+	if ( $subtab_id == 'private-contacts' && usp_is_office( get_current_user_id() ) ) {
+		$contacts_num = USPC()->private_messages_data->contacts;
+
+		if ( $contacts_num ) {
+			$title = $title . ': <span>' . $contacts_num . '</span>';
+		}
+	}
+
+	return $title;
+}
+
+// add an additional class to a button in the menu
+add_filter( 'usp_tab_class_button', 'uspc_add_class_in_button_chat', 10, 2 );
+function uspc_add_class_in_button_chat( $class, $tab_id ) {
+	if ( $tab_id == 'chat' && usp_is_office( get_current_user_id() ) ) {
+		// uspc_js_counter_unread - special class for the common js function
+		array_push( $class, 'uspc_js_counter_unread' );
+	}
+
+	return $class;
+}

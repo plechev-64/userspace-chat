@@ -57,7 +57,7 @@ $class .= ( isset( $message[ 'important' ] ) && $message[ 'important' ] ) ? ' us
 
     <div class="uspc-post__content">
         <div class="uspc-post-content__box">
-            <div class="uspc-post__name usps__line-1"><?php echo usp_get_username( $sender_id ); ?></div>
+            <div class="uspc-post__name usps__line-1"><?php echo usp_user_get_username( $sender_id ); ?></div>
             <div class="uspc-post__message">
 
 				<?php

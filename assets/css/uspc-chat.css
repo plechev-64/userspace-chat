@@ -1,18 +1,14 @@
 .uspc-userlist {
-    margin: 12px 0;
     font-size: 16px;
     box-sizing: border-box;
 }
-.uspc-userlist__count {
-    margin: 12px 6px;
-}
-.uspc-contact {
-    margin: 12px 6px 18px;
+.uspc-contact-box {
+    margin: 12px 0;
     cursor: pointer;
-    box-shadow: var(--uspBox100);
     border: var(--uspLine200);
+    box-shadow: var(--uspBox50);
 }
-.uspc-contact:hover {
+.uspc-contact-box:hover {
     color: var(--uspGray-700);
 }
 .uspc-contact__link {
@@ -32,7 +28,7 @@
     background: var(--uspBlack-07);
     z-index: 3;
 }
-.uspc-contact:hover .uspc-contact__del {
+.uspc-contact-box:hover .uspc-contact__del {
     color: var(--uspWhite);
     display: flex;
 }
@@ -99,6 +95,7 @@
 .uspc-contact__excerpt {
     padding: 6px 12px;
     line-height: 1.4;
+    word-break: break-all;
 }
 .uspc-unread .uspc-contact__excerpt {
     background: var(--uspRed-50);
@@ -108,17 +105,19 @@
 .uspc-im {
     box-sizing: border-box;
     font-size: 16px;
+    border: var(--uspLine200);
+    background: var(--uspGray-75);
+    padding-left: 12px;
 }
 .uspc-im__box {
     animation-duration: .5s;
 }
 .uspc-im__header {
-    background: var(--uspGray-100);
-    padding: 6px;
+    padding: 6px 6px 6px 0;
 }
 .uspc-im-header__title {
     font-size: 14px;
-    margin: 6px;
+    margin-right: 6px;
 }
 .uspc-im-online__title {
     margin-right: 6px;
@@ -135,8 +134,9 @@
     min-height: 200px;
     overflow-x: hidden;
     overflow-y: auto;
-    padding: 12px 6px 30px;
+    padding: 12px 0 30px;
     box-sizing: border-box;
+    border-right: 0;
 }
 .uspc-post {
     animation-duration: .5s;
@@ -154,6 +154,7 @@
     max-width: 70%;
     box-shadow: var(--uspBox100);
     box-sizing: border-box;
+    word-break: break-all;
 }
 .uspc-post__name {
     margin: 6px 0;
@@ -218,6 +219,7 @@
 .uspc-im__footer {
     overflow: hidden;
     min-height: 32px;
+    margin: 0 6px 0 12px;
 }
 .uspc-im__writes {
     bottom: 0;
@@ -234,6 +236,9 @@
     display: inline-block;
     position: absolute;
     right: 0;
+}
+.uspc-im__form {
+    margin: 0 6px 0 0;
 }
 .uspc-im-form__meta {
     position: absolute;
@@ -262,26 +267,67 @@
     margin: 0 36px 6px 0;
     width: calc(100% - 36px);
 }
+.uspc-im-form__footer {
+    margin: 6px 0 12px;
+}
 .uspc-im-form__sign-count {
     font-size: 14px;
 }
 .uspc-im-form__send {
     margin-right: 36px;
 }
+.uspc-im-form__send.usp-bttn__disabled .usp-bttn__text {
+    padding-right: 0 !important;
+    width: 0;
+    opacity: 0;
+}
 
-/*general chat*/
-.uspc-chat-general {
-    border: var(--uspLine200);
-    background: var(--uspGray-75);
+.uspc-head {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    margin: 0 0 12px;
 }
-.uspc-chat-general .uspc-im__talk {
-    margin-left: 12px;
+.uspc-head:empty {
+    display: none;
 }
-.uspc-chat-general .uspc-im__footer {
-    margin: 0 6px 0 12px;
+.uspc-head__bttn {
+    display: inline-flex;
+    color: var(--uspText);
+    background: var(--uspHex);
+    margin: 0 12px 0 0;
+    cursor: pointer;
+    align-self: stretch;
+    align-items: center;
+    transition: var(--uspLoadFast);
+    min-width: 42px;
+    justify-content: center;
+    min-height: 42px;
 }
-.uspc-chat-general .uspc-im__form {
-    margin: 0 6px 12px 12px;
+.uspc-head__bttn:hover {
+    opacity: .7;
+}
+.uspc-head__bttn .uspi {
+    padding: 6px 12px;
+}
+.uspc-head__top {
+    flex-grow: 1;
+}
+.uspc-head__top .usp-offline {
+    display: flex;
+}
+
+.uspc-head__top a {
+    color: var(--uspBlue-700) !important;
+}
+.uspc-head .usp-status-user {
+    font-size: 13px;
+    line-height: 1;
+    margin: 0 0 0 6px;
+}
+.usp-bttn.usp-bttn__active.usp-bttn__active-dm {
+    pointer-events: auto;
+    cursor: pointer;
 }
 
 @media screen and (max-width:768px) {

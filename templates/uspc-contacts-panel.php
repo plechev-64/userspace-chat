@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) || exit;
 			<?php
 			$args = [
 				'onclick'	 => 'return uspc_shift_contacts_panel();',
-				'class'		 => 'uspc-mini__count',
+				'class'		 => 'uspc-mini__count uspc_js_counter_unread',
 				'size'		 => 'no',
 				'type'		 => 'clear',
 				'icon'		 => 'fa-envelope',

@@ -60,7 +60,7 @@ function uspc_scroll_down( token ) {
 }
 
 function uspc_chat_counter_reset( form ) {
-    form.children( '.uspc-im-form__sign-count' ).text( USP.usp_chat.words ).removeAttr( 'style' );
+    form.find( '.uspc-im-form__sign-count' ).text( USP.usp_chat.words ).removeAttr( 'style' );
 }
 
 // if empty dialog
@@ -198,6 +198,8 @@ function uspc_chat_add_new_message( form ) {
         message_text = form.children( 'textarea' ).val(),
         file = form.find( '#usp-media-uspc_chat_uploader .usp-media__item' );
 
+    message_text = jQuery.trim( message_text );
+
     if ( !message_text.length && !file.length ) {
         usp_notice( USP.local.uspc_empty, 'error', 10000 );
         uspc_mark_textarea();
@@ -293,7 +295,7 @@ function uspc_contacts_navi( page, e ) {
         success: function( data ) {
             if ( data['content'] ) {
                 var list = jQuery( e ).parents( '.usp-subtab-content' );
-                list.find( '.uspc-contact, .uspc-mini__nav' ).remove();
+                list.find( '.uspc-contact-box, .uspc-mini__nav' ).remove();
                 list.append( data['nav'] ).find( '.uspc-userlist' ).append( data['content'] ).animateCss( 'fadeIn' );
             }
         }
@@ -313,10 +315,11 @@ function uspc_chat_words_count( e, elem ) {
         return false;
     }
 
-    var words = jQuery( elem ).val(),
-        counter = uspc_max_words - words.length,
+    var words = jQuery( elem ).val();
+    words = jQuery.trim( words );
+    var counter = uspc_max_words - words.length,
         color;
-    
+
     if ( counter > ( uspc_max_words - 1 ) ) {
         uspc_disable_button( form );
         return false;
@@ -326,7 +329,7 @@ function uspc_chat_words_count( e, elem ) {
         jQuery( elem ).val( words.substr( 0, ( uspc_max_words - 1 ) ) );
         return false;
     }
-    
+
     uspc_enable_button( form );
 
     if ( counter > 150 )
@@ -336,13 +339,13 @@ function uspc_chat_words_count( e, elem ) {
     else if ( counter < 50 )
         color = 'red';
 
-    jQuery( elem ).parent( '.uspc-im__form' ).children( '.uspc-im-form__sign-count' ).css( 'color', color ).text( counter );
+    jQuery( elem ).parent( '.uspc-im__form' ).find( '.uspc-im-form__sign-count' ).css( 'color', color ).text( counter );
 }
 
 function uspc_chat_remove_contact( e, chat_id ) {
     usp_preloader_show( '.uspc-userlist' );
 
-    var contact = jQuery( e ).parents( '.uspc-contact' ).data( 'contact' );
+    var contact = jQuery( e ).parents( '.uspc-contact-box' ).data( 'contact' );
 
     usp_ajax( {
         data: {
@@ -550,3 +553,117 @@ function uspc_get_chat_window( e, user_id ) {
         }
     } );
 }
+
+/* Direct messages */
+
+// open direct message 
+function uspc_get_chat_dm( e, user_id ) {
+    usp_preloader_show( jQuery( e ) );
+
+    usp_ajax( {
+        data: {
+            action: 'uspc_get_direct_message',
+            user_id: user_id
+        },
+        success: function( data ) {
+            if ( data.chat_pm ) {
+                var bTtn = '<div class="uspc-head__bttn" onclick="usp_load_tab(\'chat\', 0, this);return false;" data-token-dm="' + data.dm_token + '"><i class="uspi fa-angle-left"></i></div>';
+                jQuery( '.usp-subtabs-menu, .uspc-userlist + .uspc-mini__nav, .usp-tab-chat .usp-subtab-title' ).remove();
+                jQuery( '#usp-tab__chat.usp-bttn__active' ).addClass( 'usp-bttn__active-dm' );
+                jQuery( '.uspc-head' ).html( bTtn + data.chat_name );
+                jQuery( '.uspc-userlist' ).html( data.chat_pm );
+            }
+        }
+    } );
+
+}
+
+// tab loading hook
+usp_add_action( 'usp_upload_tab', 'uspc_set_chat_button_in_menu_active' );
+function uspc_set_chat_button_in_menu_active( e ) {
+    // is chat tab
+    if ( e.result.tab_id === 'chat' ) {
+        jQuery( '#usp-tab__chat' ).addClass( 'usp-bttn__active' );
+    }
+}
+
+//
+jQuery( function( $ ) {
+    // after leaving the communication, clear usp_beat
+    $( 'body' ).on( 'click', '.uspc-head__bttn', function() {
+        var tok = $( '.uspc-head__bttn' ).data( 'token-dm' );
+        uspc_chat_clear_beat( tok );
+    } );
+
+    // click on the block with unread - we will reduce the counters
+    $( 'body' ).on( 'click', '.uspc-unread__incoming', function() {
+        var cnt = $( '#usp-tab__chat .usp-bttn__count' ).text(),
+            bttn = $( '.uspc_js_counter_unread .usp-bttn__count' );
+
+        if ( cnt > 1 ) {
+            setTimeout( function() {
+                bttn.html( cnt - 1 );
+            }, 1000 );
+        } else if ( cnt === '1' ) {
+            setTimeout( function() {
+                bttn.hide();
+            }, 1000 );
+        }
+
+        // remove notify on contact panel
+        var contact = $( this ).data( 'contact' );
+        var contact_panel_user = $( '.uspc-mini__contacts' ).find( "[data-contact='" + contact + "']" );
+
+        contact_panel_user.children( ' .uspc-mini-person__in' ).hide();
+    } );
+} );
+
+// from the chat tab went to direct communication
+usp_add_action( 'uspc_get_direct_message', 'uspc_logged_in_to_dm' );
+function uspc_logged_in_to_dm() {
+    // scroll posts
+    var mess = jQuery( '.uspc-post' );
+    if ( mess.length >= 1 ) {
+        setTimeout( function() {
+            jQuery( '.uspc-post' ).scrollTop( jQuery( '.uspc-post' ).get( 0 ).scrollHeight );
+        }, 200 );
+    }
+
+    uspc_slide_textarea();
+
+// auto-height of the input field
+    jQuery( '#usp-office .uspc-im__form textarea' ).each( function() {
+        var h = this.scrollHeight + 9;
+        this.setAttribute( 'style', 'height:' + h + 'px;overflow-y:hidden;' );
+    } ).on( 'input', function() {
+        this.style.height = 'auto';
+        var h = this.scrollHeight + 9;
+        this.style.height = h + 'px';
+    } );
+}
+
+// scroll to form
+function uspc_slide_textarea( top = 0 ) {
+    var h = window.innerHeight;
+    var chatForm = jQuery( '.uspc-im__form' );
+
+    if ( chatForm.length < 1 )
+        return false;
+
+    //  offset to form
+    var offsetToChat = chatForm.offset().top;
+    // if the browser window is huge - not scroll
+    if ( ( h + 150 ) < offsetToChat ) {
+        var vw = jQuery( window ).width();
+        // height of the form
+        var offset = 166;
+        if ( vw <= 480 ) {
+            offset = 200;
+        }
+        jQuery( 'body,html' ).animate( {
+            scrollTop: offsetToChat - ( h - offset - top )
+        }, 1000 );
+}
+}
+
+/* end */

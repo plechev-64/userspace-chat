@@ -88,6 +88,12 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$this->query = apply_filters( 'uspc_main_query', $this->query );
 
 		$this->allowed_tags = apply_filters( 'uspc_allowed_tags', array(
+			'div'		 => array(
+				'class'		 => true,
+				'style'		 => true,
+				'onclick'	 => true,
+				'data-*'	 => true
+			),
 			'a'			 => array(
 				'href'	 => true,
 				'title'	 => true,
@@ -182,7 +188,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$write = ($user->user_id == $this->user_id) ? 0 : $user->user_write;
 
 		return array(
-			'link'	 => usp_get_username( $user->user_id, usp_get_tab_permalink( $user->user_id, 'chat' ) ),
+			'link'	 => usp_user_get_username( $user->user_id, usp_get_tab_permalink( $user->user_id, 'chat' ) ),
 			'write'	 => $write
 		);
 	}
@@ -212,7 +218,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	}
 
 	function add_message( $message, $attachment = false ) {
-		$result = $this->insert_message( $this->chat_id, $this->user_id, $message );
+		$result = $this->insert_message( $this->chat_id, $this->user_id, trim( $message ) );
 
 		if ( $this->is_errors() )
 			return $this->errors();
@@ -389,7 +395,20 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		if ( $this->file_upload ) {
 			$content .= $uploader->get_gallery();
 		}
+
+		$content .= '<div class="uspc-im-form__footer usps usps__jc-between usps__ai-center">';
+
 		$content .= '<span class="uspc-im-form__sign-count">' . $this->max_words . '</span>';
+
+		$content .= usp_get_button( [
+			'label'		 => __( 'Send', 'userspace-chat' ),
+			'icon'		 => 'fa-paper-plane',
+			'icon_align' => 'right',
+			'class'		 => 'uspc-im-form__send usps__as-end usp-bttn__disabled',
+			'onclick'	 => 'uspc_chat_add_message(this);return false;'
+			] );
+
+		$content .= '</div>';
 
 		$hiddens = apply_filters( 'uspc_hidden_fields', array(
 			'chat[token]'		 => $this->chat_token,
@@ -405,13 +424,6 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			}
 		}
 
-		$content .= usp_get_button( [
-			'label'		 => __( 'Send', 'userspace-chat' ),
-			'icon'		 => 'fa-paper-plane',
-			'icon_align' => 'right',
-			'class'		 => 'uspc-im-form__send usps__as-end usp-bttn__disabled',
-			'onclick'	 => 'uspc_chat_add_message(this);return false;'
-			] );
 		$content .= '</form>';
 
 		$content .= apply_filters( 'uspc_after_form', '', $this->chat );

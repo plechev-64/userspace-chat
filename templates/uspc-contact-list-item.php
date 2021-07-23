@@ -29,10 +29,16 @@
  * @param int   $user_id    ID of current user
  */
 defined( 'ABSPATH' ) || exit;
+
+$class = 'uspc-contact-box usps usps__nowrap preloader-parent ' . ( ( ! $message[ 'message_status' ] ) ? 'uspc-unread' : '');
+
+// I am not the author of this unread
+if ( get_current_user_id() != $message[ 'author_id' ] && ! $message[ 'message_status' ] ) {
+	$class .= ' uspc-unread__incoming';
+}
 ?>
 
-<div class="uspc-contact usps usps__nowrap preloader-parent<?php echo (( ! $message[ 'message_status' ]) ? ' uspc-unread' : ''); ?>" data-contact="<?php echo $message[ 'user_id' ]; ?>">
-    <a class="uspc-contact__link" href="<?php echo usp_get_tab_permalink( $message[ 'user_id' ], 'chat' ); ?>"></a>
+<div class="<?php echo $class; ?>" data-contact="<?php echo $message[ 'user_id' ]; ?>" onclick="uspc_get_chat_dm( this,<?php echo $message[ 'user_id' ]; ?> );return false;">
 	<?php
 	$args_del = [
 		'type'		 => 'clear',
@@ -47,12 +53,12 @@ defined( 'ABSPATH' ) || exit;
 
     <div class="uspc-contact__ava usps usps__column usps__ai-center usps__shrink-0 usps__relative">
 		<?php echo usp_get_avatar( $message[ 'user_id' ], 50, false, [ 'class' => 'uspc-contact-ava__img usps__radius-50' ] ); ?>
-		<?php echo usp_get_useraction_html( $message[ 'user_id' ] ); ?>
+		<?php echo USP()->user( $message[ 'user_id' ] )->get_action_icon(); ?>
 		<?php echo uspc_get_count_unread_by_user( $message[ 'user_id' ] ); ?>
     </div>
     <div class="uspc-contact__content usps usps__column usps__grow">
         <div class="uspc-contact__meta usps usps__jc-between usps__ai-center">
-            <div class="uspc-contact__name"><?php echo usp_get_username( $message[ 'user_id' ] ); ?></div>
+            <div class="uspc-contact__name"><?php echo usp_user_get_username( $message[ 'user_id' ] ); ?></div>
             <div class="uspc-contact__time usps__text-center usps__line-1"><?php echo usp_human_time_diff( $message[ 'message_time' ] ); ?> <?php _e( 'ago', 'userspace-chat' ); ?></div>
         </div>
         <div class="uspc-contact__text usps">

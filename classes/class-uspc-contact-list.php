@@ -75,8 +75,6 @@ class USPC_Contact_List {
 
 		$content .= '<div class="uspc-userlist">';
 
-		$content .= '<div class="uspc-userlist__count">' . __( 'Total number of contacts', 'userspace-chat' ) . ': ' . USPC()->private_messages_data->contacts . '</div>';
-
 		$content .= $this->get_loop();
 
 		$content .= '</div>';
