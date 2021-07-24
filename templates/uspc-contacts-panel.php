@@ -33,17 +33,7 @@ defined( 'ABSPATH' ) || exit;
 
     <div class="uspc-mini__wrap">
         <div class="uspc-mini__userlist usps usps__column usps__ai-center usps__relative">
-			<?php
-			$args = [
-				'onclick'	 => 'return uspc_shift_contacts_panel();',
-				'class'		 => 'uspc-mini__count uspc_js_counter_unread',
-				'size'		 => 'no',
-				'type'		 => 'clear',
-				'icon'		 => 'fa-envelope',
-				'counter'	 => ($unread ? $unread : ''),
-			];
-			echo usp_get_button( $args );
-			?>
+			<?php echo uspc_shift_contact_panel_button( $unread ); ?>
 
             <div class="uspc-mini__contacts">
 				<?php
@@ -52,7 +42,7 @@ defined( 'ABSPATH' ) || exit;
 						continue;
 					?>
 
-					<div class="uspc-mini__person usps__relative" data-contact="<?php echo $user_id; ?>" onclick="uspc_get_minichat( this, <?php echo $user_id; ?> ); return false;">
+					<div class="uspc-mini__person usps__relative" data-contact="<?php echo $user_id; ?>" onclick="uspc_get_chat_window( this, <?php echo $user_id; ?> ); return false;">
 						<?php echo usp_get_avatar( $user_id, 42 ); ?>
 						<?php if ( ! $data[ 'status' ] ) : ?>
 							<i class="uspi fa-comment-dots uspc-mini-person__in usps__radius-50" aria-hidden="true"></i>

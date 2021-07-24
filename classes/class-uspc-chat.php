@@ -188,8 +188,9 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$write = ($user->user_id == $this->user_id) ? 0 : $user->user_write;
 
 		return array(
-			'link'	 => usp_user_get_username( $user->user_id, usp_get_tab_permalink( $user->user_id, 'chat' ) ),
-			'write'	 => $write
+			'link'		 => usp_user_get_username( $user->user_id, usp_get_tab_permalink( $user->user_id, 'chat' ) ),
+			'write'		 => $write,
+			'user_id'	 => $user->user_id
 		);
 	}
 

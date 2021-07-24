@@ -8,12 +8,16 @@ function uspc_get_ajax_chat_window() {
 
 	$chatdata = uspc_get_chat_private( $user_id );
 
+	$name = '<a href="' . get_author_posts_url( $user_id ) . '" title="' . __( 'Go to the profile', 'userspace-chat' ) . '">' . usp_user_get_username( $user_id ) . '</a>';
+
+	$head = '<div class="uspc-head__top">' . $name . USP()->user( $user_id )->get_action( 'mixed' ) . '</div>';
+
 	wp_send_json( array(
 		'dialog' => [
 			'content'		 => $chatdata[ 'content' ],
-			'title'			 => __( 'Chat with', 'userspace-chat' ) . ' ' . usp_user_get_username( $user_id ),
-			'class'			 => 'uspc-chat-window',
-			'size'			 => 'small',
+			'title'			 => $head,
+			'class'			 => 'uspc-chat-window ssi-dialog ssi-no-padding',
+			'size'			 => 'medium',
 			'buttonClose'	 => false,
 			'onClose'		 => [ 'uspc_chat_clear_beat', array( $chatdata[ 'token' ] ) ]
 		]
@@ -292,11 +296,15 @@ function uspc_get_direct_message() {
 
 	$name = '<a href="' . get_author_posts_url( $user_id ) . '" title="' . __( 'Go to the profile', 'userspace-chat' ) . '">' . usp_user_get_username( $user_id ) . '</a>';
 
-	$head = '<div class="uspc-head__top">' . $name . USP()->user( $user_id )->get_action( 'mixed' ) . '</div>';
+	$header	 = '<div class="uspc-head" data-head-id="' . $user_id . '">';
+	$header	 .= '<div class="uspc-head__bttn" onclick="usp_load_tab(\'chat\', 0, this);return false;" data-token-dm="' . $chatdata[ 'token' ] . '">'
+		. '<i class="uspi fa-angle-left"></i>'
+		. '</div>';
+	$header	 .= '<div class="uspc-head__top">' . $name . USP()->user( $user_id )->get_action( 'mixed' ) . '<div class="uspc-head__status"></div></div>';
+	$header	 .= '</div>';
 
 	$resp[ 'chat_pm' ]	 = $chatdata[ 'content' ];
-	$resp[ 'chat_name' ] = $head;
-	$resp[ 'dm_token' ]	 = $chatdata[ 'token' ];
+	$resp[ 'chat_head' ] = $header;
 
 	wp_send_json( $resp );
 }

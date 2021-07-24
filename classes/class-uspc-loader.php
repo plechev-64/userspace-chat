@@ -85,6 +85,8 @@ class USPC_Loader {
 	}
 
 	function get_contacts_panel_resources() {
+		usp_dialog_scripts();
+
 		usp_enqueue_style( 'uspc-contacts-panel', USPC_URL . 'assets/css/uspc-contacts-panel.css' );
 		usp_enqueue_script( 'uspc-contacts-panel', USPC_URL . 'assets/js/uspc-contacts-panel.js' );
 	}
@@ -137,6 +139,7 @@ class USPC_Loader {
 
 		$data[ 'local' ][ 'uspc_empty' ]		 = __( 'Write something', 'userspace-chat' );
 		$data[ 'local' ][ 'uspc_text_words' ]	 = __( 'Exceeds the maximum message size', 'userspace-chat' );
+		$data[ 'local' ][ 'uspc_inchat' ]		 = __( 'In chat', 'userspace-chat' );
 
 		return $data;
 	}

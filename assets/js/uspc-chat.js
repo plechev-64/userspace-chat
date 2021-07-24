@@ -518,6 +518,7 @@ function uspc_chat_beat_success( data ) {
 
         if ( data['users'] ) {
             jQuery.each( data['users'], function( index, data ) {
+                uspc_status_in_chat( chat, data['user_id'] );
                 chat.find( '.uspc-im-online__items' ).append( data['link'] );
                 if ( data['write'] == 1 )
                     user_write = 1;
@@ -540,21 +541,26 @@ function uspc_chat_beat_success( data ) {
     } );
 }
 
-// open PM in modal: 1 - this; 2 - id chat user
-function uspc_get_chat_window( e, user_id ) {
-    if ( e && jQuery( e ).parents( '.preloader-parent' ) ) {
-        usp_preloader_show( jQuery( e ).parents( '.preloader-parent' ) );
-    }
-
-    usp_ajax( {
-        data: {
-            action: 'uspc_get_ajax_chat_window',
-            user_id: user_id
-        }
-    } );
-}
-
 /* Direct messages */
+
+// add in top dm status
+function uspc_status_in_chat( chat, user_id ) {
+    var head = chat.parents( '.uspc-userlist' ).prev( '.uspc-head' );
+    var headStatus = head.find( '.uspc-head__status' );
+    headStatus.text( '' );
+
+    if ( head.data( 'head-id' ) == user_id ) {
+
+
+        var offline = head.find( '.usp-status-user.usp-offline' );
+        if ( offline.length ) {
+            offline.remove();
+            head.find( '.uspc-head__top > a' ).append( '<i class="uspi fa-circle usp-status-user usp-online"></i>' );
+        }
+
+        return headStatus.text( USP.local.uspc_inchat );
+    }
+}
 
 // open direct message 
 function uspc_get_chat_dm( e, user_id ) {
@@ -567,10 +573,9 @@ function uspc_get_chat_dm( e, user_id ) {
         },
         success: function( data ) {
             if ( data.chat_pm ) {
-                var bTtn = '<div class="uspc-head__bttn" onclick="usp_load_tab(\'chat\', 0, this);return false;" data-token-dm="' + data.dm_token + '"><i class="uspi fa-angle-left"></i></div>';
                 jQuery( '.usp-subtabs-menu, .uspc-userlist + .uspc-mini__nav, .usp-tab-chat .usp-subtab-title' ).remove();
                 jQuery( '#usp-tab__chat.usp-bttn__active' ).addClass( 'usp-bttn__active-dm' );
-                jQuery( '.uspc-head' ).html( bTtn + data.chat_name );
+                jQuery( '#usp-subtab-private-contacts .usp-subtab-content' ).prepend( data.chat_head );
                 jQuery( '.uspc-userlist' ).html( data.chat_pm );
             }
         }
@@ -601,8 +606,9 @@ jQuery( function( $ ) {
             bttn = $( '.uspc_js_counter_unread .usp-bttn__count' );
 
         if ( cnt > 1 ) {
+            var contactIncoming = $( this ).data( 'unread' );
             setTimeout( function() {
-                bttn.html( cnt - 1 );
+                bttn.html( cnt - contactIncoming );
             }, 1000 );
         } else if ( cnt === '1' ) {
             setTimeout( function() {
@@ -629,7 +635,7 @@ function uspc_logged_in_to_dm() {
         }, 200 );
     }
 
-    uspc_slide_textarea();
+    uspc_slide_to_textarea();
 
 // auto-height of the input field
     jQuery( '#usp-office .uspc-im__form textarea' ).each( function() {
@@ -643,7 +649,7 @@ function uspc_logged_in_to_dm() {
 }
 
 // scroll to form
-function uspc_slide_textarea( top = 0 ) {
+function uspc_slide_to_textarea( top = 0 ) {
     var h = window.innerHeight;
     var chatForm = jQuery( '.uspc-im__form' );
 

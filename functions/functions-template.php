@@ -106,9 +106,20 @@ function uspc_get_the_excerpt( $string ) {
 	return $string_preg;
 }
 
-function uspc_get_count_unread_by_user( $user_id ) {
-	$count = uspc_count_unread_by_user( $user_id );
+// delete contact
+function uspc_delete_contact_button( $chat_id ) {
+	$args_del = [
+		'type'		 => 'clear',
+		'size'		 => 'small',
+		'class'		 => 'uspc-contact__del',
+		'onclick'	 => 'uspc_chat_remove_contact( this,' . $chat_id . ' );return false;',
+		'title'		 => __( 'Delete contact', 'userspace-chat' ),
+		'icon'		 => 'fa-times',
+	];
+	return usp_get_button( $args_del );
+}
 
+function uspc_get_count_unread_by_user( $count ) {
 	if ( $count == 0 )
 		return false;
 
@@ -116,6 +127,19 @@ function uspc_get_count_unread_by_user( $user_id ) {
 		. '<i class="uspi fa-envelope" aria-hidden="true"></i>'
 		. '<span class="uspc_unread_count usps usps__jc-center usps__ai-center usps__radius-50 usps__line-1">' . $count . '</span>'
 		. '</div>';
+}
+
+// open/closed contacts panel
+function uspc_shift_contact_panel_button( $unread ) {
+	$args = [
+		'onclick'	 => 'return uspc_shift_contacts_panel();',
+		'class'		 => 'uspc-mini__count uspc_js_counter_unread',
+		'size'		 => 'no',
+		'type'		 => 'clear',
+		'icon'		 => 'fa-envelope',
+		'counter'	 => ($unread ? $unread : ''),
+	];
+	return usp_get_button( $args );
 }
 
 add_filter( 'uspc_post_do_bttns', 'uspc_add_do_buttons_important', 20, 2 );

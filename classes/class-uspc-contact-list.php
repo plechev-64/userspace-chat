@@ -70,10 +70,7 @@ class USPC_Contact_List {
 			return $this->get_notice();
 		}
 
-		// ajax button "Back" & user meta info
-		$content = '<div class="uspc-head"></div>';
-
-		$content .= '<div class="uspc-userlist">';
+		$content = '<div class="uspc-userlist">';
 
 		$content .= $this->get_loop();
 
@@ -91,8 +88,9 @@ class USPC_Contact_List {
 
 		foreach ( $messages as $message ) {
 			$content .= usp_get_include_template( 'uspc-contact-list-item.php', USPC_PATH . 'templates', [
-				'message'	 => $message,
-				'user_id'	 => $this->user_id
+				'message'		 => $message,
+				'user_id'		 => $this->user_id,
+				'number_unread'	 => uspc_count_unread_by_user( $message[ 'contact_id' ] ),
 				] );
 		}
 
@@ -103,7 +101,7 @@ class USPC_Contact_List {
 		$messages = $this->messages;
 
 		foreach ( $messages as $k => $message ) {
-			$messages[ $k ][ 'user_id' ]	 = ($message[ 'user_id' ] == $this->user_id) ? $message[ 'private_key' ] : $message[ 'user_id' ];
+			$messages[ $k ][ 'contact_id' ]	 = ($message[ 'user_id' ] == $this->user_id) ? $message[ 'private_key' ] : $message[ 'user_id' ];
 			$messages[ $k ][ 'author_id' ]	 = $message[ 'user_id' ];
 		}
 

@@ -1,34 +1,48 @@
 var uspc_contact_token = 0; //open contact
 
-// open .uspc-mini__im
-function uspc_get_minichat( e, user_id ) {
-    if ( uspc_contact_token ) {
-        uspc_chat_clear_beat( uspc_contact_token );
+// open PM in modal: 1 - this; 2 - id chat user
+function uspc_get_chat_window( e, user_id ) {
+    if ( e && jQuery( e ).parents( '.preloader-parent' ) ) {
+        usp_preloader_show( jQuery( e ).parents( '.preloader-parent' ) );
     }
-
-    usp_preloader_show( '#uspc-mini > div', 36 );
 
     usp_ajax( {
         data: {
-            action: 'uspc_get_chat_private_ajax',
+            action: 'uspc_get_ajax_chat_window',
             user_id: user_id
-        },
-        success: function( data ) {
-            if ( data['content'] ) {
-                var box = jQuery( '#uspc-mini' );
-                var animate = box.hasClass( 'uspc-on-left' ) ? 'fadeInLeft' : 'fadeInRight';
-                box.children( '.uspc-mini__im' ).html( data['content'] ).animateCss( animate );
-                box.find( '.uspc-im__header' ).prepend( data['name'] ).append( data['bttn'] );
-                box.addClass( 'uspc-mini-opened' );
-                uspc_contact_token = data['chat_token'];
-                uspc_set_active_minichat( e );
-                uspc_scroll_down( uspc_contact_token );
-            }
         }
     } );
-
-    return false;
 }
+
+// open .uspc-mini__im
+//function uspc_get_minichat( e, user_id ) {
+//    if ( uspc_contact_token ) {
+//        uspc_chat_clear_beat( uspc_contact_token );
+//    }
+//
+//    usp_preloader_show( '#uspc-mini > div', 36 );
+//
+//    usp_ajax( {
+//        data: {
+//            action: 'uspc_get_chat_private_ajax',
+//            user_id: user_id
+//        },
+//        success: function( data ) {
+//            if ( data['content'] ) {
+//                var box = jQuery( '#uspc-mini' );
+//                var animate = box.hasClass( 'uspc-on-left' ) ? 'fadeInLeft' : 'fadeInRight';
+//                box.children( '.uspc-mini__im' ).html( data['content'] ).animateCss( animate );
+//                box.find( '.uspc-im__header' ).prepend( data['name'] ).append( data['bttn'] );
+//                box.addClass( 'uspc-mini-opened' );
+//                uspc_contact_token = data['chat_token'];
+//                uspc_set_active_minichat( e );
+//                uspc_scroll_down( uspc_contact_token );
+//            }
+//        }
+//    } );
+//
+//    return false;
+//}
 
 function uspc_set_active_minichat( e ) {
     uspc_reset_active_minichat();

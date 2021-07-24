@@ -18,7 +18,7 @@
  * @param array  $message {
  *     @type int        $message_id         ID of message
  *     @type int        $chat_id            ID of chat
- *     @type int        $user_id            ID of the user who is communicating with
+ *     @type int        $contact_id         ID of the user who is communicating with
  *     @type string     $message_content    Message text
  *     @type string     $message_time       Time last message
  *     @type int        $private_key        ID personal account last message.
@@ -26,7 +26,8 @@
  *     @type int        $author_id          ID author last message.
  * }
  *
- * @param int   $user_id    ID of current user
+ * @param int   $user_id		ID of current user
+ * @param int   $number_unread	number of unread messages
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -36,34 +37,29 @@ $class = 'uspc-contact-box usps usps__nowrap preloader-parent ' . ( ( ! $message
 if ( get_current_user_id() != $message[ 'author_id' ] && ! $message[ 'message_status' ] ) {
 	$class .= ' uspc-unread__incoming';
 }
+
+$data_unread	 = ($number_unread) ? 'data-unread="' . $number_unread . '"' : '';
+$data_contact	 = 'data-contact="' . $message[ 'contact_id' ] . '"';
+$onclick		 = 'onclick="uspc_get_chat_dm(this,' . $message[ 'contact_id' ] . ');return false;"';
 ?>
 
-<div class="<?php echo $class; ?>" data-contact="<?php echo $message[ 'user_id' ]; ?>" onclick="uspc_get_chat_dm( this,<?php echo $message[ 'user_id' ]; ?> );return false;">
-	<?php
-	$args_del = [
-		'type'		 => 'clear',
-		'size'		 => 'small',
-		'class'		 => 'uspc-contact__del',
-		'onclick'	 => 'uspc_chat_remove_contact( this,' . $message[ 'chat_id' ] . ' );return false;',
-		'title'		 => __( 'Delete contact', 'userspace-chat' ),
-		'icon'		 => 'fa-times',
-	];
-	echo usp_get_button( $args_del );
-	?>
+<div class="<?php echo $class; ?>" <?php echo $data_unread; ?> <?php echo $data_contact; ?> <?php echo $onclick; ?>>
+	<?php echo uspc_delete_contact_button( $message[ 'chat_id' ] ); ?>
 
     <div class="uspc-contact__ava usps usps__column usps__ai-center usps__shrink-0 usps__relative">
-		<?php echo usp_get_avatar( $message[ 'user_id' ], 50, false, [ 'class' => 'uspc-contact-ava__img usps__radius-50' ] ); ?>
-		<?php echo USP()->user( $message[ 'user_id' ] )->get_action_icon(); ?>
-		<?php echo uspc_get_count_unread_by_user( $message[ 'user_id' ] ); ?>
+		<?php echo usp_get_avatar( $message[ 'contact_id' ], 50, false, [ 'class' => 'uspc-contact-ava__img usps__radius-50' ] ); ?>
+		<?php echo USP()->user( $message[ 'contact_id' ] )->get_action_icon(); ?>
+		<?php echo uspc_get_count_unread_by_user( $number_unread ); ?>
     </div>
+
     <div class="uspc-contact__content usps usps__column usps__grow">
         <div class="uspc-contact__meta usps usps__jc-between usps__ai-center">
-            <div class="uspc-contact__name"><?php echo usp_user_get_username( $message[ 'user_id' ] ); ?></div>
+            <div class="uspc-contact__name"><?php echo usp_user_get_username( $message[ 'contact_id' ] ); ?></div>
             <div class="uspc-contact__time usps__text-center usps__line-1"><?php echo usp_human_time_diff( $message[ 'message_time' ] ); ?> <?php _e( 'ago', 'userspace-chat' ); ?></div>
         </div>
-        <div class="uspc-contact__text usps">
+        <div class="uspc-contact__text usps usps__nowrap">
 			<?php if ( $user_id == $message[ 'author_id' ] ) { ?>
-				<div class="uspc-contact__you"><?php echo usp_get_avatar( $user_id, 30, false, [ 'class' => 'uspc-contact-you__img usps__radius-50' ] ); ?></div>
+				<div class="uspc-contact__you usps usps__shrink-0"><?php echo usp_get_avatar( $user_id, 30, false, [ 'class' => 'uspc-contact-you__img usps__radius-50' ] ); ?></div>
 			<?php } ?>
             <div class="uspc-contact__excerpt usps__radius-3"><?php echo uspc_get_the_excerpt( $message[ 'message_content' ] ); ?></div>
         </div>

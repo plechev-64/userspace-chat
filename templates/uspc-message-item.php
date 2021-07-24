@@ -36,14 +36,13 @@ defined( 'ABSPATH' ) || exit;
 ?>
 
 <?php
-$sender_id	 = $message[ 'user_id' ];
-$message_id	 = $message[ 'message_id' ];
-$class		 = ($sender_id == $user_id) ? ' uspc-you' : '';
+$sender_id = $message[ 'user_id' ];
 
-$class .= ( isset( $message[ 'important' ] ) && $message[ 'important' ] ) ? ' uspc-post__saved' : ''
+$class	 = ($sender_id == $user_id) ? ' uspc-you' : '';
+$class	 .= ( isset( $message[ 'important' ] ) && $message[ 'important' ] ) ? ' uspc-post__saved' : ''
 ?>
 
-<div class="uspc-post <?php echo $class; ?> usps usps__relative" data-message="<?php echo $message_id; ?>" data-user_id="<?php echo $sender_id; ?>">
+<div class="uspc-post <?php echo $class; ?> usps usps__relative" data-message="<?php echo $message[ 'message_id' ]; ?>" data-user_id="<?php echo $sender_id; ?>">
 
     <div class="uspc-post__ava usps__shrink-0" style="width:<?php echo $avatar_size; ?>px">
 		<?php

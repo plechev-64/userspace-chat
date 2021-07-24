@@ -91,11 +91,12 @@
 .uspc-contact-you__img {
     width: 30px;
     height: 30px;
+    max-height: 30px;
 }
 .uspc-contact__excerpt {
     padding: 6px 12px;
     line-height: 1.4;
-    word-break: break-all;
+    word-break: break-word;
 }
 .uspc-unread .uspc-contact__excerpt {
     background: var(--uspRed-50);
@@ -154,7 +155,7 @@
     max-width: 70%;
     box-shadow: var(--uspBox100);
     box-sizing: border-box;
-    word-break: break-all;
+    word-break: break-word;
 }
 .uspc-post__name {
     margin: 6px 0;
@@ -238,6 +239,7 @@
     right: 0;
 }
 .uspc-im__form {
+    background: var(--uspGray-75);
     margin: 0 6px 0 0;
 }
 .uspc-im-form__meta {
@@ -283,7 +285,7 @@
 }
 
 .uspc-head {
-    font-size: 18px;
+    font-size: 20px;
     display: flex;
     align-items: center;
     margin: 0 0 12px;
@@ -320,7 +322,11 @@
 .uspc-head__top a {
     color: var(--uspBlue-700) !important;
 }
-.uspc-head .usp-status-user {
+.uspc-head__status {
+    font-size: 13px;
+    color: var(--uspGreen-700);
+}
+.uspc-head__top .usp-status-user {
     font-size: 13px;
     line-height: 1;
     margin: 0 0 0 6px;
