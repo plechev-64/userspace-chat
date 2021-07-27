@@ -1,7 +1,7 @@
 /* global USP, USPUploaders, usp_beats */
 
 var uspc_last_activity = { }; //last request for new messages 
-var uspc_beat = new Array; //array of open chats
+var uspc_beat = []; //array of open chats
 var uspc_write = 0; //user writes
 var uspc_inactive_counter = -1; //user idle counter
 var uspc_important = 0;
@@ -147,7 +147,7 @@ function uspc_delete_attachment_actions( e ) {
 
 usp_add_action( 'uspc_init', 'uspc_chat_init_beat' );
 function uspc_chat_init_beat( chat ) {
-    var delay = ( chat.delay != 0 ) ? chat.delay : USP.usp_chat.delay, chat;
+    var delay = ( chat.delay != 0 ) ? chat.delay : USP.usp_chat.delay;
     usp_add_beat( 'uspc_chat_beat_core', delay, chat );
 }
 
@@ -517,8 +517,8 @@ function uspc_chat_beat_success( data ) {
         uspc_last_activity[data.token] = data['current_time'];
 
         if ( data['users'] ) {
+            uspc_status_in_chat( chat, data['users'] );
             jQuery.each( data['users'], function( index, data ) {
-                uspc_status_in_chat( chat, data['user_id'] );
                 chat.find( '.uspc-im-online__items' ).append( data['link'] );
                 if ( data['write'] == 1 )
                     user_write = 1;
@@ -544,21 +544,26 @@ function uspc_chat_beat_success( data ) {
 /* Direct messages */
 
 // add in top dm status
-function uspc_status_in_chat( chat, user_id ) {
+function uspc_status_in_chat( chat, datas ) {
     var head = chat.parents( '.uspc-userlist' ).prev( '.uspc-head' );
     var headStatus = head.find( '.uspc-head__status' );
-    headStatus.text( '' );
+    var users = [];
 
-    if ( head.data( 'head-id' ) == user_id ) {
+    jQuery.each( datas, function( index, data ) {
+        users.push(+data['user_id']);
+    });
 
-
+    if( jQuery.inArray(head.data( 'head-id' ), users) != -1 ){
         var offline = head.find( '.usp-status-user.usp-offline' );
         if ( offline.length ) {
             offline.remove();
             head.find( '.uspc-head__top > a' ).append( '<i class="uspi fa-circle usp-status-user usp-online"></i>' );
         }
-
-        return headStatus.text( USP.local.uspc_inchat );
+        if(headStatus.html() == '') {
+            headStatus.text( USP.local.uspc_inchat );
+        }
+    } else {
+        headStatus.text( '' );
     }
 }
 
@@ -669,7 +674,7 @@ function uspc_slide_to_textarea( top = 0 ) {
         jQuery( 'body,html' ).animate( {
             scrollTop: offsetToChat - ( h - offset - top )
         }, 1000 );
-}
+    }
 }
 
 /* end */
