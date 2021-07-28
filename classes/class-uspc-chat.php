@@ -454,10 +454,6 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			$meta .= $this->userslist();
 		}
 
-		if ( $this->user_id ) {
-			$meta .= $this->important_manager();
-		}
-
 		$content = '<div class="uspc-im__header usps usps__ai-center usps__jc-end">';
 		$content .= apply_filters( 'uspc_im_meta', $meta );
 		$content .= '</div>';
@@ -499,9 +495,13 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 		$content .= '</div>'; // .uspc-im__talk
 
-		$content .= '<div class="uspc-im__footer usps__relative">';
+		$content .= '<div class="uspc-im__footer usps__relative usps usps__jc-between usps__ai-center">';
 
 		$content .= '<div class="uspc-im__writes"><span>......<i class="uspi fa-pencil" aria-hidden="true"></i></span></div>';
+
+		if ( $this->user_id ) {
+			$content .= $this->important_manager();
+		}
 
 		if ( $navi ) {
 			$content .= $navi;
@@ -557,9 +557,6 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 		$content = '';
 
-		if ( $this->important ) {
-			$content .= '<span class="uspc-im-header__title usps__grow">' . __( 'Important messages', 'userspace-chat' ) . ':</span>';
-		}
 		$content .= usp_get_button(
 			[
 				'icon'		 => $class,
@@ -567,6 +564,10 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 				'onclick'	 => 'uspc_chat_important_manager_shift(this,' . $status . ');return false;'
 			]
 		);
+
+		if ( $this->important ) {
+			$content .= '<span class="uspc-im-header__title usps__grow">' . __( 'Important messages', 'userspace-chat' ) . '</span>';
+		}
 
 		return $content;
 	}

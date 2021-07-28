@@ -118,7 +118,7 @@
 }
 .uspc-im-header__title {
     font-size: 14px;
-    margin-right: 6px;
+    margin: 6px;
 }
 .uspc-im-online__title {
     margin-right: 6px;
@@ -218,12 +218,11 @@
     content: "\f006";
 }
 .uspc-im__footer {
-    overflow: hidden;
     min-height: 32px;
-    margin: 0 6px 0 12px;
+    margin: 0 6px 0 0;
 }
 .uspc-im__writes {
-    bottom: 0;
+    top: -42px;
     height: 18px;
     left: 0;
     overflow: hidden;
@@ -231,12 +230,15 @@
     white-space: nowrap;
     width: 0;
     color: var(--uspGray-500);
-    margin: 12px 0;
+    z-index: 29;
 }
 .uspc-im__writes span {
     display: inline-block;
     position: absolute;
     right: 0;
+}
+.uspc-im__important {
+    margin: 12px 0;
 }
 .uspc-im__form {
     background: var(--uspGray-75);
@@ -285,11 +287,20 @@
 }
 
 .uspc-head {
-    font-size: 20px;
     display: flex;
     align-items: center;
-    margin: 0 0 12px;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    border: var(--uspLine200);
+    background: var(--uspGray-100);
+    min-height: 48px;
+    margin-bottom: -1px;
 }
+.usp-userbar .uspc-head {
+    top: 40px;
+}
+.uspc-head__status:empty,
 .uspc-head:empty {
     display: none;
 }
@@ -302,15 +313,17 @@
     align-self: stretch;
     align-items: center;
     transition: var(--uspLoadFast);
-    min-width: 42px;
+    min-width: 46px;
     justify-content: center;
-    min-height: 42px;
+    min-height: 46px;
+    font-size: 24px;
 }
 .uspc-head__bttn:hover {
     opacity: .7;
 }
 .uspc-head__bttn .uspi {
     padding: 6px 12px;
+    font-size: 24px;
 }
 .uspc-head__top {
     flex-grow: 1;
@@ -321,15 +334,18 @@
 
 .uspc-head__top a {
     color: var(--uspBlue-700) !important;
+    font-size: 18px;
 }
 .uspc-head__status {
     font-size: 13px;
     color: var(--uspGreen-700);
+    line-height: 1;
+    margin: 0 0 3px 6px;
 }
 .uspc-head__top .usp-status-user {
     font-size: 13px;
     line-height: 1;
-    margin: 0 0 0 6px;
+    margin: 0 0 3px 6px;
 }
 .usp-bttn.usp-bttn__active.usp-bttn__active-dm {
     pointer-events: auto;

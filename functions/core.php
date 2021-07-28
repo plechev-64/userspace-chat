@@ -14,7 +14,7 @@ function uspc_get_the_chat_by_room( $chat_room, $args = [] ) {
 	require_once USPC_PATH . 'classes/class-uspc-chat.php';
 
 	$options = array_merge( [
-		'userslist'		 => 1,
+		'userslist'		 => 0,
 		'file_upload'	 => usp_get_option( 'uspc_file_upload', 0 ),
 		'chat_status'	 => 'private',
 		'chat_room'		 => $chat_room
