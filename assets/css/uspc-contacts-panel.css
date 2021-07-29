@@ -10,9 +10,6 @@
 .uspc-mini.uspc-mini-opened {
     width: 100%;
 }
-.uspc-mini__im {
-    animation-duration: .5s;
-}
 .uspc-mini__userlist {
     background: rgba(var(--uspRgb), .7);
     width: 54px;
@@ -57,15 +54,6 @@
 }
 .uspc-mini__hide .uspc-mini__contacts {
     display: none;
-}
-.uspc-mini-person__opened img {
-    border: 1px solid var(--uspRed-300);
-}
-.uspc-mini__im .uspc-im {
-    background: var(--uspWhite);
-    box-shadow: var(--uspBox400);
-    border: var(--uspLine300);
-    margin-left: 12px;
 }
 
 #uspc-mini.uspc-on-left {

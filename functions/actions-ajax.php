@@ -174,28 +174,6 @@ function uspc_chat_add_message() {
 	wp_send_json( $res );
 }
 
-usp_ajax_action( 'uspc_get_chat_private_ajax', false );
-function uspc_get_chat_private_ajax() {
-	usp_verify_ajax_nonce();
-
-	$user_id = intval( $_POST[ 'user_id' ] );
-
-	$chatdata = uspc_get_chat_private( $user_id, [ 'avatar_size' => 30, 'userslist' => 0 ] );
-
-	$bttn = usp_get_button( [
-		'onclick'	 => 'uspc_close_minichat(this);return false;',
-		'class'		 => 'uspc-im__close',
-		'icon'		 => 'fa-times'
-		] );
-
-	$result[ 'name' ]		 = usp_user_get_username( $user_id, usp_get_tab_permalink( $user_id, 'chat' ), [ 'class' => 'uspc-im__userlink' ] );
-	$result[ 'bttn' ]		 = $bttn;
-	$result[ 'content' ]	 = $chatdata[ 'content' ];
-	$result[ 'chat_token' ]	 = $chatdata[ 'token' ];
-
-	wp_send_json( $result );
-}
-
 usp_ajax_action( 'uspc_chat_message_important', false );
 function uspc_chat_message_important() {
 	usp_verify_ajax_nonce();

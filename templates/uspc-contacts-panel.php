@@ -29,8 +29,6 @@ defined( 'ABSPATH' ) || exit;
 ?>
 
 <div id="uspc-mini" class="<?php echo uspc_get_class_contacts_panel( $unread ); ?>">
-    <div class="uspc-mini__im usps__grow"></div>
-
     <div class="uspc-mini__wrap">
         <div class="uspc-mini__userlist usps usps__column usps__ai-center usps__relative">
 			<?php echo uspc_shift_contact_panel_button( $unread ); ?>
