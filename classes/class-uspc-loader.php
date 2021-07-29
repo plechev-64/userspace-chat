@@ -85,7 +85,9 @@ class USPC_Loader {
 	}
 
 	function get_contacts_panel_resources() {
+		USP()->use_module( 'fields' );
 		usp_dialog_scripts();
+		$this->chat_resources();
 
 		usp_enqueue_style( 'uspc-contacts-panel', USPC_URL . 'assets/css/uspc-contacts-panel.css' );
 		usp_enqueue_script( 'uspc-contacts-panel', USPC_URL . 'assets/js/uspc-contacts-panel.js' );
