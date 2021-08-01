@@ -75,9 +75,21 @@ function uspc_get_wrap_im_by_token(token) {
 }
 
 function uspc_chat_add_message(e) {
-    var form = jQuery(e).parents('.uspc-im__form');
+    if (uspc_connection_is()) {
+        let form = jQuery(e).parents('.uspc-im__form');
 
-    uspc_chat_add_new_message(form);
+        uspc_chat_add_new_message(form);
+    } else {
+        uspc_connection_lost_message();
+    }
+}
+
+function uspc_connection_is() {
+    return navigator.onLine;
+}
+
+function uspc_connection_lost_message() {
+    usp_notice(USP.local.uspc_network_lost, 'error', 6000);
 }
 
 function uspc_chat_clear_beat(token) {
@@ -153,7 +165,7 @@ function uspc_delete_attachment_actions(e) {
 usp_add_action('uspc_init', 'uspc_chat_init_beat');
 
 function uspc_chat_init_beat(chat) {
-    var delay = (chat.delay != 0) ? chat.delay : USP.usp_chat.delay;
+    let delay = (chat.delay != 0) ? chat.delay : USP.usp_chat.delay;
     usp_add_beat('uspc_chat_beat_core', delay, chat);
 }
 
@@ -311,7 +323,7 @@ function uspc_contacts_navi(page, e) {
 }
 
 function uspc_chat_words_count(e, elem) {
-    evt = e || window.event;
+    let evt = e || window.event;
 
     var key = evt.keyCode,
         form = jQuery(elem).parents('.uspc-im__form');
@@ -410,7 +422,7 @@ function uspc_chat_message_important(message_id) {
 }
 
 function uspc_chat_important_manager_shift(e, status) {
-    usp_preloader_show('.uspc-im');
+    usp_preloader_show('.uspc-im__box');
 
     uspc_important = status;
 

@@ -347,7 +347,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			           . '});</script>';
 		}
 
-		$content .= '<div class="uspc-im uspc-chat-' . $this->chat_status . ' uspc-chat__room-' . $this->chat_room . '" data-token="' . $this->chat_token . '" data-in_page="' . $this->query['number'] . '">';
+		$content .= '<div class="uspc-im uspc-chat-' . $this->chat_status . ' uspc-chat__room-' . $this->chat_room . ' usps__relative" data-token="' . $this->chat_token . '" data-in_page="' . $this->query['number'] . '">';
 		$content .= '<div class="uspc-im__box usps__relative">';
 		$content .= $this->get_messages_box();
 		$content .= '</div>';
@@ -581,7 +581,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	function important_manager() {
 		$status = ( $this->important ) ? 0 : 1;
 		$class  = ( $this->important ) ? 'fa-star-fill' : 'fa-star';
-		
+
 		$content = usp_get_button(
 			[
 				'icon'    => $class,

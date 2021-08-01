@@ -4,8 +4,9 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="@types/jquery" level="application" />
-    <orderEntry type="library" name="userspace" level="project" />
+    <orderEntry type="library" name="userspace core" level="project" />
     <orderEntry type="library" name="usp-uploader.js" level="project" />
+    <orderEntry type="library" name="@types/jquery" level="application" />
+    <orderEntry type="library" name="userspace scripts" level="project" />
   </component>
 </module>

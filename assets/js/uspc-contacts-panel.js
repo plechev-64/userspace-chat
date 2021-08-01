@@ -1,8 +1,6 @@
 // open PM in modal: 1 - this; 2 - id chat user
 function uspc_get_chat_window(e, user_id) {
-    if (e && jQuery(e).parents('.preloader-parent')) {
-        usp_preloader_show(jQuery(e).parents('.preloader-parent'));
-    }
+    usp_preloader_show(jQuery(e), 36);
 
     usp_ajax({
         data: {
