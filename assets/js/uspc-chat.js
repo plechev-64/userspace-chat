@@ -250,6 +250,7 @@ function uspc_chat_add_new_message(form) {
 
                 if (data.new_messages) {
                     uspc_play_sound();
+                    uspc_blink_tab();
                 }
 
                 uspc_last_activity[token] = data.last_activity;
@@ -546,6 +547,7 @@ function uspc_chat_beat_success(data) {
 
         if (data['content']) {
             uspc_play_sound();
+            uspc_blink_tab();
             chat.find('.uspc-im__talk').append(data['content']);
             uspc_scroll_down(data.token);
         } else {
@@ -721,3 +723,39 @@ function uspc_on_off_sound() {
 function uspc_mute_chat() {
     return (+jQuery.cookie('uspc_sound_off') === 1) ? 0 : 1;
 }
+
+/* blink title tab */
+var uspcTitle = document.title;
+var isActive = true;
+var uspcTimer;
+
+window.onfocus = function () {
+    isActive = true;
+
+    clearInterval(uspcTimer);
+    document.title = uspcTitle;
+};
+
+window.onblur = function () {
+    isActive = false;
+};
+
+function uspc_blink_tab() {
+    if (isActive)
+        return;
+
+    var mess = '*';
+    uspcTimer = setInterval(function () {
+        if (mess === '*') {
+            mess = '**';
+        } else if (mess === '**') {
+            mess = '***';
+        } else {
+            mess = '*';
+        }
+
+        document.title = mess + ' ' + uspcTitle;
+    }, 1000);
+}
+
+/**/
