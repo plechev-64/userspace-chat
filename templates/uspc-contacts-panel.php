@@ -15,7 +15,7 @@
  *
  * @version 1.0.0
  *
- * @param array  $users     Array containing some datas.
+ * @param array $users Array containing some datas.
  * $users = [
  *     [141] => [                   // (int)    ID of the user who is communicating with
  *             [status] => 0        // (bool)   Status message. 1 read, 0 - unread.
@@ -23,7 +23,7 @@
  *         ]
  * ]
  *
- * @param int   $unread             counter all unread messages
+ * @param int $unread counter all unread messages
  */
 defined( 'ABSPATH' ) || exit;
 ?>
@@ -36,16 +36,18 @@ defined( 'ABSPATH' ) || exit;
             <div class="uspc-mini__contacts">
 				<?php
 				foreach ( $users as $user_id => $data ) :
-					if ( $user_id == usp_office_id() )
+					if ( $user_id == usp_office_id() ) {
 						continue;
+					}
 					?>
 
-					<div class="uspc-mini__person usps__relative" data-contact="<?php echo $user_id; ?>" onclick="uspc_get_chat_window( this, <?php echo $user_id; ?> ); return false;">
+                    <div class="uspc-mini__person usps__relative" data-contact="<?php echo $user_id; ?>"
+                         onclick="uspc_get_chat_window( this, <?php echo $user_id; ?> ); return false;">
 						<?php echo usp_get_avatar( $user_id, 42 ); ?>
-						<?php if ( ! $data[ 'status' ] ) : ?>
-							<i class="uspi fa-comment-dots uspc-mini-person__in usps__radius-50" aria-hidden="true"></i>
+						<?php if ( ! $data['status'] ) : ?>
+                            <i class="uspi fa-comment-dots uspc-mini-person__in usps__radius-50" aria-hidden="true"></i>
 						<?php endif; ?>
-					</div>
+                    </div>
 				<?php endforeach; ?>
             </div>
 

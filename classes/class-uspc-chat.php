@@ -365,9 +365,16 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 	function get_form() {
 		if ( ! is_user_logged_in() ) {
+			$link    = usp_get_button( [
+				'type'  => 'clear',
+				'label' => __( 'to login', 'userspace-chat' ),
+				'size'  => 'no',
+				'href'  => usp_get_loginform_url( 'login' ),
+				'class' => 'usp-entry-bttn usp-login'
+			] );
 			$content = usp_get_notice( [
 				'type' => 'error',
-				'text' => __( 'To post messages in the chat you need to login', 'userspace-chat' )
+				'text' => __( 'To post messages in the chat you need', 'userspace-chat' ) . ' ' . $link
 			] );
 
 			//$content .= '<form class="uspc-im__form usps__relative"><input type="hidden" name="chat[token]" value="' . $this->chat_token . '"></form>';
