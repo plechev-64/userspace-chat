@@ -7,42 +7,51 @@
     right: 6px;
     z-index: 101;
 }
+
 .uspc-mini.uspc-mini-opened {
     width: 100%;
 }
+
 .uspc-mini__userlist {
     background: rgba(var(--uspRgb), .7);
     width: 54px;
 }
+
 .uspc-mini__count * {
     color: var(--uspWhite);
 }
+
 .uspc-mini__count > span {
     align-items: center;
     background: var(--uspHex);
     border-radius: 50%;
     display: flex;
-    height: 20px;
+    height: 24px;
     justify-content: center;
     font-size: 16px;
     padding: 0 !important;
     position: absolute;
-    right: calc(50% - 9px);
-    top: calc(50% - 9px);
-    width: 20px;
+    right: calc(50% - 12px);
+    top: calc(50% - 12px);
+    width: 24px;
+    line-height: 1;
 }
+
 .uspc-mini__count i {
     font-size: 42px;
 }
+
 .uspc-mini__person {
     cursor: pointer;
 }
+
 .uspc-mini__person img {
     border-radius: 0;
     padding: 0;
     vertical-align: inherit;
     width: 42px;
 }
+
 .uspc-mini-person__in {
     background: var(--uspWhite);
     font-size: 14px;
@@ -52,6 +61,7 @@
     top: -3px;
     color: var(--uspRed-500);
 }
+
 .uspc-mini__hide .uspc-mini__contacts {
     display: none;
 }

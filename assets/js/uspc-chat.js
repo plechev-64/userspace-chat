@@ -578,7 +578,7 @@ function uspc_status_in_chat(chat, datas) {
         var offline = head.find('.usp-status-user.usp-offline');
         if (offline.length) {
             offline.remove();
-            head.find('.uspc-head__top > a').append('<i class="uspi fa-circle usp-status-user usp-online"></i>');
+            head.find('.uspc-head__left > a').append('<i class="uspi fa-circle usp-status-user usp-online"></i>');
         }
         if (headStatus.html() == '') {
             headStatus.text(USP.local.uspc_inchat);
@@ -759,3 +759,28 @@ function uspc_blink_tab() {
 }
 
 /**/
+function uspc_get_user_info(user_id) {
+    usp_preloader_show('.uspc-head-right__bttn', 48);
+
+    usp_ajax({
+        data: {
+            action: 'usp_return_user_details',
+            user_id: user_id
+        },
+        success: function (data) {
+            if (data['content']) {
+                ssi_modal.show({
+                    title: USP.local.title_user_info,
+                    sizeClass: 'auto',
+                    className: 'usp-user-getails',
+                    buttons: [{
+                        label: USP.local.close,
+                        closeAfter: true
+                    }],
+                    content: data['content']
+                });
+
+            }
+        }
+    });
+}

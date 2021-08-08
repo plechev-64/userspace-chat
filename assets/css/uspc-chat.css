@@ -171,36 +171,54 @@
 
 .uspc-post {
     animation-duration: .5s;
-    margin: 24px 0;
+    margin: 24px 0 6px;
+}
+
+.uspc-you {
+    flex-direction: row-reverse;
+}
+
+.uspc-chat-private .uspc-post:not(.uspc-you) + .uspc-post:not(.uspc-you),
+.uspc-you + .uspc-you {
+    margin: 6px 0;
 }
 
 .uspc-post__ava {
     margin: 0 12px;
 }
 
+.uspc-post.uspc-you + .uspc-post.uspc-you .uspc-post__name,
+.uspc-post.uspc-you + .uspc-post.uspc-you .uspc-post__ava img,
+.uspc-chat-private .uspc-post:not(.uspc-you) + .uspc-post:not(.uspc-you) .uspc-post__name,
+.uspc-chat-private .uspc-post:not(.uspc-you) + .uspc-post:not(.uspc-you) .uspc-post__ava img {
+    display: none;
+}
+
 .uspc-post__content {
     overflow: hidden;
-    margin: 0 6px;
     border-radius: 6px;
-    padding: 6px 12px;
+    padding: 0 12px;
     min-width: 150px;
-    max-width: 70%;
-    box-shadow: var(--uspBox100);
     box-sizing: border-box;
     word-break: break-word;
+    background: var(--uspGray-100);
+    color: var(--uspGray-700);
+}
+
+.uspc-you .uspc-post__content {
+    background: var(--uspBlue-50);
 }
 
 .uspc-post__name {
-    margin: 6px 0;
+    margin-top: 12px;
     font-size: 14px;
-    color: var(--uspGray-500);
+    color: var(--uspYellow-900);
 }
 
 .uspc-post__message iframe {
     display: block;
-    margin: 12px auto;
-    max-width: 100%;
-    width: auto;
+    margin: 12px -12px;
+    max-width: none;
 }
 
 .uspc-post__message img.emoji,
@@ -210,18 +228,30 @@
     width: 24px !important;
 }
 
-.uspc-post-message__file {
-    margin-top: 12px;
-    padding: 6px;
-    background: var(--uspGray-100);
-}
-
 .uspc-post-message__file-image {
     text-align: center;
+    margin: 0 -12px;
 }
 
 .uspc-post__img {
     max-height: 100vh;
+}
+
+.uspc-post-message__file-audio {
+    min-width: 300px;
+    margin-top: 12px;
+}
+
+.uspc-post-message__file-audio audio {
+    background-color: var(--uspGray-300);
+    padding: 6px;
+}
+
+.uspc-post-message__file-archive {
+    margin: 12px 0;
+    padding: 6px;
+    background: var(--uspGray-150);
+    min-width: 300px;
 }
 
 .uspc-post-message__file-archive img {
@@ -230,16 +260,17 @@
 
 .uspc-post-message__file span {
     margin: 0 12px 0 18px;
+    color: var(--uspBlue-700);
 }
 
 .uspc-post__time {
     font-size: 13px;
     color: var(--uspGray-500);
-    margin: 6px 0;
+    margin: 12px 0 12px 36px;
 }
 
 .uspc-post__do {
-    margin: 0 6px;
+    margin: 0 12px;
 }
 
 .uspc-post__do > * {
@@ -411,8 +442,8 @@
     font-size: 24px;
 }
 
-.uspc-head__top {
-    flex-grow: 1;
+.uspc-head__right {
+    padding: 0 12px;
 }
 
 .uspc-head__top .usp-offline {

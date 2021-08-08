@@ -27,7 +27,7 @@ function uspc_get_the_content( $content_in, $allowed_tags ) {
 		$links = '';
 		preg_match_all( '/href="([^"]+)"/', $content, $links );
 		foreach ( $links[1] as $link ) {
-			$m_lnk = wp_oembed_get( $link, array( 'width' => 300, 'height' => 300 ) );
+			$m_lnk = wp_oembed_get( $link, array( 'width' => 500, 'height' => 300 ) );
 			if ( $m_lnk ) {
 				$content = str_replace( '<a href="' . $link . '" rel="nofollow">' . $link . '</a>', '', $content );
 				$content .= $m_lnk;
@@ -75,7 +75,7 @@ function uspc_get_the_attachment( $attachment_id ) {
 	} else {
 		$type      = 'archive';
 		$media_img = wp_get_attachment_image( $attachment_id, [ 30, 30 ], true );
-		$media     = '<a class="uspc-post__archive usps usps__ai-center" target="_blank" href="' . $attach_url . '">' . $media_img . '<span>' . $post->post_title . '.' . $ext . '</span></a>';
+		$media     = '<a class="uspc-post__archive usps usps__nowrap usps__ai-center" target="_blank" href="' . $attach_url . '">' . $media_img . '<span>' . $post->post_title . '.' . $ext . '</span></a>';
 	}
 
 	return '<div class="uspc-post-message__file uspc-post-message__file-' . $type . '" data-attachment="' . $attachment_id . '">' . $media . '</div>';
@@ -83,12 +83,16 @@ function uspc_get_the_attachment( $attachment_id ) {
 
 // get the excerpt for contact list
 function uspc_get_the_excerpt( $string ) {
+	if ( ! $string ) {
+		return '...';
+	}
+
 	$string_nl2br = nl2br( $string );
 
 	$allowed_html = [
 		'br'     => [],
 		'em'     => [],
-		'strong' => []
+		'strong' => [],
 	];
 
 	$string_kses = wp_kses( $string_nl2br, $allowed_html );

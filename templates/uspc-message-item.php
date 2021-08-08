@@ -43,7 +43,8 @@ $class = ( $sender_id == $user_id ) ? ' uspc-you' : '';
 $class .= ( isset( $message['important'] ) && $message['important'] ) ? ' uspc-post__saved' : ''
 ?>
 
-<div class="uspc-post <?php echo $class; ?> usps usps__relative" data-message="<?php echo $message['message_id']; ?>"
+<div class="uspc-post <?php echo $class; ?> usps usps__nowrap usps__relative"
+     data-message="<?php echo $message['message_id']; ?>"
      data-user_id="<?php echo $sender_id; ?>">
 
     <div class="uspc-post__ava usps__shrink-0" style="width:<?php echo $avatar_size; ?>px">

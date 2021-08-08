@@ -48,6 +48,8 @@ class USPC_Loader {
 		add_filter( 'usp_init_js_variables', [ $this, 'init_js_chat_variables' ] );
 
 		if ( is_user_logged_in() ) {
+			usp_include_modal_user_details();
+
 			add_action( 'usp_init', [ $this, 'init_contact_list' ] );
 			add_action( 'usp_office_setup', [ $this, 'init_direct_message_datas' ] );
 			add_action( 'usp_enqueue_scripts', [ $this, 'chat_fileupload_scripts' ] );

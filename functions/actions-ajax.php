@@ -287,7 +287,25 @@ function uspc_get_direct_message() {
 	$header .= '<div class="uspc-head__bttn" onclick="usp_load_tab(\'chat\', 0, this);return false;" data-token-dm="' . $chatdata['token'] . '">'
 	           . '<i class="uspi fa-arrow-left"></i>'
 	           . '</div>';
-	$header .= '<div class="uspc-head__top">' . $name . USP()->user( $user_id )->get_action( 'mixed' ) . '<div class="uspc-head__status"></div></div>';
+	$header .= '<div class="uspc-head__top usps usps__nowrap usps__grow usps__jc-between usps__ai-center">';
+	$header .= '<div class="uspc-head__left">';
+	$header .= $name . USP()->user( $user_id )->get_action( 'mixed' );
+	$header .= '<div class="uspc-head__status"></div>';
+	$header .= '</div>';
+
+	$header .= '<div class="uspc-head__right usps usps__relative">';
+	$header .= usp_get_button( [
+		'type'    => 'clear',
+		'size'    => 'large',
+		'class'   => 'uspc-head-right__bttn',
+		'title'   => __( 'User info', 'userspace-chat' ),
+		'onclick' => 'uspc_get_user_info(' . $user_id . ');return false;',
+		'href'    => '#',
+		'icon'    => 'fa-info-circle',
+	] );
+	$header .= '</div>';
+
+	$header .= '</div>';
 	$header .= '</div>';
 
 	$resp['chat_pm']   = $chatdata['content'];

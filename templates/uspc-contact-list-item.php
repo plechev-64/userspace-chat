@@ -56,7 +56,10 @@ $onclick      = 'onclick="uspc_get_chat_dm(this,' . $message['contact_id'] . ');
     <div class="uspc-contact__content usps usps__column usps__grow">
         <div class="uspc-contact__meta usps usps__jc-between usps__ai-center">
             <div class="uspc-contact__name"><?php echo usp_user_get_username( $message['contact_id'] ); ?></div>
-            <div class="uspc-contact__time usps__text-center usps__line-1"><?php echo usp_human_time_diff( $message['message_time'] ); ?><?php _e( 'ago', 'userspace-chat' ); ?></div>
+            <div class="uspc-contact__time usps__text-center usps__line-1">
+				<?php echo usp_human_time_diff( $message['message_time'] ); ?>
+                &nbsp;<?php _e( 'ago', 'userspace-chat' ); ?>
+            </div>
         </div>
         <div class="uspc-contact__text usps usps__nowrap">
 			<?php if ( $user_id == $message['author_id'] ) { ?>
