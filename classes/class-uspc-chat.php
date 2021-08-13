@@ -181,7 +181,6 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$res = [ $this->user_id => $this->get_user_activity( $this ) ];
 
 		if ( $users ) {
-			vdl( $users );
 			foreach ( $users as $user ) {
 				$res[ $user->user_id ] = $this->get_user_activity( $user );
 			}
@@ -538,7 +537,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		if ( $this->user_id ) {
 			$content .= $this->important_manager();
 		}
-		
+
 		if ( $navi ) {
 			$content .= $navi;
 		}
