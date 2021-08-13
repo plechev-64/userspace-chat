@@ -25,6 +25,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	public $beat = true;
 	public $errors = [];
 	public $allowed_tags;
+	private $once_date;
 
 	function __construct( $args = [] ) {
 		parent::__construct();
@@ -180,6 +181,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$res = [ $this->user_id => $this->get_user_activity( $this ) ];
 
 		if ( $users ) {
+			vdl( $users );
 			foreach ( $users as $user ) {
 				$res[ $user->user_id ] = $this->get_user_activity( $user );
 			}
@@ -536,7 +538,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		if ( $this->user_id ) {
 			$content .= $this->important_manager();
 		}
-
+		
 		if ( $navi ) {
 			$content .= $navi;
 		}
@@ -568,12 +570,16 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	}
 
 	function include_template_message_item( $message ) {
+		$item_date = date( 'Y-m-d', strtotime( $message['message_time'] ) );
+
 		return usp_get_include_template( 'uspc-message-item.php', USPC_PATH . 'templates', [
 			'message'      => $message,
 			'user_id'      => $this->user_id,
 			'avatar_size'  => $this->avatar_size,
 			'user_can'     => $this->user_can,
 			'allowed_tags' => $this->allowed_tags,
+			'chat_status'  => $this->chat_status,
+			'day_date'     => ( $this->once_date != $item_date ) ? $this->once_date = $item_date : '',
 		] );
 	}
 
@@ -589,13 +595,11 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$status = ( $this->important ) ? 0 : 1;
 		$class  = ( $this->important ) ? 'fa-star-fill' : 'fa-star';
 
-		$content = usp_get_button(
-			[
-				'icon'    => $class,
-				'class'   => 'uspc-im__important',
-				'onclick' => 'uspc_chat_important_manager_shift(this,' . $status . ');return false;'
-			]
-		);
+		$content = usp_get_button( [
+			'icon'    => $class,
+			'class'   => 'uspc-im__important',
+			'onclick' => 'uspc_chat_important_manager_shift(this,' . $status . ');return false;'
+		] );
 
 		if ( $this->important ) {
 			$content .= '<span class="uspc-im-header__title usps__grow">' . __( 'Important messages', 'userspace-chat' ) . '</span>';

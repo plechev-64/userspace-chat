@@ -296,6 +296,7 @@ function uspc_chat_navi(page, e) {
                 imBox.append(data['content']).animateCss('fadeIn');
 
                 uspc_scroll_down(token);
+                usp_do_action('uspc_load_page');
             }
         }
     });
@@ -784,3 +785,59 @@ function uspc_get_user_info(user_id) {
         }
     });
 }
+
+usp_add_action('uspc_get_direct_message', 'uspc_run_in_chat');
+usp_add_action('uspc_init', 'uspc_run_in_chat');
+usp_add_action('uspc_load_page', 'uspc_run_in_chat');
+
+function uspc_run_in_chat() {
+    uspc_max_width();
+    uspc_date_sticky();
+    uspc_hide_date();
+}
+
+function uspc_max_width() {
+    var maxWidth = Math.max.apply(null, jQuery('.uspc-date__day').map(function () {
+            return jQuery(this).outerWidth(true);
+        }).get()
+    );
+
+    jQuery('.uspc-date__day').css({'min-width': maxWidth});
+}
+
+function uspc_date_sticky() {
+    document.querySelectorAll(".uspc-date").forEach((i) => {
+        const observer = new IntersectionObserver(([i]) =>
+                i.target.classList.toggle("uspc-date-sticky", i.intersectionRatio < 1),
+            {root: document.querySelector('.uspc-im__talk'), rootMargin: '0px 0px 300px 0px', threshold: [1]});
+        observer.observe(i);
+    })
+}
+
+function uspc_hide_date() {
+    var waiting = false;
+    var t = false;
+    jQuery(".uspc-im__talk").on('scroll', function () {
+        if (waiting) {
+            return;
+        }
+        waiting = true;
+
+        setTimeout(function () {
+            waiting = false;
+        }, 400);
+
+        clearTimeout(t);
+        jQuery(".uspc-date-sticky").removeClass('uspc-date-hide');
+        checkScroll();
+    });
+
+    function checkScroll() {
+        t = setTimeout(function () {
+            jQuery(".uspc-date-sticky").addClass('uspc-date-hide');
+        }, 2000); /* You can increase or reduse timer */
+    }
+
+    return;
+}
+

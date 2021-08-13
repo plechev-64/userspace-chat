@@ -32,6 +32,8 @@
  * @param int $avatar_size Size avatars in chat
  * @param bool $user_can 1 - if the user can delete messages
  * @param array $allowed_tags Array allowed tags in current chat
+ * @param string $chat_status general or private chat
+ * @param string $day_date once day in loop
  */
 defined( 'ABSPATH' ) || exit;
 ?>
@@ -43,30 +45,35 @@ $class = ( $sender_id == $user_id ) ? ' uspc-you' : '';
 $class .= ( isset( $message['important'] ) && $message['important'] ) ? ' uspc-post__saved' : ''
 ?>
 
+<?php if ( $day_date ) : ?>
+    <div class="uspc-date usps usps__jc-center">
+        <span class="uspc-date__day"><?php echo usp_human_days( $message['message_time'] ); ?></span>
+    </div>
+<?php endif; ?>
 <div class="uspc-post <?php echo $class; ?> usps usps__nowrap usps__relative"
      data-message="<?php echo $message['message_id']; ?>"
      data-user_id="<?php echo $sender_id; ?>">
 
-    <div class="uspc-post__ava usps__shrink-0" style="width:<?php echo $avatar_size; ?>px">
-		<?php if ( $sender_id != $user_id ) {
-			echo usp_get_avatar( $sender_id, $avatar_size, usp_get_tab_permalink( $sender_id, 'chat' ), [ 'class' => 'uspc-post__ava-img usps__radius-50' ] );
-		} else {
-			echo usp_get_avatar( $sender_id, $avatar_size, false, [ 'class' => 'uspc-post__ava-img usps__radius-50' ] );
-		} ?>
-    </div>
+	<?php if ( $sender_id != $user_id ): ?>
+        <div class="uspc-post__ava usps__shrink-0" style="width:<?php echo $avatar_size; ?>px">
+			<?php echo usp_get_avatar( $sender_id, $avatar_size, usp_get_tab_permalink( $sender_id, 'chat' ), [ 'class' => 'uspc-post__ava-img usps__radius-50' ] ); ?>
+        </div>
+	<?php endif; ?>
 
     <div class="uspc-post__content">
-        <div class="uspc-post-content__box">
-            <div class="uspc-post__name usps__line-1"><?php echo usp_user_get_username( $sender_id ); ?></div>
-            <div class="uspc-post__message">
-				<?php echo uspc_get_the_content( $message['message_content'], $allowed_tags );
-
-				if ( isset( $message['attachment'] ) && $message['attachment'] ) {
-					echo uspc_get_the_attachment( $message['attachment'] );
-				} ?>
-            </div>
+        <div class="uspc-post__meta usps usps__ai-center usps__jc-between">
+			<?php if ( $chat_status === 'general' && $sender_id != $user_id ) : ?>
+                <div class="uspc-post__name usps__line-1"><?php echo usp_user_get_username( $sender_id ); ?></div>
+			<?php endif; ?>
+            <div class="uspc-post__time usps usps__grow usps__jc-end usps__line-1"><?php echo date( 'H:i', strtotime( $message['message_time'] ) ); ?></div>
         </div>
-        <div class="uspc-post__time usps usps__jc-end usps__line-1"><?php echo $message['message_time']; ?></div>
+        <div class="uspc-post__message">
+			<?php echo uspc_get_the_content( $message['message_content'], $allowed_tags );
+
+			if ( isset( $message['attachment'] ) && $message['attachment'] ) {
+				echo uspc_get_the_attachment( $message['attachment'] );
+			} ?>
+        </div>
     </div>
 
 	<?php if ( $user_id ) : ?>

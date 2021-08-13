@@ -153,9 +153,38 @@
 }
 
 .uspc-im-online__items a {
+    text-decoration: underline !important;
+    color: var(--uspBlue-700) !important;
+}
+
+.uspc-im-online__items > * {
     margin-right: 12px;
-    text-decoration: underline;
-    color: var(--uspBlue-700);
+}
+
+.uspc-date {
+    position: sticky;
+    top: -13px;
+    font-size: 14px;
+}
+
+.uspc-date-hide {
+    visibility: hidden;
+}
+
+.uspc-date.uspc-date-sticky {
+    z-index: 4;
+}
+
+.uspc-date__day {
+    padding: 6px;
+    text-align: center;
+    color: var(--uspGray-700);
+    line-height: 1;
+}
+
+.uspc-date-sticky .uspc-date__day {
+    background: var(--uspGray-200);
+    border-radius: 0 0 3px 3px;
 }
 
 .uspc-im__talk {
@@ -176,25 +205,34 @@
 
 .uspc-you {
     flex-direction: row-reverse;
+    margin-right: 12px;
 }
 
 .uspc-chat-private .uspc-post:not(.uspc-you) + .uspc-post:not(.uspc-you),
 .uspc-you + .uspc-you {
-    margin: 6px 0;
+    margin-top: 6px;
+}
+
+.uspc-post__content {
+    max-width: 75%;
 }
 
 .uspc-post__ava {
     margin: 0 12px;
 }
 
-.uspc-post.uspc-you + .uspc-post.uspc-you .uspc-post__name,
 .uspc-post.uspc-you + .uspc-post.uspc-you .uspc-post__ava img,
-.uspc-chat-private .uspc-post:not(.uspc-you) + .uspc-post:not(.uspc-you) .uspc-post__name,
 .uspc-chat-private .uspc-post:not(.uspc-you) + .uspc-post:not(.uspc-you) .uspc-post__ava img {
     display: none;
 }
 
-.uspc-post__content {
+.uspc-post__name {
+    font-size: 14px;
+    color: var(--uspYellow-900);
+    margin-bottom: 6px;
+}
+
+.uspc-post__message {
     overflow: hidden;
     border-radius: 6px;
     padding: 0 12px;
@@ -205,14 +243,9 @@
     color: var(--uspGray-700);
 }
 
-.uspc-you .uspc-post__content {
-    background: var(--uspBlue-50);
-}
-
-.uspc-post__name {
-    margin-top: 12px;
-    font-size: 14px;
-    color: var(--uspYellow-900);
+.uspc-you .uspc-post__message {
+    background: linear-gradient(180deg, #beb5ff 0%, #e7f3ff 51%, var(--uspBlue-50) 92%) no-repeat center;
+    background-attachment: fixed;
 }
 
 .uspc-chat-general .uspc-post__message p {
@@ -225,7 +258,7 @@
 
 .uspc-post__message iframe {
     display: block;
-    margin: 12px -12px;
+    margin: 0 -12px;
     max-width: none;
 }
 
@@ -247,7 +280,7 @@
 
 .uspc-post-message__file-audio {
     min-width: 300px;
-    margin-top: 12px;
+    margin-top: 6px;
 }
 
 .uspc-post-message__file-audio audio {
@@ -274,20 +307,31 @@
 .uspc-post__time {
     font-size: 13px;
     color: var(--uspGray-500);
-    margin: 12px 0 12px 36px;
+    margin-bottom: 6px;
+    justify-content: flex-start;
+}
+
+.uspc-you .uspc-post__time {
+    justify-content: flex-end;
+}
+
+.uspc-chat-private .uspc-post:not(.uspc-you) + .uspc-post:not(.uspc-you) .uspc-post__time,
+.uspc-you + .uspc-you .uspc-post__time {
+    display: none;
+}
+
+.uspc-post:not(.uspc-you) .uspc-post__name + .uspc-post__time {
+    justify-content: flex-end;
 }
 
 .uspc-post__do {
     margin: 0 12px;
+    justify-content: space-between;
 }
 
 .uspc-post__do > * {
     border: 0;
     opacity: 0;
-}
-
-.uspc-post__do > *:not(:last-child) {
-    margin-bottom: 36px;
 }
 
 .uspc-post:hover .uspc-post-do__bttn {
@@ -410,7 +454,7 @@
     align-items: center;
     position: sticky;
     top: 0;
-    z-index: 2;
+    z-index: 5;
     border: var(--uspLine200);
     background: var(--uspGray-100);
     min-height: 48px;

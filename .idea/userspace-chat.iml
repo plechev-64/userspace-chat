@@ -11,5 +11,6 @@
     <orderEntry type="library" name="usp-uploader.js" level="project" />
     <orderEntry type="library" name="@types/jquery" level="application" />
     <orderEntry type="library" name="userspace scripts" level="project" />
+    <orderEntry type="library" name="usp-core-css" level="project" />
   </component>
 </module>

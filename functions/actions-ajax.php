@@ -74,7 +74,9 @@ function uspc_get_all_important_navi( $chat_page ) {
 function uspc_get_paged_user_to_user( $chat_token, $chat_page, $important, $in_page ) {
 	$chat_room = base64_decode( $chat_token );
 
-	if ( ! uspc_get_chat_by_room( $chat_room ) ) {
+	$chat_data = uspc_get_chat_by_room( $chat_room );
+
+	if ( ! $chat_data ) {
 		return;
 	}
 
@@ -82,11 +84,12 @@ function uspc_get_paged_user_to_user( $chat_token, $chat_page, $important, $in_p
 
 	$chat = new USPC_Chat(
 		[
-			'chat_room' => $chat_room,
-			'paged'     => $chat_page,
-			'important' => $important,
-			'in_page'   => $in_page,
-			'userslist' => 1
+			'chat_room'   => $chat_room,
+			'chat_status' => $chat_data->chat_status,
+			'paged'       => $chat_page,
+			'important'   => $important,
+			'in_page'     => $in_page,
+			'userslist'   => 1
 		]
 	);
 
