@@ -538,6 +538,14 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			$content .= $this->important_manager();
 		}
 
+		$wrap = ( $this->chat_status == 'private' ) ? '.usp-subtab-content' : '.uspc-chat-general';
+
+		$content .= usp_get_button( [
+			'icon'    => 'fa-expand-arrows',
+			'class'   => 'uspc-im__modal',
+			'onclick' => 'uspc_chat_modal_shift(this,"' . $wrap . '");return false;'
+		] );
+
 		if ( $navi ) {
 			$content .= $navi;
 		}

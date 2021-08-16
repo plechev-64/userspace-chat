@@ -786,9 +786,10 @@ function uspc_get_user_info(user_id) {
     });
 }
 
-usp_add_action('uspc_get_direct_message', 'uspc_run_in_chat');
 usp_add_action('uspc_init', 'uspc_run_in_chat');
 usp_add_action('uspc_load_page', 'uspc_run_in_chat');
+usp_add_action('uspc_load_modal', 'uspc_run_in_chat');
+usp_add_action('uspc_get_direct_message', 'uspc_run_in_chat');
 
 function uspc_run_in_chat() {
     uspc_max_width();
@@ -822,7 +823,6 @@ function uspc_hide_date() {
             return;
         }
         waiting = true;
-
         setTimeout(function () {
             waiting = false;
         }, 400);
@@ -841,3 +841,26 @@ function uspc_hide_date() {
     return;
 }
 
+function uspc_chat_modal_shift(i, wrap) {
+    var chatModal = ssi_modal.show({
+        content: jQuery(wrap),
+        bodyElement: true,
+        //extendOriginalContent: true,
+        sizeClass: 'medium',
+        className: 'uspc-chat-modal ssi-dialog ssi-no-padding',
+    })
+
+    chatModal.get$modal().on('onShow.ssi-modal', function () {
+        usp_do_action('uspc_load_modal');
+    });
+}
+
+usp_add_action('uspc_load_modal', 'uspc_scroll_in_modal');
+
+function uspc_scroll_in_modal() {
+    var talk = jQuery('.uspc-chat-modal .uspc-im__talk');
+
+    if (talk.length > 0) {
+        jQuery(talk).scrollTop(jQuery(talk).get(0).scrollHeight);
+    }
+}
