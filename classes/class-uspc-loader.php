@@ -203,7 +203,7 @@ class USPC_Loader {
 			usp_fileupload_scripts();
 		}
 
-		return ( new USPC_Chat( $attr ) )->get_chat();
+		return '<div class="uspc-messenger">' . ( new USPC_Chat( $attr ) )->get_chat() . '</div>';
 	}
 
 }

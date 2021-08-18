@@ -599,11 +599,11 @@ function uspc_get_chat_dm(e, user_id) {
             user_id: user_id
         },
         success: function (data) {
-            if (data.chat_pm) {
-                jQuery('.usp-subtabs-menu, .uspc-userlist + .uspc-mini__nav, .usp-tab-chat .usp-subtab-title').remove();
+            if (data.content) {
+                jQuery('.usp-subtab-content').html('');
+                jQuery('.usp-tab-chat .usp-subtab-title').remove();
                 jQuery('#usp-tab__chat.usp-bttn__active').addClass('usp-bttn__active-dm');
-                jQuery('#usp-subtab-private-contacts .usp-subtab-content').prepend(data.chat_head);
-                jQuery('.uspc-userlist').html(data.chat_pm);
+                jQuery('#usp-subtab-private-contacts .usp-subtab-content').prepend(data.content);
             }
         }
     });
@@ -789,6 +789,7 @@ function uspc_get_user_info(user_id) {
 usp_add_action('uspc_init', 'uspc_run_in_chat');
 usp_add_action('uspc_load_page', 'uspc_run_in_chat');
 usp_add_action('uspc_load_modal', 'uspc_run_in_chat');
+usp_add_action('uspc_close_modal', 'uspc_run_in_chat');
 usp_add_action('uspc_get_direct_message', 'uspc_run_in_chat');
 
 function uspc_run_in_chat() {
@@ -845,7 +846,6 @@ function uspc_chat_modal_shift(i, wrap) {
     var chatModal = ssi_modal.show({
         content: jQuery(wrap),
         bodyElement: true,
-        //extendOriginalContent: true,
         sizeClass: 'medium',
         className: 'uspc-chat-modal ssi-dialog ssi-no-padding',
     })
@@ -853,12 +853,36 @@ function uspc_chat_modal_shift(i, wrap) {
     chatModal.get$modal().on('onShow.ssi-modal', function () {
         usp_do_action('uspc_load_modal');
     });
+    chatModal.get$modal().on('onClose.ssi-modal', function () {
+        usp_do_action('uspc_close_modal');
+    });
 }
 
 usp_add_action('uspc_load_modal', 'uspc_scroll_in_modal');
 
 function uspc_scroll_in_modal() {
     var talk = jQuery('.uspc-chat-modal .uspc-im__talk');
+
+    if (talk.length > 0) {
+        jQuery(talk).scrollTop(jQuery(talk).get(0).scrollHeight);
+    }
+}
+
+jQuery(document).on('click', '.ssi-modalOuter .usp-emoji__list img', function () {
+    var alt = jQuery(this).attr('alt');
+    var area = jQuery(this).parents('.usp-emoji').data('area');
+    var boxModal = jQuery('.ssi-modalOuter #' + area);
+
+    boxModal.val(boxModal.val() + ' ' + alt + ' ');
+    usp_do_action('usp_emoji_insert', boxModal);
+});
+
+usp_add_action('uspc_close_modal', 'uspc_is_close_modal');
+
+function uspc_is_close_modal() {
+    jQuery('.uspc-im-form__textarea').val('');
+
+    let talk = jQuery('.uspc-im__talk');
 
     if (talk.length > 0) {
         jQuery(talk).scrollTop(jQuery(talk).get(0).scrollHeight);

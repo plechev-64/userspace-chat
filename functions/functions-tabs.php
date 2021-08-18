@@ -66,7 +66,7 @@ function uspc_chat_tab( $office_id ) {
 
 	$chatdata = uspc_get_chat_private( $office_id );
 
-	return $chatdata['content'];
+	return '<div class="uspc-messenger">' . $chatdata['content'] . '</div>';
 }
 
 // init important tab

@@ -310,9 +310,8 @@ function uspc_get_direct_message() {
 
 	$header .= '</div>';
 	$header .= '</div>';
-
-	$resp['chat_pm']   = $chatdata['content'];
-	$resp['chat_head'] = $header;
+	
+	$resp['content'] = '<div class="uspc-messenger">' . $header . $chatdata['content'] . '</div>';
 
 	wp_send_json( $resp );
 }

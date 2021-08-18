@@ -333,9 +333,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		}
 
 		$uspc_chat = $this;
-
 		if ( $this->beat ) {
-
 			$content = '<script>'
 			           . 'jQuery(function($){uspc_init_chat({'
 			           . 'token:"' . $this->chat_token . '",'
