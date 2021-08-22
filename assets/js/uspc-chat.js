@@ -883,7 +883,7 @@ function uspc_is_close_modal(html) {
     let chat = jQuery('.uspc-messenger');
     chat.removeAttr('style');
     chat.html(html);
-
+    
     USPUploaders.init();
 
     uspc_scroll_by_selector('.uspc-im__talk');
