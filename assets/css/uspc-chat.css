@@ -24,6 +24,7 @@
 }
 
 .uspc-contact__del.usp-bttn {
+    color: var(--uspWhite) !important;
     display: none;
     right: 6px;
     padding: 3px;
@@ -34,7 +35,6 @@
 }
 
 .uspc-contact-box:hover .uspc-contact__del {
-    color: var(--uspWhite);
     display: flex;
 }
 
@@ -377,11 +377,11 @@
 }
 
 .uspc-im__important {
-    margin: 12px 12px 12px 0;
+    margin: 12px 6px 12px 0;
 }
 
 .uspc-im__modal {
-    margin: 12px 6px 12px;
+    margin: 12px 6px;
 }
 
 .uspc-im__footer > .usp-bttn {
@@ -444,6 +444,12 @@
     background: var(--uspGray-200);
     padding: 6px;
     color: var(--uspGray-700);
+    border: var(--uspLine300);
+}
+
+.uspc-im-form__textarea:focus + .uspc-im-form__sign-count {
+    border-top-color: var(--uspBlue-500);
+    border-right-color: var(--uspBlue-500);
 }
 
 .uspc-im-form__on-off i {
@@ -507,6 +513,7 @@
 .uspc-chat-modal .uspc-head__bttn {
     opacity: 0;
     pointer-events: none;
+    width: 6px;
 }
 
 .uspc-head__bttn:hover {
@@ -552,5 +559,20 @@
 @media screen and (max-width: 768px) {
     .usp-bttn.uspc-contact__del {
         display: flex;
+    }
+}
+
+@media screen and (max-width: 568px) {
+    .ssi-modalOuter .uspc-im {
+        border: 0;
+    }
+
+    .ssi-modalOuter .uspc-chat-general .uspc-im__header {
+        min-height: 50px;
+        padding-left: 50px;
+    }
+
+    .uspc-chat-modal .uspc-head__bttn {
+        width: auto;
     }
 }

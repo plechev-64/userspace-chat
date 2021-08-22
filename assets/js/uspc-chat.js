@@ -54,7 +54,11 @@ function uspc_scroll_down(token) {
     if (!token)
         return;
 
-    var talk = jQuery('.uspc-im[data-token="' + token + '"] .uspc-im__talk');
+    uspc_scroll_by_selector('.uspc-im[data-token="' + token + '"] .uspc-im__talk');
+}
+
+function uspc_scroll_by_selector(html) {
+    var talk = jQuery(html);
 
     if (talk.length > 0) {
         jQuery(talk).scrollTop(jQuery(talk).get(0).scrollHeight);
@@ -773,7 +777,7 @@ function uspc_get_user_info(user_id) {
                 ssi_modal.show({
                     title: USP.local.title_user_info,
                     sizeClass: 'auto',
-                    className: 'usp-user-getails',
+                    className: 'usp-user-details',
                     buttons: [{
                         label: USP.local.close,
                         closeAfter: true
@@ -788,8 +792,8 @@ function uspc_get_user_info(user_id) {
 
 usp_add_action('uspc_init', 'uspc_run_in_chat');
 usp_add_action('uspc_load_page', 'uspc_run_in_chat');
-usp_add_action('uspc_load_modal', 'uspc_run_in_chat');
-usp_add_action('uspc_close_modal', 'uspc_run_in_chat');
+usp_add_action('uspc_load_focus_modal', 'uspc_run_in_chat');
+usp_add_action('uspc_close_focus_modal', 'uspc_run_in_chat');
 usp_add_action('uspc_get_direct_message', 'uspc_run_in_chat');
 
 function uspc_run_in_chat() {
@@ -836,55 +840,51 @@ function uspc_hide_date() {
     function checkScroll() {
         t = setTimeout(function () {
             jQuery(".uspc-date-sticky").addClass('uspc-date-hide');
-        }, 2000); /* You can increase or reduse timer */
+        }, 2000);
     }
 
     return;
 }
 
-function uspc_chat_modal_shift(i, wrap) {
+function uspc_focus_modal_shift(i) {
+    let chat = jQuery(i).parents('.uspc-messenger');
+    let html = chat.html();
+
+    chat.css({'height': jQuery(chat).outerHeight(), 'width': jQuery(chat).outerWidth()});
+
+    jQuery('.uspc-messenger').html('');
+
     var chatModal = ssi_modal.show({
-        content: jQuery(wrap),
+        content: html,
         bodyElement: true,
         sizeClass: 'medium',
         className: 'uspc-chat-modal ssi-dialog ssi-no-padding',
     })
 
     chatModal.get$modal().on('onShow.ssi-modal', function () {
-        usp_do_action('uspc_load_modal');
+        usp_do_action('uspc_load_focus_modal', html);
     });
     chatModal.get$modal().on('onClose.ssi-modal', function () {
-        usp_do_action('uspc_close_modal');
+        usp_do_action('uspc_close_focus_modal', html);
     });
 }
 
-usp_add_action('uspc_load_modal', 'uspc_scroll_in_modal');
+usp_add_action('uspc_load_focus_modal', 'uspc_scroll_in_modal');
 
 function uspc_scroll_in_modal() {
-    var talk = jQuery('.uspc-chat-modal .uspc-im__talk');
+    USPUploaders.init();
 
-    if (talk.length > 0) {
-        jQuery(talk).scrollTop(jQuery(talk).get(0).scrollHeight);
-    }
+    uspc_scroll_by_selector('.uspc-chat-modal .uspc-im__talk');
 }
 
-jQuery(document).on('click', '.ssi-modalOuter .usp-emoji__list img', function () {
-    var alt = jQuery(this).attr('alt');
-    var area = jQuery(this).parents('.usp-emoji').data('area');
-    var boxModal = jQuery('.ssi-modalOuter #' + area);
+usp_add_action('uspc_close_focus_modal', 'uspc_is_close_modal');
 
-    boxModal.val(boxModal.val() + ' ' + alt + ' ');
-    usp_do_action('usp_emoji_insert', boxModal);
-});
+function uspc_is_close_modal(html) {
+    let chat = jQuery('.uspc-messenger');
+    chat.removeAttr('style');
+    chat.html(html);
 
-usp_add_action('uspc_close_modal', 'uspc_is_close_modal');
+    USPUploaders.init();
 
-function uspc_is_close_modal() {
-    jQuery('.uspc-im-form__textarea').val('');
-
-    let talk = jQuery('.uspc-im__talk');
-
-    if (talk.length > 0) {
-        jQuery(talk).scrollTop(jQuery(talk).get(0).scrollHeight);
-    }
+    uspc_scroll_by_selector('.uspc-im__talk');
 }
