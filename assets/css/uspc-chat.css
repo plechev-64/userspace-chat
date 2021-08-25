@@ -155,6 +155,10 @@
 .uspc-im-online__items a {
     text-decoration: underline !important;
     color: var(--uspBlue-700) !important;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .uspc-im-online__items > * {
@@ -374,10 +378,6 @@
     display: inline-block;
     position: absolute;
     right: 0;
-}
-
-.uspc-im__important {
-    margin: 12px 6px 12px 0;
 }
 
 .uspc-im__modal {
