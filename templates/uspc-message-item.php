@@ -78,7 +78,10 @@ $class .= ( isset( $message['important'] ) && $message['important'] ) ? ' uspc-p
 
 	<?php if ( $user_id ) : ?>
         <div class="uspc-post__do usps usps__column usps__ai-center">
-			<?php echo apply_filters( 'uspc_post_do_bttns', '', $message, $user_can ); ?>
+			<?php echo ( new USP_Dropdown( 'uspc_post_do_bttns',
+				[ 'border' => false, 'filter_arg' => [ 'message' => $message, 'user_can' => $user_can ] ]
+			) )->get_dropdown(); ?>
+			<?php //echo apply_filters( 'uspc_post_do_bttns', '', $message, $user_can ); ?>
         </div>
 	<?php endif; ?>
 

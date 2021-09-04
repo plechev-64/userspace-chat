@@ -131,9 +131,10 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		do_action( 'uspc_chat_is_load', $this );
 
 		if ( $this->user_id ) {
-			add_filter( 'uspc_chat_info', [ $this, 'important_manager' ], 10 );
+			add_filter( 'uspc_chat_info', [ $this, 'important_button' ], 10 );
 		}
 		add_filter( 'uspc_chat_info', [ $this, 'mute_button' ], 12 );
+		add_filter( 'uspc_chat_info', [ $this, 'focus_mode_button' ], 14 );
 	}
 
 	public function load_resources() {
@@ -474,6 +475,35 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		return $content;
 	}
 
+	function important_button( $content ) {
+		$status = ( $this->important ) ? 0 : 1;
+		$class  = ( $this->important ) ? 'fa-star-fill' : 'fa-star';
+
+		$content .= usp_get_button( [
+			'type'    => 'clear',
+			'size'    => 'medium',
+			'icon'    => $class,
+			'class'   => 'uspc-im__important',
+			'label'   => __( 'Important messages', 'userspace-chat' ),
+			'onclick' => 'uspc_chat_important_manager_shift(this,' . $status . ');return false;'
+		] );
+
+		return $content;
+	}
+
+	function focus_mode_button( $content ) {
+		$content .= usp_get_button( [
+			'type'    => 'clear',
+			'size'    => 'medium',
+			'icon'    => 'fa-expand-arrows',
+			'class'   => 'uspc-im__modal',
+			'label'   => __( 'Focus mode', 'userspace-chat' ),
+			'onclick' => 'uspc_focus_modal_shift(this);return false;'
+		] );
+
+		return $content;
+	}
+
 	function userslist() {
 		$content = '<div class="uspc-im__online uspc-im-header__title usps__grow">'
 		           . '<span class="uspc-im-online__title">' . __( 'In chat', 'userspace-chat' ) . ':</span>'
@@ -496,7 +526,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			$meta .= $this->userslist();
 		}
 
-		$meta .= ( new USP_Dropdown( [ 'id' => 'uspc_chat_info', 'left' => 'subscribe' ] ) )->get_dropdown();
+		$meta .= ( new USP_Dropdown( 'uspc_chat_info', [ 'left' => 'subscribe' ] ) )->get_dropdown();
 
 		$content = '<div class="uspc-im__header usps usps__ai-center usps__jc-end">';
 		$content .= apply_filters( 'uspc_im_meta', $meta );
@@ -543,12 +573,6 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$content .= '<div class="uspc-im__footer usps__relative usps usps__jc-between usps__ai-center">';
 
 		$content .= '<div class="uspc-im__writes"><span>......<i class="uspi fa-pencil" aria-hidden="true"></i></span></div>';
-
-		$content .= usp_get_button( [
-			'icon'    => 'fa-expand-arrows',
-			'class'   => 'uspc-im__modal',
-			'onclick' => 'uspc_focus_modal_shift(this);return false;'
-		] );
 
 		if ( $navi ) {
 			$content .= $navi;
@@ -600,25 +624,6 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$user_can = ( $current_user->user_level >= usp_get_option( 'usp_consol_access', 7 ) ) ? 1 : 0;
 
 		return apply_filters( 'uspc_check_user_can', $user_can );
-	}
-
-	function important_manager( $content ) {
-		$status = ( $this->important ) ? 0 : 1;
-		$class  = ( $this->important ) ? 'fa-star-fill' : 'fa-star';
-
-		$content .= usp_get_button( [
-			'label'   => __( 'Important messages', 'userspace-chat' ),
-			'type'    => 'clear',
-			'icon'    => $class,
-			'class'   => 'uspc-im__important',
-			'onclick' => 'uspc_chat_important_manager_shift(this,' . $status . ');return false;'
-		] );
-
-		if ( $this->important ) {
-			$content .= '<span class="uspc-im-header__title usps__grow">' . __( 'Important messages', 'userspace-chat' ) . '</span>';
-		}
-
-		return $content;
 	}
 
 	function add_important_query( $query ) {

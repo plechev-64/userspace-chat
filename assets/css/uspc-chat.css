@@ -342,13 +342,8 @@
     opacity: 0;
 }
 
-.uspc-post:hover .uspc-post-do__bttn {
-    opacity: .7;
-}
-
 .uspc-post__saved .uspc-post-do__important,
-.uspc-post .uspc-post-do__bttn:hover,
-.uspc-post:hover .uspc-post-do__delete {
+.uspc-post:hover #uspc_post_do_bttns {
     opacity: 1;
 }
 
@@ -378,10 +373,6 @@
     display: inline-block;
     position: absolute;
     right: 0;
-}
-
-.uspc-im__modal {
-    margin: 12px 6px;
 }
 
 .uspc-im__footer > .usp-bttn {

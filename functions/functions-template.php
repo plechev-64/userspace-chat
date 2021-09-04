@@ -155,8 +155,9 @@ function uspc_shift_contact_panel_button( $unread ) {
 }
 
 add_filter( 'uspc_post_do_bttns', 'uspc_add_do_buttons_important', 20, 2 );
-function uspc_add_do_buttons_important( $bttns, $message ) {
-	$class = ( isset( $message['important'] ) && $message['important'] ) ? 'fa-star-fill' : 'fa-star';
+function uspc_add_do_buttons_important( $bttns, $datas ) {
+	$message = $datas['message'];
+	$class   = ( isset( $message['important'] ) && $message['important'] ) ? 'fa-star-fill' : 'fa-star';
 
 	$args_imp = [
 		'type'    => 'clear',
@@ -169,9 +170,11 @@ function uspc_add_do_buttons_important( $bttns, $message ) {
 	return $bttns;
 }
 
-add_filter( 'uspc_post_do_bttns', 'uspc_add_do_buttons_delete', 30, 3 );
-function uspc_add_do_buttons_delete( $bttns, $message, $user_can ) {
+add_filter( 'uspc_post_do_bttns', 'uspc_add_do_buttons_delete', 30, 2 );
+function uspc_add_do_buttons_delete( $bttns, $datas ) {
+	$user_can = $datas['user_can'];
 	if ( $user_can ) {
+		$message  = $datas['message'];
 		$args_del = [
 			'type'    => 'clear',
 			'class'   => 'uspc-post-do__bttn uspc-post-do__delete',
