@@ -36,10 +36,10 @@ if ( in_array( 'userspace/userspace.php', apply_filters( 'active_plugins', get_o
 	function uspc_plugin_not_install() {
 		$url = '/wp-admin/plugin-install.php?s=UserSpace&tab=search&type=term';
 
-		$notice	 = '<div class="notice notice-error">';
-		$notice	 .= '<p>' . __( 'UserSpace plugin not installed!', 'userspace-chat' ) . '</p>';
-		$notice	 .= '<p>' . sprintf( __( 'Go to the page %sPlugins%s - install and activate the UserSpace plugin', 'userspace-chat' ), '<a href="' . $url . '">"', '"</a>' ) . '</p>';
-		$notice	 .= '</div>';
+		$notice = '<div class="notice notice-error">';
+		$notice .= '<p>' . __( 'UserSpace plugin not installed!', 'userspace-chat' ) . '</p>';
+		$notice .= '<p>' . sprintf( __( 'Go to the page %sPlugins%s - install and activate the UserSpace plugin', 'userspace-chat' ), '<a href="' . $url . '">"', '"</a>' ) . '</p>';
+		$notice .= '</div>';
 
 		echo $notice;
 	}

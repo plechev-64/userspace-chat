@@ -4,28 +4,31 @@ defined( 'ABSPATH' ) || exit;
 
 class USPC_Contact_List {
 
-	public $offset	 = 0;
-	public $in_page	 = 6;
-	public $current	 = 1;
-	public $user_id	 = 0;
+	public $offset = 0;
+	public $in_page = 6;
+	public $current = 1;
+	public $user_id = 0;
 	public $chat_ids = [];
 	public $messages = '';
 
 	function __construct( $args = [] ) {
-		if ( ! isset( $args[ 'user_id' ] ) )
+		if ( ! isset( $args['user_id'] ) ) {
 			$this->user_id = get_current_user_id();
+		}
 
-		if ( isset( $args[ 'in_page' ] ) )
-			$this->in_page = $args[ 'in_page' ];
+		if ( isset( $args['in_page'] ) ) {
+			$this->in_page = $args['in_page'];
+		}
 
-		if ( isset( $args[ 'current' ] ) )
-			$this->current = $args[ 'current' ];
+		if ( isset( $args['current'] ) ) {
+			$this->current = $args['current'];
+		}
 
 		$this->get_pagination();
 
 		$this->chat_ids = USPC()->private_messages_data->chat_ids;
 
-		if ( isset( $args[ 'current' ] ) && $args[ 'current' ] > 1 ) {
+		if ( isset( $args['current'] ) && $args['current'] > 1 ) {
 			$this->messages = $this->get_messages_by_chat_id();
 		} else {
 			$this->messages = USPC()->private_messages_data->messages;
@@ -33,8 +36,9 @@ class USPC_Contact_List {
 	}
 
 	function get_messages_by_chat_id() {
-		if ( ! $this->chat_ids )
+		if ( ! $this->chat_ids ) {
 			return false;
+		}
 
 		global $wpdb;
 
@@ -88,10 +92,10 @@ class USPC_Contact_List {
 
 		foreach ( $messages as $message ) {
 			$content .= usp_get_include_template( 'uspc-contact-list-item.php', USPC_PATH . 'templates', [
-				'message'		 => $message,
-				'user_id'		 => $this->user_id,
-				'number_unread'	 => uspc_count_unread_by_user( $message[ 'contact_id' ] ),
-				] );
+				'message'       => $message,
+				'user_id'       => $this->user_id,
+				'number_unread' => uspc_count_unread_by_user( $message['contact_id'] ),
+			] );
 		}
 
 		return $content;
@@ -101,8 +105,8 @@ class USPC_Contact_List {
 		$messages = $this->messages;
 
 		foreach ( $messages as $k => $message ) {
-			$messages[ $k ][ 'contact_id' ]	 = ($message[ 'user_id' ] == $this->user_id) ? $message[ 'private_key' ] : $message[ 'user_id' ];
-			$messages[ $k ][ 'author_id' ]	 = $message[ 'user_id' ];
+			$messages[ $k ]['contact_id'] = ( $message['user_id'] == $this->user_id ) ? $message['private_key'] : $message['user_id'];
+			$messages[ $k ]['author_id']  = $message['user_id'];
 		}
 
 		return $messages;
@@ -110,12 +114,12 @@ class USPC_Contact_List {
 
 	function get_pagination() {
 		$pagenavi = new USP_Pager( [
-			'total'		 => USPC()->private_messages_data->contacts,
-			'number'	 => $this->in_page,
-			'current'	 => $this->current,
-			'class'		 => 'uspc-mini__nav',
-			'onclick'	 => 'uspc_contacts_navi'
-			] );
+			'total'   => USPC()->private_messages_data->contacts,
+			'number'  => $this->in_page,
+			'current' => $this->current,
+			'class'   => 'uspc-mini__nav',
+			'onclick' => 'uspc_contacts_navi'
+		] );
 
 		$this->offset = $pagenavi->offset;
 

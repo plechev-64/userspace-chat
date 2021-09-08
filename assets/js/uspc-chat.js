@@ -132,11 +132,11 @@ function uspc_init_chat(chat) {
 }
 
 function uspc_disable_button(form) {
-    jQuery(form).find('.uspc-im-form__send').addClass('usp-bttn__disabled');
+    jQuery(form).find('.uspc-im-form-bttn__send').addClass('usp-bttn__disabled');
 }
 
 function uspc_enable_button(form) {
-    jQuery(form).find('.uspc-im-form__send').removeClass('usp-bttn__disabled');
+    jQuery(form).find('.uspc-im-form-bttn__send').removeClass('usp-bttn__disabled');
 }
 
 // send button opening after load file
@@ -217,7 +217,7 @@ function uspc_chat_add_new_message(form) {
 
     var token = form.children('[name="chat[token]"]').val(),
         chat = uspc_get_wrap_im_by_token(token),
-        message_text = form.children('textarea').val(),
+        message_text = form.find('.uspc-im-form__textarea').val(),
         file = form.find('#usp-media-uspc_chat_uploader .usp-media__item');
 
     message_text = jQuery.trim(message_text);
@@ -363,7 +363,7 @@ function uspc_chat_words_count(e, elem) {
     else if (counter < 50)
         color = 'var(--uspRed-800)';
 
-    jQuery(elem).parent('.uspc-im__form').find('.uspc-im-form__sign-count').css('color', color).text(counter);
+    jQuery(elem).parents('.uspc-im__form').find('.uspc-im-form__sign-count').css('color', color).text(counter);
 }
 
 function uspc_chat_remove_contact(e, chat_id) {
@@ -432,7 +432,7 @@ function uspc_chat_important_manager_shift(e, status) {
 
     uspc_important = status;
 
-    var token = jQuery(e).parents('.uspc-im').data('token');
+    var token = jQuery(e).parents('.uspc-head').find('.uspc-head__bttn').data('token-dm');
 
     usp_ajax({
         data: {
@@ -442,10 +442,17 @@ function uspc_chat_important_manager_shift(e, status) {
         },
         success: function (data) {
             if (data['content']) {
-                var form = jQuery(e).parents('.uspc-im').find('.uspc-im__form');
+                var form = jQuery(e).parents('.uspc-messenger').find('.uspc-im__form');
                 status ? form.hide() : form.show();
 
-                jQuery(e).parents('.uspc-im__box').html(data['content']).animateCss('fadeIn');
+                jQuery(e).parents('.uspc-messenger').find('.uspc-im__box').html(data['content']).animateCss('fadeIn');
+                if (status === 1) {
+                    jQuery(e).find('i').removeClass('fa-star').addClass('fa-star-fill');
+                    jQuery(e).attr('onclick', 'uspc_chat_important_manager_shift(this,0);return false;');
+                } else {
+                    jQuery(e).find('i').removeClass('fa-star-fill').addClass('fa-star');
+                    jQuery(e).attr('onclick', 'uspc_chat_important_manager_shift(this,1);return false;');
+                }
 
                 uspc_scroll_down(token);
             }
@@ -632,6 +639,8 @@ jQuery(function ($) {
         uspc_chat_clear_beat(tok);
     });
 
+    uspc_auto_height_textarea();
+
     // click on the block with unread - we will reduce the counters
     $('body').on('click', '.uspc-unread__incoming', function () {
         var cnt = $('#usp-tab__chat .usp-bttn__count').text(),
@@ -670,13 +679,22 @@ function uspc_logged_in_to_dm() {
 
     uspc_slide_to_textarea();
 
+    uspc_auto_height_textarea();
+}
+
 // auto-height of the input field
-    jQuery('#usp-office .uspc-im__form textarea').each(function () {
-        var h = this.scrollHeight + 9;
-        this.setAttribute('style', 'height:' + h + 'px;overflow-y:hidden;');
+function uspc_auto_height_textarea() {
+    jQuery('.uspc-im__form textarea').each(function () {
+        var initial = this.scrollHeight + 9;
+        this.setAttribute('style', 'height:' + initial + 'px;overflow-y:hidden;');
     }).on('input', function () {
         this.style.height = 'auto';
         var h = this.scrollHeight + 9;
+        if (h > 150) {
+            h = 150;
+            this.setAttribute('style', 'height:' + h + 'px;overflow-y:auto;');
+            return;
+        }
         this.style.height = h + 'px';
     });
 }
@@ -883,7 +901,7 @@ function uspc_is_close_modal(html) {
     let chat = jQuery('.uspc-messenger');
     chat.removeAttr('style');
     chat.html(html);
-    
+
     USPUploaders.init();
 
     uspc_scroll_by_selector('.uspc-im__talk');

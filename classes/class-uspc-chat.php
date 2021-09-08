@@ -96,37 +96,37 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 		$this->query = apply_filters( 'uspc_main_query', $this->query );
 
-		$this->allowed_tags = apply_filters( 'uspc_allowed_tags', array(
-			'div'        => array(
+		$this->allowed_tags = apply_filters( 'uspc_allowed_tags', [
+			'div'        => [
 				'class'   => true,
 				'style'   => true,
 				'onclick' => true,
-				'data-*'  => true
-			),
-			'a'          => array(
+				'data-*'  => true,
+			],
+			'a'          => [
 				'href'   => true,
 				'title'  => true,
-				'target' => true
-			),
-			'img'        => array(
+				'target' => true,
+			],
+			'img'        => [
 				'src'   => true,
 				'alt'   => true,
 				'class' => true,
-			),
-			'p'          => array(
-				'class' => true
-			),
-			'blockquote' => array(),
-			'del'        => array(),
-			'em'         => array(),
-			'strong'     => array(),
-			'details'    => array(),
-			'summary'    => array(),
-			'span'       => array(
+			],
+			'p'          => [
 				'class' => true,
-				'style' => true
-			)
-		) );
+			],
+			'blockquote' => [],
+			'del'        => [],
+			'em'         => [],
+			'strong'     => [],
+			'details'    => [],
+			'summary'    => [],
+			'span'       => [
+				'class' => true,
+				'style' => true,
+			],
+		] );
 
 		do_action( 'uspc_chat_is_load', $this );
 
@@ -197,19 +197,19 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 	function get_user_activity( $user ) {
 		if ( ! $user->user_id ) {
-			return array(
+			return [
 				'link'  => '<span>' . __( 'Guest', 'userspace-chat' ) . '</span>',
-				'write' => 0
-			);
+				'write' => 0,
+			];
 		}
 
 		$write = ( $user->user_id == $this->user_id ) ? 0 : $user->user_write;
 
-		return array(
+		return [
 			'link'    => usp_user_get_username( $user->user_id, usp_get_tab_permalink( $user->user_id, 'chat' ) ),
 			'write'   => $write,
-			'user_id' => $user->user_id
-		);
+			'user_id' => $user->user_id,
+		];
 	}
 
 	function add_error( $code, $error_text ) {
@@ -375,11 +375,12 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 				'label' => __( 'to login', 'userspace-chat' ),
 				'size'  => 'no',
 				'href'  => usp_get_loginform_url( 'login' ),
-				'class' => 'usp-entry-bttn usp-login'
+				'class' => 'usp-entry-bttn usp-login',
 			] );
 			$content = usp_get_notice( [
-				'type' => 'error',
-				'text' => __( 'To post messages in the chat you need', 'userspace-chat' ) . ' ' . $link
+				'type'  => 'error',
+				'class' => 'uspc-im__need-login',
+				'text'  => __( 'To post messages in the chat you need', 'userspace-chat' ) . ' ' . $link,
 			] );
 
 			//$content .= '<form class="uspc-im__form usps__relative"><input type="hidden" name="chat[token]" value="' . $this->chat_token . '"></form>';
@@ -390,7 +391,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$content = apply_filters( 'uspc_before_form', '', $this->chat );
 
 		if ( $this->file_upload ) {
-			$uploader = new USP_Uploader( 'uspc_chat_uploader', array(
+			$uploader = new USP_Uploader( 'uspc_chat_uploader', [
 				'multiple'     => 0,
 				'max_files'    => 1,
 				'crop'         => 0,
@@ -398,14 +399,14 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 				'mode_output'  => 'list',
 				'input_attach' => 'chat[attachment]',
 				'file_types'   => usp_get_option( 'uspc_file_types', 'jpeg, jpg, png' ),
-				'max_size'     => usp_get_option( 'uspc_file_size', 2 ) * 1024
-			) );
+				'max_size'     => usp_get_option( 'uspc_file_size', 2 ) * 1024,
+			] );
 		}
 
 		$content .= '<form class="uspc-im__form usps usps__column usp-field usps__relative" action="" method="post">';
-		$content .= '<div class="uspc-im-form__meta">';
-		$content .= usp_get_emoji( 'uspc-im-form__area-' . $this->chat_id );
+		$content .= '<div class="uspc-im-form__input usps usps__nowrap usps__jc-between usps__relative">';
 
+		$content .= '<div class="uspc-im-form__left usps usps__column">';
 		if ( $this->file_upload ) {
 			$args_uploads = [
 				'type'    => 'clear',
@@ -416,36 +417,37 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			];
 			$content      .= usp_get_button( $args_uploads );
 		}
+		$content .= '<span class="uspc-im-form__sign-count">' . $this->max_words . '</span>';
+		$content .= '</div>';
+
+		$content .= '<textarea rows="2" maxlength="' . $this->max_words . '" onkeyup="uspc_chat_words_count(event,this);" id="uspc-im-form__area-' . $this->chat_id . '" class="uspc-im-form__textarea" name="chat[message]" placeholder="' . __( 'Write something', 'userspace-chat' ) . '..."></textarea>';
+
+		$content .= usp_get_emoji( 'uspc-im-form__area-' . $this->chat_id, 'uspc-im-emoji' );
 
 		$content .= '</div>';
 
-		$content .= '<textarea maxlength="' . $this->max_words . '" onkeyup="uspc_chat_words_count(event,this);" id="uspc-im-form__area-' . $this->chat_id . '" class="uspc-im-form__textarea" name="chat[message]" placeholder="' . __( 'Write something', 'userspace-chat' ) . '"></textarea>';
-
-		$content .= '<span class="uspc-im-form__sign-count">' . $this->max_words . '</span>';
+		$content .= '<div class="uspc-im-form__footer usps usps__nowrap usps__jc-between usps__ai-start">';
 
 		if ( $this->file_upload ) {
 			$content .= $uploader->get_gallery();
 		}
-
-		$content .= '<div class="uspc-im-form__footer usps usps__jc-between usps__ai-center">';
-
-		$content .= usp_get_button( [
-			'label'      => __( 'Send', 'userspace-chat' ),
-			'icon'       => 'fa-paper-plane',
-			'icon_align' => 'right',
-			'class'      => 'uspc-im-form__send usps__as-end usp-bttn__disabled',
-			'onclick'    => 'uspc_chat_add_message(this);return false;'
-		] );
+		$content .= '<div class="uspc-im-form__bttn">' . usp_get_button( [
+				'label'      => __( 'Send', 'userspace-chat' ),
+				'icon'       => 'fa-paper-plane',
+				'icon_align' => 'right',
+				'class'      => 'uspc-im-form-bttn__send usps__as-end usp-bttn__disabled',
+				'onclick'    => 'uspc_chat_add_message(this);return false;',
+			] ) . '</div>';
 
 		$content .= '</div>';
 
-		$hiddens = apply_filters( 'uspc_hidden_fields', array(
+		$hiddens = apply_filters( 'uspc_hidden_fields', [
 			'chat[token]'       => $this->chat_token,
 			'chat[in_page]'     => $this->query['number'],
 			'chat[status]'      => $this->chat_status,
 			'chat[userslist]'   => $this->userslist,
-			'chat[file_upload]' => $this->file_upload
-		) );
+			'chat[file_upload]' => $this->file_upload,
+		] );
 
 		if ( $hiddens ) {
 			foreach ( $hiddens as $name => $val ) {
@@ -469,7 +471,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			'icon'    => $icon,
 			'class'   => 'uspc-im-form__on-off',
 			'label'   => __( 'Sound on/off', 'userspace-chat' ),
-			'onclick' => 'uspc_on_off_sound(this);return false;'
+			'onclick' => 'uspc_on_off_sound(this);return false;',
 		] );
 
 		return $content;
@@ -485,20 +487,24 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			'icon'    => $class,
 			'class'   => 'uspc-im__important',
 			'label'   => __( 'Important messages', 'userspace-chat' ),
-			'onclick' => 'uspc_chat_important_manager_shift(this,' . $status . ');return false;'
+			'onclick' => 'uspc_chat_important_manager_shift(this,' . $status . ');return false;',
 		] );
 
 		return $content;
 	}
 
 	function focus_mode_button( $content ) {
+		if ( ! is_user_logged_in() ) {
+			return $content;
+		}
+
 		$content .= usp_get_button( [
 			'type'    => 'clear',
 			'size'    => 'medium',
 			'icon'    => 'fa-expand-arrows',
 			'class'   => 'uspc-im__modal',
 			'label'   => __( 'Focus mode', 'userspace-chat' ),
-			'onclick' => 'uspc_focus_modal_shift(this);return false;'
+			'onclick' => 'uspc_focus_modal_shift(this);return false;',
 		] );
 
 		return $content;
@@ -522,11 +528,13 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 	function get_messages_header() {
 		$meta = '';
-		if ( $this->userslist ) {
+		if ( $this->userslist && $this->chat->chat_status == 'general' ) {
 			$meta .= $this->userslist();
 		}
 
-		$meta .= ( new USP_Dropdown( 'uspc_chat_info', [ 'left' => 'subscribe' ] ) )->get_dropdown();
+		if ( $this->chat->chat_status == 'general' ) {
+			$meta .= ( new USP_Dropdown( 'uspc_chat_info', [ 'border' => false ] ) )->get_dropdown();
+		}
 
 		$content = '<div class="uspc-im__header usps usps__ai-center usps__jc-end">';
 		$content .= apply_filters( 'uspc_im_meta', $meta );
@@ -538,41 +546,49 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	function get_messages_talk() {
 		$navi = false;
 
-		$amount_messages = $this->count_messages();
-
-		$content = '<div class="uspc-im__talk">';
-
+		$amount_messages  = $this->count_messages();
+		$content_messages = '';
+		$class            = '';
 		if ( $amount_messages ) {
 			$pagenavi = new USP_Pager( [
 				'total'   => $amount_messages,
 				'number'  => $this->query['number'],
 				'current' => $this->paged,
 				'class'   => 'uspc-im__nav',
-				'onclick' => 'uspc_chat_navi'
+				'onclick' => 'uspc_chat_navi',
 			] );
 
 			$this->query['offset'] = $pagenavi->offset;
 
 			$messages = $this->get_messages();
 
-			$content .= $this->get_loop( $messages );
+			$content_messages = $this->get_loop( $messages );
 
 			$navi = $pagenavi->get_navi();
 		} else {
 			if ( $this->important ) {
+				$class  = ' uspc-im__talk--empty';
 				$notice = __( 'No important messages in this chat', 'userspace-chat' );
 			} else {
 				$notice = __( 'Chat history will be displayed here', 'userspace-chat' );
 			}
 
-			$content .= usp_get_notice( [ 'text' => $notice, 'class' => 'uspc-im-talk__write' ] );
+			$content_messages .= usp_get_notice( [
+				'text'      => $notice,
+				'class'     => 'uspc-im-talk__write',
+				'no_border' => true,
+			] );
 		}
 
+		$content = '<div class="uspc-im__talk' . $class . '">';
+		$content .= $content_messages;
 		$content .= '</div>'; // .uspc-im__talk
 
 		$content .= '<div class="uspc-im__footer usps__relative usps usps__jc-between usps__ai-center">';
 
-		$content .= '<div class="uspc-im__writes"><span>......<i class="uspi fa-pencil" aria-hidden="true"></i></span></div>';
+		if ( $this->chat_status == 'private' ) {
+			$content .= '<div class="uspc-im__writes"><span>......<i class="uspi fa-pencil" aria-hidden="true"></i></span></div>';
+		}
 
 		if ( $navi ) {
 			$content .= $navi;
