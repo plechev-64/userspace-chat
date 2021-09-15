@@ -8,22 +8,18 @@ function uspc_get_ajax_chat_window() {
 
 	$chatdata = uspc_get_chat_private( $user_id );
 
-	$name = usp_user_get_username( $user_id, get_author_posts_url( $user_id ), [ 'class' => 'uspc-head-left__link' ] );
-
-	$head = '<div class="uspc-head__top">' . $name . USP()->user( $user_id )->get_action( 'mixed' ) . '</div>';
+	$header = uspc_include_chat_header( $user_id, $chatdata );
 
 	wp_send_json( [
 		'dialog' => [
-			'content'     => $chatdata['content'],
-			'title'       => $head,
-			'class'       => 'uspc-chat-window ssi-dialog ssi-no-padding',
+			'content'     => uspc_get_chat_box( $chatdata['content'], $header ),
+			'class'       => 'uspc-chat-modal ssi-dialog ssi-no-padding',
 			'size'        => 'medium',
 			'buttonClose' => false,
 			'onClose'     => [ 'uspc_chat_clear_beat', [ $chatdata['token'] ] ],
 		],
 	] );
 }
-
 
 usp_ajax_action( 'uspc_chat_remove_contact' );
 function uspc_chat_remove_contact() {
@@ -96,7 +92,7 @@ function uspc_get_paged_user_to_user( $chat_token, $chat_page, $important, $in_p
 		]
 	);
 
-	$res['content'] = $chat->get_messages_talk();
+	$res['content'] = $chat->get_messages_box();
 
 	wp_send_json( $res );
 }
@@ -287,48 +283,9 @@ function uspc_get_direct_message() {
 
 	$chatdata = uspc_get_chat_private( $user_id );
 
-	$name = usp_user_get_username( $user_id, get_author_posts_url( $user_id ), [ 'class' => 'uspc-head-left__link' ] );
+	$header = uspc_include_chat_header( $user_id, $chatdata );
 
-	$header = '<div class="uspc-head" data-head-id="' . $user_id . '">';
-	$header .= '<div class="uspc-head__bttn" onclick="usp_load_tab(\'chat\', 0, this);return false;" data-token-dm="' . $chatdata['token'] . '">'
-	           . '<i class="uspi fa-arrow-left"></i>'
-	           . '</div>';
-	$header .= '<div class="uspc-head__top usps usps__nowrap usps__grow usps__jc-between usps__ai-center">';
-	$header .= '<div class="uspc-head__left">';
-	$header .= $name . USP()->user( $user_id )->get_action( 'mixed' );
-	$header .= '<div class="uspc-head__status"></div>';
-	$header .= '</div>';
-
-	$header .= '<div class="uspc-head__right usps usps__relative">';
-	$header .= ( new USP_Dropdown( 'uspc_chat_info', [
-		'filter_arg' => $user_id,
-		'border'     => false,
-	] ) )->get_dropdown();
-	$header .= '</div>';
-
-	$header .= '</div>';
-	$header .= '</div>';
-
-	$resp['content'] = '<div class="uspc-messenger">' . $header . $chatdata['content'] . '</div>';
+	$resp['content'] = uspc_get_chat_box( $chatdata['content'], $header );
 
 	wp_send_json( $resp );
-}
-
-add_filter( 'uspc_chat_info', 'uspc_iser_info_button', 10, 2 );
-function uspc_iser_info_button( $content, $user_id ) {
-	if ( ! $user_id ) {
-		return $content;
-	}
-
-	$content .= usp_get_button( [
-		'type'    => 'clear',
-		'size'    => 'medium',
-		'class'   => 'uspc-head-right__bttn',
-		'label'   => __( 'User info', 'userspace-chat' ),
-		'onclick' => 'uspc_get_user_info(' . $user_id . ');return false;',
-		'href'    => '#',
-		'icon'    => 'fa-info-circle',
-	] );
-
-	return $content;
 }

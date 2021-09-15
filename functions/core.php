@@ -7,25 +7,37 @@ function uspc_get_chat_private( $user_id, $args = [] ) {
 }
 
 function uspc_get_private_chat_room( $user_1, $user_2 ) {
-	return ($user_1 < $user_2) ? 'private:' . $user_1 . ':' . $user_2 : 'private:' . $user_2 . ':' . $user_1;
+	return ( $user_1 < $user_2 ) ? 'private:' . $user_1 . ':' . $user_2 : 'private:' . $user_2 . ':' . $user_1;
 }
 
 function uspc_get_the_chat_by_room( $chat_room, $args = [] ) {
 	require_once USPC_PATH . 'classes/class-uspc-chat.php';
 
 	$options = array_merge( [
-		'userslist'		 => 0,
-		'file_upload'	 => usp_get_option( 'uspc_file_upload', 0 ),
-		'chat_status'	 => 'private',
-		'chat_room'		 => $chat_room
-		], $args );
+		'userslist'   => 0,
+		'file_upload' => usp_get_option( 'uspc_file_upload', 0 ),
+		'chat_status' => 'private',
+		'chat_room'   => $chat_room,
+	], $args );
 
 	$chat = new USPC_Chat( $options );
 
 	return [
-		'content'	 => $chat->get_chat(),
-		'token'		 => $chat->chat_token
+		'content' => $chat->get_chat(),
+		'token'   => $chat->chat_token,
 	];
+}
+
+function uspc_include_chat_header( $user_id, $chatdata, $args = false ) {
+	return usp_get_include_template( 'uspc-chat-header.php', USPC_PATH . 'templates', [
+		'user_id'  => $user_id,
+		'chatdata' => $chatdata,
+		'args'     => $args,
+	] );
+}
+
+function uspc_get_chat_box( $content, $header = false ) {
+	return '<div class="uspc-messenger-js"><div class="uspc-messenger-box">' . $header . $content . '</div></div>';
 }
 
 add_action( 'uspc_chat_remove_users', 'uspc_remove_messages', 10 );
@@ -33,11 +45,11 @@ add_action( 'uspc_user_deleted', 'uspc_remove_messages', 10, 2 );
 function uspc_remove_messages( $chat_id, $user_id = false ) {
 
 	$args = [
-		'chat_id' => $chat_id
+		'chat_id' => $chat_id,
 	];
 
 	if ( $user_id ) {
-		$args[ 'user_id' ] = $user_id;
+		$args['user_id'] = $user_id;
 	}
 
 	//get all the messages in this chat
@@ -58,23 +70,25 @@ function uspc_remove_messages( $chat_id, $user_id = false ) {
 function uspc_chat_get_new_messages( $post ) {
 	$chat_room = base64_decode( $post->token );
 
-	if ( ! uspc_get_chat_by_room( $chat_room ) )
+	if ( ! uspc_get_chat_by_room( $chat_room ) ) {
 		return false;
+	}
 
 	require_once USPC_PATH . 'classes/class-uspc-chat.php';
 
 	$chat = new USPC_Chat( [
-		'chat_room'			 => $chat_room,
-		'user_write'		 => $post->user_write,
-		'update_activity'	 => $post->update_activity
+		'chat_room'       => $chat_room,
+		'user_write'      => $post->user_write,
+		'update_activity' => $post->update_activity,
 	] );
 
 	$content = '';
 
 	if ( $post->last_activity ) {
-		$chat->query[ 'where' ][]	 = "message_time > '$post->last_activity'";
-		if ( is_user_logged_in() )
-			$chat->query[ 'where' ][]	 = "user_id != '" . get_current_user_id() . "'";
+		$chat->query['where'][] = "message_time > '$post->last_activity'";
+		if ( is_user_logged_in() ) {
+			$chat->query['where'][] = "user_id != '" . get_current_user_id() . "'";
+		}
 
 		$messages = $chat->get_messages();
 
@@ -84,18 +98,18 @@ function uspc_chat_get_new_messages( $post ) {
 			$chat->read_chat( $chat->chat_id );
 		}
 
-		$res[ 'content' ] = $content;
+		$res['content'] = $content;
 	}
 
 	$activity = $chat->get_current_activity();
 
 	if ( $activity ) {
-		$res[ 'users' ] = $activity;
+		$res['users'] = $activity;
 	}
 
-	$res[ 'success' ]		 = true;
-	$res[ 'token' ]			 = $post->token;
-	$res[ 'current_time' ]	 = current_time( 'mysql' );
+	$res['success']      = true;
+	$res['token']        = $post->token;
+	$res['current_time'] = current_time( 'mysql' );
 
 	return $res;
 }
@@ -108,4 +122,23 @@ function uspc_important_im_talk_box( $user_id, $current_page = 1 ) {
 	$chat = new USPC_Chat_All_Important( [ 'user_id' => $user_id, 'current_page' => $current_page ] );
 
 	return $chat->get_box_important_messages();
+}
+
+add_filter( 'uspc_chat_info', 'uspc_iser_info_button', 10, 2 );
+function uspc_iser_info_button( $content, $chatdata ) {
+	if ( ! isset( $chatdata['user_id'] ) || isset( $chatdata['chat_status'] ) && $chatdata['chat_status'] !== 'private' ) {
+		return $content;
+	}
+
+	$content .= usp_get_button( [
+		'type'    => 'clear',
+		'size'    => 'medium',
+		'class'   => 'uspc-head-right__bttn',
+		'label'   => __( 'User info', 'userspace-chat' ),
+		'onclick' => 'uspc_get_user_info(' . $chatdata['user_id'] . ');return false;',
+		'href'    => '#',
+		'icon'    => 'fa-info-circle',
+	] );
+
+	return $content;
 }

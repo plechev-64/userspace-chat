@@ -334,26 +334,32 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	function get_chat() {
 		global $uspc_chat;
 
+		$content = '';
 		if ( $this->chat_id && $this->chat_status == 'private' ) {
 			$this->read_chat( $this->chat_id );
 		}
 
 		$uspc_chat = $this;
+
+		if ( $this->chat->chat_status == 'general' ) {
+			$content .= $this->get_messages_header();
+		}
+
 		if ( $this->beat ) {
-			$content = '<script>'
-			           . 'jQuery(function($){uspc_init_chat({'
-			           . 'token:"' . $this->chat_token . '",'
-			           . 'file_upload:' . $this->file_upload . ','
-			           . 'max_words:' . $this->max_words . ','
-			           . 'delay:' . $this->delay . ','
-			           . 'open_chat:"' . current_time( 'mysql' ) . '",'
-			           . 'timeout:' . $this->timeout
-			           . '})'
-			           . '});</script>';
+			$content .= '<script>'
+			            . 'jQuery(function($){uspc_init_chat({'
+			            . 'token:"' . $this->chat_token . '",'
+			            . 'file_upload:' . $this->file_upload . ','
+			            . 'max_words:' . $this->max_words . ','
+			            . 'delay:' . $this->delay . ','
+			            . 'open_chat:"' . current_time( 'mysql' ) . '",'
+			            . 'timeout:' . $this->timeout
+			            . '})'
+			            . '});</script>';
 		}
 
 		$content .= '<div class="uspc-im uspc-chat-' . $this->chat_status . ' uspc-chat__room-' . $this->chat_room . ' usps__relative" data-token="' . $this->chat_token . '" data-in_page="' . $this->query['number'] . '">';
-		$content .= '<div class="uspc-im__box usps__relative">';
+		$content .= '<div class="uspc-im__box usps usps__nowrap usps__column usps__relative">';
 		$content .= $this->get_messages_box();
 		$content .= '</div>';
 
@@ -519,31 +525,16 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		return $content;
 	}
 
-	function get_messages_box() {
-		$content = $this->get_messages_header();
-		$content .= $this->get_messages_talk();
-
-		return $content;
-	}
-
 	function get_messages_header() {
-		$meta = '';
-		if ( $this->userslist && $this->chat->chat_status == 'general' ) {
-			$meta .= $this->userslist();
+		$args = [];
+		if ( $this->userslist ) {
+			$args['left'] = $this->userslist();
 		}
 
-		if ( $this->chat->chat_status == 'general' ) {
-			$meta .= ( new USP_Dropdown( 'uspc_chat_info', [ 'border' => false ] ) )->get_dropdown();
-		}
-
-		$content = '<div class="uspc-im__header usps usps__ai-center usps__jc-end">';
-		$content .= apply_filters( 'uspc_im_meta', $meta );
-		$content .= '</div>';
-
-		return $content;
+		return uspc_include_chat_header( $this->user_id, (array) $this->chat, $args );
 	}
 
-	function get_messages_talk() {
+	function get_messages_box() {
 		$navi = false;
 
 		$amount_messages  = $this->count_messages();
@@ -629,7 +620,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			'avatar_size'  => $this->avatar_size,
 			'user_can'     => $this->user_can,
 			'allowed_tags' => $this->allowed_tags,
-			'chat_status'  => $this->chat_status,
+			'chat_status'  => $this->chat->chat_status,
 			'day_date'     => ( $this->once_date != $item_date ) ? $this->once_date = $item_date : '',
 		] );
 	}

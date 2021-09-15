@@ -3,7 +3,7 @@
 // init Contacts tab
 add_action( 'usp_init_tabs', 'uspc_tab_private_contacts', 10 );
 function uspc_tab_private_contacts() {
-	$tab_data = array(
+	$tab_data = [
 		'id'       => 'chat',
 		'name'     => __( 'Chat', 'userspace-chat' ),
 		'supports' => [ 'ajax' ],
@@ -11,17 +11,17 @@ function uspc_tab_private_contacts() {
 		'icon'     => 'fa-comments',
 		'output'   => 'menu',
 		'counter'  => uspc_counter_in_tab(),
-		'content'  => array(
+		'content'  => [
 			[
 				'id'       => 'private-contacts',
 				'name'     => __( 'Contacts', 'userspace-chat' ),
 				'icon'     => 'fa-book',
 				'callback' => [
-					'name' => 'uspc_chat_tab'
-				]
-			]
-		)
-	);
+					'name' => 'uspc_chat_tab',
+				],
+			],
+		],
+	];
 
 	usp_tab( $tab_data );
 }
@@ -52,7 +52,7 @@ function uspc_chat_tab( $office_id ) {
 			'label' => __( 'Sign in', 'userspace-chat' ),
 			'size'  => 'no',
 			'href'  => usp_get_loginform_url( 'login' ),
-			'class' => 'usp-entry-bttn usp-login'
+			'class' => 'usp-entry-bttn usp-login',
 		] );
 
 		return usp_get_notice( [ 'text' => $link . ' ' . __( 'to send a message to the user', 'userspace-chat' ) ] );
@@ -66,7 +66,9 @@ function uspc_chat_tab( $office_id ) {
 
 	$chatdata = uspc_get_chat_private( $office_id );
 
-	return '<div class="uspc-messenger">' . $chatdata['content'] . '</div>';
+	$header = uspc_include_chat_header( $office_id, $chatdata, [ 'button' => 'hide' ] );
+
+	return uspc_get_chat_box( $chatdata['content'], $header );
 }
 
 // init important tab
@@ -81,8 +83,8 @@ function uspc_tab_important() {
 		'name'     => __( 'Important messages', 'userspace-chat' ),
 		'icon'     => 'fa-star',
 		'callback' => [
-			'name' => 'uspc_get_tab_user_important'
-		]
+			'name' => 'uspc_get_tab_user_important',
+		],
 	] );
 }
 

@@ -261,6 +261,7 @@ function uspc_chat_add_new_message(form) {
 
                 uspc_clear_notice();
                 uspc_disable_button(form);
+                uspc_auto_height_textarea();
 
                 usp_do_action('uspc_added_message', {
                     token: token,
@@ -431,8 +432,8 @@ function uspc_chat_important_manager_shift(e, status) {
     usp_preloader_show('.uspc-im__box');
 
     uspc_important = status;
-
-    var token = jQuery(e).parents('.uspc-head').find('.uspc-head__bttn').data('token-dm');
+    
+    var token = jQuery(e).parents('.uspc-head-box').nextAll('.uspc-im').data('token');
 
     usp_ajax({
         data: {
@@ -442,10 +443,10 @@ function uspc_chat_important_manager_shift(e, status) {
         },
         success: function (data) {
             if (data['content']) {
-                var form = jQuery(e).parents('.uspc-messenger').find('.uspc-im__form');
+                var form = jQuery(e).parents('.uspc-head-box').nextAll('.uspc-im').find('.uspc-im__form');
                 status ? form.hide() : form.show();
 
-                jQuery(e).parents('.uspc-messenger').find('.uspc-im__box').html(data['content']).animateCss('fadeIn');
+                jQuery(e).parents('.uspc-head-box').nextAll('.uspc-im').find('.uspc-im__box').html(data['content']).animateCss('fadeIn');
                 if (status === 1) {
                     jQuery(e).find('i').removeClass('fa-star').addClass('fa-star-fill');
                     jQuery(e).attr('onclick', 'uspc_chat_important_manager_shift(this,0);return false;');
@@ -536,7 +537,9 @@ function uspc_chat_beat_success(data) {
     }
 
     var user_write = 0;
-    chat.find('.uspc-im-online__items').html('');
+    let onlineList = chat.parents('.uspc-messenger-box').find('.uspc-im-online__items');
+
+    onlineList.html('');
     uspc_chat_write_status_cancel(data.token);
 
     if (data['errors']) {
@@ -551,7 +554,7 @@ function uspc_chat_beat_success(data) {
         if (data['users']) {
             uspc_status_in_chat(chat, data['users']);
             jQuery.each(data['users'], function (index, data) {
-                chat.find('.uspc-im-online__items').append(data['link']);
+                onlineList.append(data['link']);
                 if (data['write'] == 1)
                     user_write = 1;
             });
@@ -578,7 +581,7 @@ function uspc_chat_beat_success(data) {
 
 // add in top dm status
 function uspc_status_in_chat(chat, datas) {
-    var head = chat.parents('.uspc-userlist').prev('.uspc-head');
+    var head = chat.parents('.uspc-messenger-box').find('.uspc-head-box');
     var headStatus = head.find('.uspc-head__status');
     var users = [];
 
@@ -684,7 +687,10 @@ function uspc_logged_in_to_dm() {
 
 // auto-height of the input field
 function uspc_auto_height_textarea() {
-    jQuery('.uspc-im__form textarea').each(function () {
+    let form = jQuery('.uspc-im__form textarea');
+    jQuery(form).css({'height': 'auto', 'overflow-y': 'auto'});
+
+    form.each(function () {
         var initial = this.scrollHeight + 9;
         this.setAttribute('style', 'height:' + initial + 'px;overflow-y:hidden;');
     }).on('input', function () {
@@ -713,7 +719,7 @@ function uspc_slide_to_textarea(top = 0) {
     if ((h + 150) < offsetToChat) {
         var vw = jQuery(window).width();
         // height of the form
-        var offset = 166;
+        var offset = 160;
         if (vw <= 480) {
             offset = 200;
         }
@@ -865,12 +871,12 @@ function uspc_hide_date() {
 }
 
 function uspc_focus_modal_shift(i) {
-    let chat = jQuery(i).parents('.uspc-messenger');
+    let chat = jQuery(i).parents('.uspc-messenger-js');
     let html = chat.html();
 
     chat.css({'height': jQuery(chat).outerHeight(), 'width': jQuery(chat).outerWidth()});
 
-    jQuery('.uspc-messenger').html('');
+    jQuery('.uspc-messenger-js').html('');
 
     var chatModal = ssi_modal.show({
         content: html,
@@ -898,7 +904,7 @@ function uspc_scroll_in_modal() {
 usp_add_action('uspc_close_focus_modal', 'uspc_is_close_modal');
 
 function uspc_is_close_modal(html) {
-    let chat = jQuery('.uspc-messenger');
+    let chat = jQuery('.uspc-messenger-js');
     chat.removeAttr('style');
     chat.html(html);
 

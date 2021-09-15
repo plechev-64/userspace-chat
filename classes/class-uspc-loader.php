@@ -120,7 +120,7 @@ class USPC_Loader {
 			'class' => 'usp-bar-chat',
 			'href'  => usp_get_tab_permalink( get_current_user_id(), 'chat' ),
 			'icon'  => 'fa-comments',
-			'label' => __( 'Chat', 'userspace-chat' )
+			'label' => __( 'Chat', 'userspace-chat' ),
 		] );
 
 		return $menu;
@@ -204,8 +204,8 @@ class USPC_Loader {
 		if ( get_current_user_id() && $file_upload ) {
 			usp_fileupload_scripts();
 		}
-
-		return '<div class="uspc-messenger">' . ( new USPC_Chat( $attr ) )->get_chat() . '</div>';
+		
+		return uspc_get_chat_box( ( new USPC_Chat( $attr ) )->get_chat() );
 	}
 
 }

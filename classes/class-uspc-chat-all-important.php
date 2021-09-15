@@ -4,18 +4,18 @@ defined( 'ABSPATH' ) || exit;
 
 class USPC_Chat_All_Important extends USPC_Chat {
 
-	public $user_id			 = 0;
-	public $current_page	 = 1;
-	public $count_important	 = 0;
+	public $user_id = 0;
+	public $current_page = 1;
+	public $count_important = 0;
 
 	function __construct( $args ) {
 		parent::__construct();
 
-		if ( $args[ 'user_id' ] ) {
-			$this->user_id = $args[ 'user_id' ];
+		if ( $args['user_id'] ) {
+			$this->user_id = $args['user_id'];
 		}
-		if ( $args[ 'current_page' ] ) {
-			$this->current_page = $args[ 'current_page' ];
+		if ( $args['current_page'] ) {
+			$this->current_page = $args['current_page'];
 		}
 
 		$this->count_important = $this->count_important_messages();
@@ -23,10 +23,10 @@ class USPC_Chat_All_Important extends USPC_Chat {
 
 	function count_important_messages() {
 		return ( new USPC_Chat_Messages_Query() )
-				->join( 'message_id', ( new USPC_Chat_Messagemeta_Query() )
-					->where( [ 'meta_key' => 'important:' . $this->user_id ] )
-				)
-				->get_count();
+			->join( 'message_id', ( new USPC_Chat_Messagemeta_Query() )
+				->where( [ 'meta_key' => 'important:' . $this->user_id ] )
+			)
+			->get_count();
 	}
 
 	function get_important_messages( $limit ) {
@@ -35,7 +35,7 @@ class USPC_Chat_All_Important extends USPC_Chat {
 				->where( [ 'meta_key' => 'important:' . $this->user_id ] )
 			)
 			->orderby( 'message_time' )
-			->limit( $limit[ 1 ], $limit[ 0 ] )
+			->limit( $limit[1], $limit[0] )
 			->get_results( false, ARRAY_A );
 
 		$messages = uspc_chat_messages_add_attachments_meta( $messagesData );
@@ -44,7 +44,10 @@ class USPC_Chat_All_Important extends USPC_Chat {
 	}
 
 	function message_no_important() {
-		return usp_get_notice( [ 'text' => __( 'No important messages yet', 'userspace-chat' ) ] );
+		return usp_get_notice( [
+			'text'  => __( 'No important messages yet', 'userspace-chat' ),
+			'class' => 'uspc_no_important',
+		] );
 	}
 
 	public function get_box_important_messages() {
@@ -53,11 +56,11 @@ class USPC_Chat_All_Important extends USPC_Chat {
 		}
 
 		$pagenavi = new USP_Pager( [
-			'total'		 => $this->count_important,
-			'current'	 => $this->current_page,
-			'class'		 => 'uspc-im__nav',
-			'onclick'	 => 'uspc_chat_navi'
-			] );
+			'total'   => $this->count_important,
+			'current' => $this->current_page,
+			'class'   => 'uspc-im__nav',
+			'onclick' => 'uspc_chat_navi',
+		] );
 
 		$messages_important = $this->get_important_messages( [ $pagenavi->offset, 30 ] );
 

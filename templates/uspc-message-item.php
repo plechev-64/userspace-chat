@@ -62,7 +62,7 @@ $class .= ( isset( $message['important'] ) && $message['important'] ) ? ' uspc-p
 
     <div class="uspc-post__content">
         <div class="uspc-post__meta usps usps__ai-center usps__jc-between">
-			<?php if ( $chat_status === 'general' && $sender_id != $user_id ) : ?>
+			<?php if ( ( $chat_status === 'general' && $sender_id != $user_id ) || ( isset( $message['important'] ) && $chat_status === 'general' ) ) : ?>
                 <div class="uspc-post__name usps__line-1"><?php echo usp_user_get_username( $sender_id ); ?></div>
 			<?php endif; ?>
             <div class="uspc-post__time usps usps__grow usps__jc-end usps__line-1"><?php echo date( 'H:i', strtotime( $message['message_time'] ) ); ?></div>
