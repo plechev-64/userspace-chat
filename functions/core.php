@@ -157,7 +157,7 @@ function uspc_css_variable( $styles ) {
 
 	$styles .= '.uspc-you .uspc-post__message {
 		background: linear-gradient(' . $theme . ' 0%, rgba(' . $r . ', ' . $g . ', ' . $b . ', ' . $alpha . ') 51%) no-repeat fixed center center;
-	};';
+	}';
 
 	return $styles;
 }
