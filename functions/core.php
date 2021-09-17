@@ -142,3 +142,22 @@ function uspc_iser_info_button( $content, $chatdata ) {
 
 	return $content;
 }
+
+// added color in you messages
+add_filter( 'usp_inline_styles', 'uspc_css_variable', 10 );
+function uspc_css_variable( $styles ) {
+	if ( ! is_user_logged_in() ) {
+		return $styles;
+	}
+
+	$theme = usp_get_option_customizer( 'uspc_theme', '#beb5ff' );
+	[ $r, $g, $b ] = sscanf( $theme, "#%02x%02x%02x" );
+
+	$alpha = usp_get_option_customizer( 'uspc_alpha', '0.2' );
+
+	$styles .= '.uspc-you .uspc-post__message {
+		background: linear-gradient(' . $theme . ' 0%, rgba(' . $r . ', ' . $g . ', ' . $b . ', ' . $alpha . ') 51%) no-repeat fixed center center;
+	};';
+
+	return $styles;
+}

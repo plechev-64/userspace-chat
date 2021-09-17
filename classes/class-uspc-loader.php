@@ -47,6 +47,8 @@ class USPC_Loader {
 		add_action( 'uspc_chat_is_load', [ $this, 'chat_reset_oembed_filter' ] );
 		add_filter( 'usp_init_js_variables', [ $this, 'init_js_chat_variables' ] );
 
+		add_action( 'init', [ $this, 'customizer_init' ] );
+
 		if ( is_user_logged_in() ) {
 			usp_include_modal_user_details();
 
@@ -66,6 +68,10 @@ class USPC_Loader {
 		}
 
 		add_shortcode( 'userspace-chat', [ $this, 'chat_shortcode' ] );
+	}
+
+	function customizer_init() {
+		require_once USPC_PATH . 'customizer/customizer.php';
 	}
 
 	function init_contact_list() {
@@ -139,8 +145,7 @@ class USPC_Loader {
 	}
 
 	function init_js_chat_variables( $data ) {
-		$data['usp_chat']['sounds'] = apply_filters( 'uspc_sound', USPC_URL . 'assets/audio/e-oh.mp3' );
-
+		$data['usp_chat']['sounds']     = apply_filters( 'uspc_sound', USPC_URL . 'assets/audio/e-oh.mp3' );
 		$data['usp_chat']['delay']      = usp_get_option( 'uspc_delay', 15 );
 		$data['usp_chat']['inactivity'] = usp_get_option( 'uspc_inactivity', 10 );
 		$data['usp_chat']['words']      = usp_get_option( 'uspc_words', 300 );
@@ -149,6 +154,17 @@ class USPC_Loader {
 		$data['local']['uspc_text_words']   = __( 'Exceeds the maximum message size', 'userspace-chat' );
 		$data['local']['uspc_inchat']       = __( 'In chat', 'userspace-chat' );
 		$data['local']['uspc_network_lost'] = __( 'Check your internet connection', 'userspace-chat' );
+
+		if ( is_user_logged_in() ) {
+			$theme = usp_get_option_customizer( 'uspc_theme', '#beb5ff' );
+			[ $r, $g, $b ] = sscanf( $theme, "#%02x%02x%02x" );
+
+			$data['uspc_css']['from']  = $theme;
+			$data['uspc_css']['r']     = $r;
+			$data['uspc_css']['g']     = $g;
+			$data['uspc_css']['b']     = $b;
+			$data['uspc_css']['alpha'] = usp_get_option_customizer( 'uspc_alpha', '0.2' );
+		}
 
 		return $data;
 	}
@@ -204,7 +220,7 @@ class USPC_Loader {
 		if ( get_current_user_id() && $file_upload ) {
 			usp_fileupload_scripts();
 		}
-		
+
 		return uspc_get_chat_box( ( new USPC_Chat( $attr ) )->get_chat() );
 	}
 
