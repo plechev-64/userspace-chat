@@ -63,7 +63,7 @@ if ( $user_id > 0 ) {
 
         <div class="uspc-head__right usps usps__relative">
 			<?php
-			$menu = new USP_Dropdown_Menu( 'uspc_chat_info', [ 'icon' => 'fa-vertical-ellipsis', ], [ 'position' => 'bottom-left', 'style' => 'white', ] );
+			$menu = new USP_Dropdown_Menu( 'uspc_chat_info', [ 'icon' => 'fa-vertical-ellipsis', ], [ 'position' => 'bottom-right', 'style' => 'white', ] );
 			$icon = ( isset( $_COOKIE['uspc_sound_off'] ) && $_COOKIE['uspc_sound_off'] ) ? 'fa-volume-off' : 'fa-volume-up';
 
 			$menu->add_button( [
