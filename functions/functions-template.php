@@ -27,7 +27,7 @@ function uspc_get_the_content( $content_in, $allowed_tags ) {
 		$links = '';
 		preg_match_all( '/href="([^"]+)"/', $content, $links );
 		foreach ( $links[1] as $link ) {
-			$m_lnk = wp_oembed_get( $link, array( 'width' => 500, 'height' => 300 ) );
+			$m_lnk = wp_oembed_get( $link, [ 'width' => 500, 'height' => 300 ] );
 			if ( $m_lnk ) {
 				$content = str_replace( '<a href="' . $link . '" rel="nofollow">' . $link . '</a>', '', $content );
 				$content .= $m_lnk;
@@ -64,7 +64,7 @@ function uspc_get_the_attachment( $attachment_id ) {
 		$type  = 'image';
 		$media = '<a class="uspc-post__image usps" target="_blank" rel="fancybox" href="' . $attach_url . '"><img src="' . wp_get_attachment_image_url( $attachment_id, [
 				300,
-				300
+				300,
 			] ) . '" class="uspc-post__img usps__img-reset" alt=""></a>';
 	} else if ( in_array( $ext, wp_get_audio_extensions() ) ) {
 		$type  = 'audio';
@@ -152,37 +152,4 @@ function uspc_shift_contact_panel_button( $unread ) {
 	];
 
 	return usp_get_button( $args );
-}
-
-add_filter( 'uspc_post_do_bttns', 'uspc_add_do_buttons_important', 20, 2 );
-function uspc_add_do_buttons_important( $bttns, $datas ) {
-	$message = $datas['message'];
-	$class   = ( isset( $message['important'] ) && $message['important'] ) ? 'fa-star-fill' : 'fa-star';
-
-	$args_imp = [
-		'type'    => 'clear',
-		'class'   => 'uspc-post-do__bttn uspc-post-do__important',
-		'onclick' => 'uspc_chat_message_important( ' . $message['message_id'] . ' ); return false;',
-		'icon'    => $class,
-	];
-	$bttns    .= usp_get_button( $args_imp );
-
-	return $bttns;
-}
-
-add_filter( 'uspc_post_do_bttns', 'uspc_add_do_buttons_delete', 30, 2 );
-function uspc_add_do_buttons_delete( $bttns, $datas ) {
-	$user_can = $datas['user_can'];
-	if ( $user_can ) {
-		$message  = $datas['message'];
-		$args_del = [
-			'type'    => 'clear',
-			'class'   => 'uspc-post-do__bttn uspc-post-do__delete',
-			'onclick' => 'uspc_chat_delete_message( ' . $message['message_id'] . ' ); return false;',
-			'icon'    => 'fa-trash',
-		];
-		$bttns    .= usp_get_button( $args_del );
-	}
-
-	return $bttns;
 }

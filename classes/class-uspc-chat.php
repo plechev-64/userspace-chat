@@ -129,12 +129,6 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		] );
 
 		do_action( 'uspc_chat_is_load', $this );
-
-		if ( $this->user_id ) {
-			add_filter( 'uspc_chat_info', [ $this, 'important_button' ], 10 );
-		}
-		add_filter( 'uspc_chat_info', [ $this, 'mute_button' ], 12 );
-		add_filter( 'uspc_chat_info', [ $this, 'focus_mode_button' ], 14 );
 	}
 
 	public function load_resources() {
@@ -176,9 +170,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	function get_users_activity() {
 		global $wpdb;
 
-		$actives = $wpdb->get_results( "SELECT user_id,user_write FROM " . USPC_PREF . "chat_users WHERE chat_id='$this->chat_id' AND user_id!='$this->user_id' AND user_activity >= ('" . current_time( 'mysql' ) . "' - interval 1 minute)" );
-
-		return $actives;
+		return $wpdb->get_results( "SELECT user_id,user_write FROM " . USPC_PREF . "chat_users WHERE chat_id='$this->chat_id' AND user_id!='$this->user_id' AND user_activity >= ('" . current_time( 'mysql' ) . "' - interval 1 minute)" );
 	}
 
 	function get_current_activity() {
@@ -376,22 +368,19 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 	function get_form() {
 		if ( ! is_user_logged_in() ) {
-			$link    = usp_get_button( [
+			$link = usp_get_button( [
 				'type'  => 'clear',
 				'label' => __( 'to login', 'userspace-chat' ),
 				'size'  => 'no',
 				'href'  => usp_get_loginform_url( 'login' ),
 				'class' => 'usp-entry-bttn usp-login',
 			] );
-			$content = usp_get_notice( [
+
+			return usp_get_notice( [
 				'type'  => 'error',
 				'class' => 'uspc-im__need-login',
 				'text'  => __( 'To post messages in the chat you need', 'userspace-chat' ) . ' ' . $link,
 			] );
-
-			//$content .= '<form class="uspc-im__form usps__relative"><input type="hidden" name="chat[token]" value="' . $this->chat_token . '"></form>';
-
-			return $content;
 		}
 
 		$content = apply_filters( 'uspc_before_form', '', $this->chat );
@@ -468,61 +457,11 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		return $content;
 	}
 
-	function mute_button( $content ) {
-		$icon = ( isset( $_COOKIE['uspc_sound_off'] ) && $_COOKIE['uspc_sound_off'] ) ? 'fa-volume-off' : 'fa-volume-up';
-
-		$content .= usp_get_button( [
-			'type'    => 'clear',
-			'size'    => 'medium',
-			'icon'    => $icon,
-			'class'   => 'uspc-im-form__on-off',
-			'label'   => __( 'Sound on/off', 'userspace-chat' ),
-			'onclick' => 'uspc_on_off_sound(this);return false;',
-		] );
-
-		return $content;
-	}
-
-	function important_button( $content ) {
-		$status = ( $this->important ) ? 0 : 1;
-		$class  = ( $this->important ) ? 'fa-star-fill' : 'fa-star';
-
-		$content .= usp_get_button( [
-			'type'    => 'clear',
-			'size'    => 'medium',
-			'icon'    => $class,
-			'class'   => 'uspc-im__important',
-			'label'   => __( 'Important messages', 'userspace-chat' ),
-			'onclick' => 'uspc_chat_important_manager_shift(this,' . $status . ');return false;',
-		] );
-
-		return $content;
-	}
-
-	function focus_mode_button( $content ) {
-		if ( ! is_user_logged_in() ) {
-			return $content;
-		}
-
-		$content .= usp_get_button( [
-			'type'    => 'clear',
-			'size'    => 'medium',
-			'icon'    => 'fa-expand-arrows',
-			'class'   => 'uspc-im__modal',
-			'label'   => __( 'Focus mode', 'userspace-chat' ),
-			'onclick' => 'uspc_focus_modal_shift(this);return false;',
-		] );
-
-		return $content;
-	}
-
 	function userslist() {
-		$content = '<div class="uspc-im__online uspc-im-header__title usps__grow">'
-		           . '<span class="uspc-im-online__title">' . __( 'In chat', 'userspace-chat' ) . ':</span>'
-		           . '<div class="uspc-im-online__items usps__inline"></div>'
-		           . '</div>';
-
-		return $content;
+		return '<div class="uspc-im__online uspc-im-header__title usps__grow">'
+		       . '<span class="uspc-im-online__title">' . __( 'In chat', 'userspace-chat' ) . ':</span>'
+		       . '<div class="uspc-im-online__items usps__inline"></div>'
+		       . '</div>';
 	}
 
 	function get_messages_header() {
@@ -530,6 +469,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		if ( $this->userslist ) {
 			$args['left'] = $this->userslist();
 		}
+		$args['important'] = $this->important ? '1' : '';
 
 		return uspc_include_chat_header( $this->user_id, (array) $this->chat, $args );
 	}

@@ -15,11 +15,12 @@
  *
  * @version 1.0.0
  *
- * @param int $user_id id of user
+ * @var int $user_id id of user
  *
- * @param array $chatdata chat datas
- * @param array $args additional options
+ * @var array $chatdata chat data
+ * @var array $args additional options
  */
+
 defined( 'ABSPATH' ) || exit;
 
 $data_head = '';
@@ -61,10 +62,44 @@ if ( $user_id > 0 ) {
         </div>
 
         <div class="uspc-head__right usps usps__relative">
-			<?php echo ( new USP_Dropdown( 'uspc_chat_info', [
-				'filter_arg' => $chatdata,
-				'border'     => false,
-			] ) )->get_dropdown(); ?>
+			<?php
+			$menu = new USP_Dropdown_Menu( 'uspc_chat_info', [ 'icon' => 'fa-vertical-ellipsis', ], [ 'position' => 'bottom-left', 'style' => 'white', ] );
+			$icon = ( isset( $_COOKIE['uspc_sound_off'] ) && $_COOKIE['uspc_sound_off'] ) ? 'fa-volume-off' : 'fa-volume-up';
+
+			$menu->add_button( [
+				'type'    => 'clear',
+				'size'    => 'medium',
+				'icon'    => $icon,
+				'class'   => 'uspc-im-form__on-off',
+				'label'   => __( 'Sound on/off', 'userspace-chat' ),
+				'onclick' => 'uspc_on_off_sound(this);return false;',
+			] );
+
+			if ( is_user_logged_in() ) {
+				$menu->add_button( [
+					'type'    => 'clear',
+					'size'    => 'medium',
+					'icon'    => 'fa-expand-arrows',
+					'class'   => 'uspc-im__modal',
+					'label'   => __( 'Focus mode', 'userspace-chat' ),
+					'onclick' => 'uspc_focus_modal_shift(this);return false;',
+				] );
+
+				$status = ( $args['important'] ) ? 0 : 1;
+				$class  = ( $args['important'] ) ? 'fa-star-fill' : 'fa-star';
+
+				$menu->add_button( [
+					'type'    => 'clear',
+					'size'    => 'medium',
+					'icon'    => $class,
+					'class'   => 'uspc-im__important',
+					'label'   => __( 'Important messages', 'userspace-chat' ),
+					'onclick' => 'uspc_chat_important_manager_shift(this,' . $status . ');return false;',
+				] );
+			}
+
+			echo $menu->get_content();
+			?>
         </div>
 
     </div>

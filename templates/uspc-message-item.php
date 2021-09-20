@@ -28,12 +28,13 @@
  *  'attachment'=>0                         // (int)    ID of attachment file. If the message has an attachment file
  * ]
  *
- * @param int $user_id ID of current user
- * @param int $avatar_size Size avatars in chat
- * @param bool $user_can 1 - if the user can delete messages
- * @param array $allowed_tags Array allowed tags in current chat
- * @param string $chat_status general or private chat
- * @param string $day_date once day in loop
+ * @var array $message Data message item
+ * @var int $user_id ID of current user
+ * @var int $avatar_size Size avatars in chat
+ * @var bool $user_can 1 - if the user can delete messages
+ * @var array $allowed_tags Array allowed tags in current chat
+ * @var string $chat_status general or private chat
+ * @var string $day_date once day in loop
  */
 defined( 'ABSPATH' ) || exit;
 ?>
@@ -78,10 +79,34 @@ $class .= ( isset( $message['important'] ) && $message['important'] ) ? ' uspc-p
 
 	<?php if ( $user_id ) : ?>
         <div class="uspc-post__do usps usps__column usps__ai-center">
-			<?php echo ( new USP_Dropdown( 'uspc_post_do_bttns',
-				[ 'border' => false, 'filter_arg' => [ 'message' => $message, 'user_can' => $user_can ] ]
-			) )->get_dropdown(); ?>
-			<?php //echo apply_filters( 'uspc_post_do_bttns', '', $message, $user_can ); ?>
+			<?php
+			$menu = new USP_Dropdown_Menu( 'uspc_post_do_bttns', [
+				'icon' => 'fa-vertical-ellipsis',
+				'type' => 'simple',
+			] );
+
+			$class = ( isset( $message['important'] ) && $message['important'] ) ? 'fa-star-fill' : 'fa-star';
+
+			$args_imp = [
+				'type'    => 'clear',
+				'class'   => 'uspc-post-do__bttn uspc-post-do__important',
+				'onclick' => 'uspc_chat_message_important( ' . $message['message_id'] . ' ); return false;',
+				'icon'    => $class,
+			];
+			$menu->add_button( $args_imp );
+
+			if ( $user_can ) {
+				$args_del = [
+					'type'    => 'clear',
+					'class'   => 'uspc-post-do__bttn uspc-post-do__delete',
+					'onclick' => 'uspc_chat_delete_message( ' . $message['message_id'] . ' ); return false;',
+					'icon'    => 'fa-trash',
+				];
+				$menu->add_button( $args_del );
+			}
+
+			echo $menu->get_content();
+			?>
         </div>
 	<?php endif; ?>
 
