@@ -281,7 +281,8 @@ function uspc_get_direct_message() {
 
 	$user_id = intval( $_POST['user_id'] );
 
-	$chatdata = uspc_get_chat_private( $user_id );
+	$chatdata                = uspc_get_chat_private( $user_id );
+	$chatdata['chat_status'] = 'private';
 
 	$header = uspc_include_chat_header( $user_id, $chatdata );
 

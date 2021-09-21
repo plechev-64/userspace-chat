@@ -432,7 +432,7 @@ function uspc_chat_important_manager_shift(e, status) {
     usp_preloader_show('.uspc-im__box');
 
     uspc_important = status;
-    
+
     var token = jQuery(e).parents('.uspc-head-box').nextAll('.uspc-im').data('token');
 
     usp_ajax({
@@ -691,9 +691,10 @@ function uspc_auto_height_textarea() {
     jQuery(form).css({'height': 'auto', 'overflow-y': 'auto'});
 
     form.each(function () {
-        var initial = this.scrollHeight + 9;
+        let initial = this.scrollHeight;
         this.setAttribute('style', 'height:' + initial + 'px;overflow-y:hidden;');
     }).on('input', function () {
+
         this.style.height = 'auto';
         var h = this.scrollHeight + 9;
         if (h > 150) {

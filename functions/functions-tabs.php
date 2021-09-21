@@ -64,7 +64,8 @@ function uspc_chat_tab( $office_id ) {
 		return ( new USPC_Contact_List() )->get_box();
 	}
 
-	$chatdata = uspc_get_chat_private( $office_id );
+	$chatdata                = uspc_get_chat_private( $office_id );
+	$chatdata['chat_status'] = 'private';
 
 	$header = uspc_include_chat_header( $office_id, $chatdata, [ 'button' => 'hide' ] );
 

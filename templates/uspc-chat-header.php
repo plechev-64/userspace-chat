@@ -63,22 +63,20 @@ if ( $user_id > 0 ) {
 
         <div class="uspc-head__right usps usps__relative">
 			<?php
-			$menu = new USP_Dropdown_Menu( 'uspc_chat_info', [ 'icon' => 'fa-vertical-ellipsis', ], [ 'position' => 'bottom-right', 'style' => 'white', ] );
+			$menu = new USP_Dropdown_Menu( 'uspc_header', [ 'position' => 'bottom-right' ] );
 			$icon = ( isset( $_COOKIE['uspc_sound_off'] ) && $_COOKIE['uspc_sound_off'] ) ? 'fa-volume-off' : 'fa-volume-up';
 
-			$menu->add_button( [
-				'type'    => 'clear',
-				'size'    => 'medium',
-				'icon'    => $icon,
-				'class'   => 'uspc-im-form__on-off',
-				'label'   => __( 'Sound on/off', 'userspace-chat' ),
-				'onclick' => 'uspc_on_off_sound(this);return false;',
-			] );
-
 			if ( is_user_logged_in() ) {
+				if ( isset( $chatdata['chat_status'] ) && $chatdata['chat_status'] == 'private' ) {
+					$menu->add_button( [
+						'class'   => 'uspc-head-right__bttn',
+						'label'   => __( 'User info', 'userspace-chat' ),
+						'onclick' => 'uspc_get_user_info(' . $chatdata['user_id'] . ');return false;',
+						'icon'    => 'fa-info-circle',
+					] );
+				}
+
 				$menu->add_button( [
-					'type'    => 'clear',
-					'size'    => 'medium',
 					'icon'    => 'fa-expand-arrows',
 					'class'   => 'uspc-im__modal',
 					'label'   => __( 'Focus mode', 'userspace-chat' ),
@@ -89,14 +87,19 @@ if ( $user_id > 0 ) {
 				$class  = ( $args['important'] ) ? 'fa-star-fill' : 'fa-star';
 
 				$menu->add_button( [
-					'type'    => 'clear',
-					'size'    => 'medium',
 					'icon'    => $class,
 					'class'   => 'uspc-im__important',
 					'label'   => __( 'Important messages', 'userspace-chat' ),
 					'onclick' => 'uspc_chat_important_manager_shift(this,' . $status . ');return false;',
 				] );
 			}
+
+			$menu->add_button( [
+				'icon'    => $icon,
+				'class'   => 'uspc-im-form__on-off',
+				'label'   => __( 'Sound on/off', 'userspace-chat' ),
+				'onclick' => 'uspc_on_off_sound(this);return false;',
+			] );
 
 			echo $menu->get_content();
 			?>

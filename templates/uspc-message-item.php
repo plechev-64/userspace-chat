@@ -80,29 +80,21 @@ $class .= ( isset( $message['important'] ) && $message['important'] ) ? ' uspc-p
 	<?php if ( $user_id ) : ?>
         <div class="uspc-post__do usps usps__column usps__ai-center">
 			<?php
-			$menu = new USP_Dropdown_Menu( 'uspc_post_do_bttns', [
-				'icon' => 'fa-vertical-ellipsis',
-				'type' => 'simple',
-			] );
+			$menu = new USP_Dropdown_Menu( 'uspc_dialog' );
 
-			$class = ( isset( $message['important'] ) && $message['important'] ) ? 'fa-star-fill' : 'fa-star';
-
-			$args_imp = [
-				'type'    => 'clear',
+			$menu->add_button( [
 				'class'   => 'uspc-post-do__bttn uspc-post-do__important',
 				'onclick' => 'uspc_chat_message_important( ' . $message['message_id'] . ' ); return false;',
-				'icon'    => $class,
-			];
-			$menu->add_button( $args_imp );
+				'icon'    => ( isset( $message['important'] ) && $message['important'] ) ? 'fa-star-fill' : 'fa-star',
+			] );
 
 			if ( $user_can ) {
-				$args_del = [
+				$menu->add_button( [
 					'type'    => 'clear',
 					'class'   => 'uspc-post-do__bttn uspc-post-do__delete',
 					'onclick' => 'uspc_chat_delete_message( ' . $message['message_id'] . ' ); return false;',
 					'icon'    => 'fa-trash',
-				];
-				$menu->add_button( $args_del );
+				] );
 			}
 
 			echo $menu->get_content();

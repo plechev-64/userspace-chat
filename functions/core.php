@@ -124,25 +124,6 @@ function uspc_important_im_talk_box( $user_id, $current_page = 1 ) {
 	return $chat->get_box_important_messages();
 }
 
-add_filter( 'uspc_chat_info', 'uspc_iser_info_button', 10, 2 );
-function uspc_iser_info_button( $content, $chatdata ) {
-	if ( ! isset( $chatdata['user_id'] ) || isset( $chatdata['chat_status'] ) && $chatdata['chat_status'] !== 'private' ) {
-		return $content;
-	}
-
-	$content .= usp_get_button( [
-		'type'    => 'clear',
-		'size'    => 'medium',
-		'class'   => 'uspc-head-right__bttn',
-		'label'   => __( 'User info', 'userspace-chat' ),
-		'onclick' => 'uspc_get_user_info(' . $chatdata['user_id'] . ');return false;',
-		'href'    => '#',
-		'icon'    => 'fa-info-circle',
-	] );
-
-	return $content;
-}
-
 // added color in you messages
 add_filter( 'usp_inline_styles', 'uspc_css_variable', 10 );
 function uspc_css_variable( $styles ) {
