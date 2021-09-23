@@ -15,7 +15,7 @@
  *
  * @version 1.0.0
  *
- * @param array $message
+ * @var array $message
  * $message = [
  *  'message_id'=>1                         // (int)    ID of message
  *  'chat_id'=>1                            // (int)    ID of chat
@@ -27,8 +27,8 @@
  *  'author_id'=>2                          // (int)    ID author last message
  * ]
  *
- * @param int $user_id ID of current user
- * @param int $number_unread number of unread messages
+ * @var int $user_id ID of current user
+ * @var int $number_unread number of unread messages
  */
 defined( 'ABSPATH' ) || exit;
 
@@ -44,28 +44,39 @@ $data_contact = 'data-contact="' . $message['contact_id'] . '"';
 $onclick      = 'onclick="uspc_get_chat_dm(this,' . $message['contact_id'] . ');return false;"';
 ?>
 
-<div class="<?php echo $class; ?>" <?php echo $data_unread; ?> <?php echo $data_contact; ?> <?php echo $onclick; ?>>
-	<?php echo uspc_delete_contact_button( $message['chat_id'] ); ?>
+<div class="uspc-contact-wrap usps__relative">
+	<?php $menu = new USP_Dropdown_Menu( 'uspc_contactlist' );
 
-    <div class="uspc-contact__ava usps usps__column usps__ai-center usps__shrink-0 usps__relative">
-		<?php echo usp_get_avatar( $message['contact_id'], 50, false, [ 'class' => 'uspc-contact-ava__img usps__radius-50' ] ); ?>
-		<?php echo USP()->user( $message['contact_id'] )->get_action_icon(); ?>
-		<?php echo uspc_get_count_unread_by_user( $number_unread ); ?>
-    </div>
+	$menu->add_button( [
+		'class'   => 'uspc-contact__del',
+		'label'   => __( 'Delete contact', 'userspace-chat' ),
+		'onclick' => 'uspc_chat_remove_contact( this,' . $message['contact_id'] . ' );return false;',
+		'icon'    => 'fa-times',
+	] );
 
-    <div class="uspc-contact__content usps usps__column usps__grow">
-        <div class="uspc-contact__meta usps usps__jc-between usps__ai-center">
-            <div class="uspc-contact__name"><?php echo usp_user_get_username( $message['contact_id'] ); ?></div>
-            <div class="uspc-contact__time usps__text-center usps__line-1">
-				<?php echo usp_human_time_diff( $message['message_time'] ); ?>
-                &nbsp;<?php _e( 'ago', 'userspace-chat' ); ?>
-            </div>
+	echo $menu->get_content();
+	?>
+    <div class="<?php echo $class; ?>" <?php echo $data_unread; ?> <?php echo $data_contact; ?> <?php echo $onclick; ?>>
+        <div class="uspc-contact__ava usps usps__column usps__ai-center usps__shrink-0 usps__relative">
+			<?php echo usp_get_avatar( $message['contact_id'], 50, false, [ 'class' => 'uspc-contact-ava__img usps__radius-50' ] ); ?>
+			<?php echo USP()->user( $message['contact_id'] )->get_action_icon(); ?>
+			<?php echo uspc_get_count_unread_by_user( $number_unread ); ?>
         </div>
-        <div class="uspc-contact__text usps usps__nowrap">
-			<?php if ( $user_id == $message['author_id'] ) { ?>
-                <div class="uspc-contact__you usps usps__shrink-0"><?php echo usp_get_avatar( $user_id, 30, false, [ 'class' => 'uspc-contact-you__img usps__radius-50' ] ); ?></div>
-			<?php } ?>
-            <div class="uspc-contact__excerpt usps__radius-3"><?php echo uspc_get_the_excerpt( $message['message_content'] ); ?></div>
+
+        <div class="uspc-contact__content usps usps__column usps__grow">
+            <div class="uspc-contact__meta usps usps__jc-between usps__ai-center">
+                <div class="uspc-contact__name"><?php echo usp_user_get_username( $message['contact_id'] ); ?></div>
+                <div class="uspc-contact__time usps__text-center usps__line-1">
+					<?php echo usp_human_time_diff( $message['message_time'] ); ?>
+                    &nbsp;<?php _e( 'ago', 'userspace-chat' ); ?>
+                </div>
+            </div>
+            <div class="uspc-contact__text usps usps__nowrap">
+				<?php if ( $user_id == $message['author_id'] ) { ?>
+                    <div class="uspc-contact__you usps usps__shrink-0"><?php echo usp_get_avatar( $user_id, 30, false, [ 'class' => 'uspc-contact-you__img usps__radius-50' ] ); ?></div>
+				<?php } ?>
+                <div class="uspc-contact__excerpt usps__radius-3"><?php echo uspc_get_the_excerpt( $message['message_content'] ); ?></div>
+            </div>
         </div>
     </div>
 </div>

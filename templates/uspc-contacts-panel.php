@@ -15,7 +15,7 @@
  *
  * @version 1.0.0
  *
- * @param array $users Array containing some datas.
+ * @var array $users Array containing some data's.
  * $users = [
  *     [141] => [                   // (int)    ID of the user who is communicating with
  *             [status] => 0        // (bool)   Status message. 1 read, 0 - unread.
@@ -23,7 +23,7 @@
  *         ]
  * ]
  *
- * @param int $unread counter all unread messages
+ * @var int $unread counter all unread messages
  */
 defined( 'ABSPATH' ) || exit;
 ?>

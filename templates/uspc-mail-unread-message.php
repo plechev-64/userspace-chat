@@ -15,12 +15,12 @@
  *
  * @version 1.0.0
  *
- * @param int $author_id id of sender
- * @param array $message Array containing some datas.
+ * @var int $author_id id of sender
+ * @var array $message Array containing some data's.
  * $message = [
  *     [0] => text of message
  * ]
- * @param bool $send_text send full text message of mail
+ * @var bool $send_text send full text message of mail
  */
 defined( 'ABSPATH' ) || exit;
 

@@ -110,23 +110,7 @@ function uspc_get_the_excerpt( $string ) {
 	$string_substr = mb_substr( $del_br, 0, $max );
 
 	// Delete last word. Replace on ...
-	$string_preg = preg_replace( '~(.*)\s[^\s]*$~s', '\\1...', $string_substr );
-
-	return $string_preg;
-}
-
-// delete contact
-function uspc_delete_contact_button( $chat_id ) {
-	$args_del = [
-		'type'    => 'clear',
-		'size'    => 'small',
-		'class'   => 'uspc-contact__del',
-		'onclick' => 'uspc_chat_remove_contact( this,' . $chat_id . ' );return false;',
-		'title'   => __( 'Delete contact', 'userspace-chat' ),
-		'icon'    => 'fa-times',
-	];
-
-	return usp_get_button( $args_del );
+	return preg_replace( '~(.*)\s[^\s]*$~s', '\\1...', $string_substr );
 }
 
 function uspc_get_count_unread_by_user( $count ) {
@@ -141,14 +125,14 @@ function uspc_get_count_unread_by_user( $count ) {
 }
 
 // open/closed contacts panel
-function uspc_shift_contact_panel_button( $unread ) {
+function uspc_shift_contact_panel_button( $unread = '' ) {
 	$args = [
 		'onclick' => 'return uspc_shift_contacts_panel();',
 		'class'   => 'uspc-mini__count uspc_js_counter_unread',
 		'size'    => 'no',
 		'type'    => 'clear',
 		'icon'    => 'fa-envelope',
-		'counter' => ( $unread ? $unread : '' ),
+		'counter' => $unread,
 	];
 
 	return usp_get_button( $args );
