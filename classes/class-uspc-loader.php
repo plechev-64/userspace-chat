@@ -58,7 +58,6 @@ class USPC_Loader {
 
 			if ( usp_get_option( 'usp_bar_show' ) ) {
 				add_action( 'usp_bar_buttons', [ $this, 'usp_bar_add_chat_icon' ], 10 );
-				add_filter( 'usp_bar_profile_menu', [ $this, 'usp_bar_add_chat_link' ], 20 );
 			}
 
 			if ( usp_get_option( 'uspc_contact_panel', 0 ) ) {
@@ -116,20 +115,6 @@ class USPC_Loader {
 			'href'    => usp_get_tab_permalink( get_current_user_id(), 'chat' ),
 			'counter' => USPC()->private_messages_data->unread,
 		] );
-	}
-
-	// Link in to chat on userspace bar
-	function usp_bar_add_chat_link( $menu ) {
-		$menu .= usp_get_button( [
-			'type'  => 'clear',
-			'size'  => 'medium',
-			'class' => 'usp-bar-chat',
-			'href'  => usp_get_tab_permalink( get_current_user_id(), 'chat' ),
-			'icon'  => 'fa-comments',
-			'label' => __( 'Chat', 'userspace-chat' ),
-		] );
-
-		return $menu;
 	}
 
 	function chat_fileupload_scripts() {

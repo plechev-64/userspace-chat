@@ -142,3 +142,18 @@ function uspc_css_variable( $styles ) {
 
 	return $styles;
 }
+
+// Link in to chat on userspace bar
+add_action( 'usp_dropdown_menu', 'uspc_bar_add_chat_link', 5, 2 );
+function uspc_bar_add_chat_link( $menu_id, USP_Dropdown_Menu $menu ) {
+	if ( $menu_id !== 'usp_bar_profile_menu' ) {
+		return;
+	}
+
+	$menu->add_button( [
+		'class' => 'usp-bar-chat',
+		'href'  => usp_get_tab_permalink( get_current_user_id(), 'chat' ),
+		'icon'  => 'fa-comments',
+		'label' => __( 'Chat', 'userspace-chat' ),
+	] );
+}
