@@ -265,7 +265,7 @@ function uspc_chat_ajax_delete_message() {
 
 	global $current_user;
 
-	if ( $current_user->user_level >= usp_get_option( 'usp_consol_access', 7 ) ) {
+	if ( $current_user->user_level >= usp_get_option( 'usp_console_access', 7 ) ) {
 		uspc_chat_delete_message( $message_id );
 	}
 

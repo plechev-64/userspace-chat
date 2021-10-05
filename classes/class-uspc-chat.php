@@ -568,7 +568,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	function is_user_can() {
 		global $current_user;
 
-		$user_can = ( $current_user->user_level >= usp_get_option( 'usp_consol_access', 7 ) ) ? 1 : 0;
+		$user_can = ( $current_user->user_level >= usp_get_option( 'usp_console_access', 7 ) ) ? 1 : 0;
 
 		return apply_filters( 'uspc_check_user_can', $user_can );
 	}
