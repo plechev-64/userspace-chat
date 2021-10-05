@@ -150,10 +150,13 @@ function uspc_bar_add_chat_link( $menu_id, USP_Dropdown_Menu $menu ) {
 		return;
 	}
 
-	$menu->add_button( [
-		'class' => 'usp-bar-chat',
-		'href'  => usp_get_tab_permalink( get_current_user_id(), 'chat' ),
-		'icon'  => 'fa-comments',
-		'label' => __( 'Chat', 'userspace-chat' ),
-	] );
+	$menu->add_button(
+		[
+			'class' => 'usp-bar-chat',
+			'href'  => usp_get_tab_permalink( get_current_user_id(), 'chat' ),
+			'icon'  => 'fa-comments',
+			'label' => __( 'Chat', 'userspace-chat' ),
+		],
+		[ 'order' => 24 ]
+	);
 }
