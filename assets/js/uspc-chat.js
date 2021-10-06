@@ -789,31 +789,6 @@ function uspc_blink_tab() {
 }
 
 /**/
-function uspc_get_user_info(user_id) {
-    usp_preloader_show('.uspc-head-right__bttn', 48);
-
-    usp_ajax({
-        data: {
-            action: 'usp_return_user_details',
-            user_id: user_id
-        },
-        success: function (data) {
-            if (data['content']) {
-                ssi_modal.show({
-                    title: USP.local.title_user_info,
-                    sizeClass: 'auto',
-                    className: 'usp-user-details',
-                    buttons: [{
-                        label: USP.local.close,
-                        closeAfter: true
-                    }],
-                    content: data['content']
-                });
-
-            }
-        }
-    });
-}
 
 usp_add_action('uspc_init', 'uspc_run_in_chat');
 usp_add_action('uspc_load_page', 'uspc_run_in_chat');

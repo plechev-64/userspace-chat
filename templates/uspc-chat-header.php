@@ -71,7 +71,7 @@ if ( $user_id > 0 ) {
 					$menu->add_button( [
 						'class'   => 'uspc-head-right__bttn',
 						'label'   => __( 'User info', 'userspace-chat' ),
-						'onclick' => 'uspc_get_user_info(' . $chatdata['user_id'] . ');return false;',
+						'onclick' => 'usp_get_user_info(this,' . $chatdata['user_id'] . ');return false;',
 						'icon'    => 'fa-info-circle',
 					] );
 				}
