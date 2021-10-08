@@ -48,6 +48,13 @@ $onclick      = 'onclick="uspc_get_chat_dm(this,' . $message['contact_id'] . ');
 	<?php $menu = new USP_Dropdown_Menu( 'uspc_contactlist' );
 
 	$menu->add_button( [
+		'class'   => 'uspc-menu__user-info',
+		'label'   => __( 'User info', 'userspace-chat' ),
+		'onclick' => 'usp_get_user_info(this,' . $message['contact_id'] . ');return false;',
+		'icon'    => 'fa-info-circle',
+	] );
+
+	$menu->add_button( [
 		'class'   => 'uspc-contact__del',
 		'label'   => __( 'Delete contact', 'userspace-chat' ),
 		'onclick' => 'uspc_chat_remove_contact( this,' . $message['contact_id'] . ' );return false;',

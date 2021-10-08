@@ -452,6 +452,9 @@
     position: absolute;
     right: 1px;
     top: 1px;
+}
+
+.uspc-contact-wrap:hover #usp-menu_uspc_contactlist {
     z-index: 3;
 }
 

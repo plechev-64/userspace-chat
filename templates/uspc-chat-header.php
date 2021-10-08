@@ -69,7 +69,7 @@ if ( $user_id > 0 ) {
 			if ( is_user_logged_in() ) {
 				if ( isset( $chatdata['chat_status'] ) && $chatdata['chat_status'] == 'private' ) {
 					$menu->add_button( [
-						'class'   => 'uspc-head-right__bttn',
+						'class'   => 'uspc-menu__user-info',
 						'label'   => __( 'User info', 'userspace-chat' ),
 						'onclick' => 'usp_get_user_info(this,' . $chatdata['user_id'] . ');return false;',
 						'icon'    => 'fa-info-circle',
