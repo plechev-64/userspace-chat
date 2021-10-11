@@ -32,7 +32,7 @@
  */
 defined( 'ABSPATH' ) || exit;
 
-$class = 'uspc-contact-box usps usps__nowrap preloader-parent ' . ( ( ! $message['message_status'] ) ? 'uspc-unread' : '' );
+$class = 'uspc-contact-box usps usps__nowrap usp-preloader-parent ' . ( ( ! $message['message_status'] ) ? 'uspc-unread' : '' );
 
 // I am not the author of this unread
 if ( get_current_user_id() != $message['author_id'] && ! $message['message_status'] ) {
