@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<ruleset name="WordPress Plugin Coding Standards">
+    <description>A custom set of code standard rules to check for WordPress plugins.</description>
+
+    <!-- Exclude the Node Modules directory. -->
+    <exclude-pattern>/node_modules/*</exclude-pattern>
+
+    <!-- Exclude minified Javascript files. -->
+    <exclude-pattern>*.min.js</exclude-pattern>
+
+    <!-- exclude the WordPress-Extra standard. -->
+    <rule ref="WordPress">
+        <exclude name="Squiz"/>
+        <exclude name="Generic"/>
+        <exclude name="PEAR"/>
+        <exclude name="PSR2"/>
+        <exclude name="WordPress.Arrays"/>
+        <exclude name="WordPress.WP.GlobalVariablesOverride"/>
+        <exclude name="WordPress.WhiteSpace"/>
+        <exclude name="WordPress.Security.NonceVerification.Recommended"/>
+        <exclude name="WordPress.Security.NonceVerification.Missing"/>
+        <exclude name="WordPress.PHP.StrictComparisons"/>
+        <exclude name="WordPress.PHP.StrictInArray.MissingTrueStrict"/>
+        <exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode"/>
+        <exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode"/>
+        <exclude name="WordPress.NamingConventions.ValidVariableName.VariableNotSnakeCase"/>
+    </rule>
+</ruleset>

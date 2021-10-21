@@ -10,6 +10,8 @@ function uspc_chat_daily_delete_messages() {
 
 	global $wpdb;
 
+	// phpcs:disable
+	/** @noinspection SqlDialectInspection */
 	$chats = $wpdb->get_results(
 		"SELECT chats.*, COUNT(chat_messages.message_id) AS amount_messages "
 		. "FROM " . USPC_PREF . "chats AS chats "
@@ -22,6 +24,7 @@ function uspc_chat_daily_delete_messages() {
 		. "GROUP BY chats.chat_id "
 		. "HAVING COUNT(chat_messages.message_id) > '$max'"
 	);
+	// phpcs:enable
 
 	if ( ! $chats ) {
 		return;
@@ -35,6 +38,8 @@ function uspc_chat_daily_delete_messages() {
 
 		$amount_delete = $chat->amount_messages - $max;
 
+		// phpcs:disable
+		/** @noinspection SqlDialectInspection */
 		$messages = $wpdb->get_results( "SELECT message_id,message_status,private_key FROM " . USPC_PREF . "chat_messages "
 		                                . "WHERE message_id NOT IN ("
 		                                . "SELECT message_id FROM " . USPC_PREF . "chat_messagemeta "
@@ -44,6 +49,7 @@ function uspc_chat_daily_delete_messages() {
 		                                . "ORDER BY message_id ASC "
 		                                . "LIMIT $amount_delete"
 		);
+		// phpcs:enable
 
 		if ( ! $messages ) {
 			continue;
@@ -64,6 +70,7 @@ add_action( 'usp_cron_hourly', 'uspc_chat_send_notify_messages', 10 );
 function uspc_chat_send_notify_messages() {
 	global $wpdb;
 
+	// phpcs:ignore
 	$mess = $wpdb->get_results( "SELECT * FROM " . USPC_PREF . "chat_messages WHERE message_status='0' && private_key!='0' && message_time  > date_sub('" . current_time( 'mysql' ) . "', interval 1 hour)" );
 
 	if ( ! $mess ) {
@@ -77,7 +84,7 @@ function uspc_chat_send_notify_messages() {
 
 	usp_add_log( __( 'Send notifications on unread messages', 'userspace-chat' ) );
 
-	$mailtext = usp_get_option( 'uspc_messages_mail', 0 );
+	$mail_text = usp_get_option( 'uspc_messages_mail', 0 );
 
 	foreach ( $messages as $recipient_id => $data ) {
 		$content = '';
@@ -92,7 +99,7 @@ function uspc_chat_send_notify_messages() {
 				[
 					'author_id' => $author_id,
 					'message'   => $message,
-					'send_text' => $mailtext
+					'send_text' => $mail_text
 				]
 			);
 		}

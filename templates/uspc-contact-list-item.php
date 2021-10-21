@@ -61,28 +61,30 @@ $onclick      = 'onclick="uspc_get_chat_dm(this,' . $message['contact_id'] . ');
 		'icon'    => 'fa-times',
 	] );
 
-	echo $menu->get_content();
+	echo $menu->get_content(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	?>
-    <div class="<?php echo $class; ?>" <?php echo $data_unread; ?> <?php echo $data_contact; ?> <?php echo $onclick; ?>>
+    <div class="<?php echo esc_html( $class ); ?>" <?php echo wp_kses_data( $data_unread ); ?> <?php echo wp_kses_data( $data_contact ); ?> <?php echo wp_kses_data( $onclick ); ?>>
         <div class="uspc-contact__ava usps usps__column usps__ai-center usps__shrink-0 usps__relative">
-			<?php echo usp_get_avatar( $message['contact_id'], 50, false, [ 'class' => 'uspc-contact-ava__img usps__radius-50' ] ); ?>
-			<?php echo USP()->user( $message['contact_id'] )->get_action_icon(); ?>
-			<?php echo uspc_get_count_unread_by_user( $number_unread ); ?>
+			<?php echo wp_kses( usp_get_avatar( $message['contact_id'], 50, false, [ 'class' => 'uspc-contact-ava__img usps__radius-50' ] ), uspc_allowed_tags() ); ?>
+			<?php echo wp_kses( USP()->user( $message['contact_id'] )->get_action_icon(), uspc_allowed_tags() ); ?>
+			<?php echo wp_kses( uspc_get_count_unread_by_user( $number_unread ), uspc_allowed_tags() ); ?>
         </div>
 
         <div class="uspc-contact__content usps usps__column usps__grow">
             <div class="uspc-contact__meta usps usps__jc-between usps__ai-center">
-                <div class="uspc-contact__name"><?php echo usp_user_get_username( $message['contact_id'] ); ?></div>
+                <div class="uspc-contact__name"><?php echo esc_html( usp_user_get_username( $message['contact_id'] ) ); ?></div>
                 <div class="uspc-contact__time usps__text-center usps__line-1">
-					<?php echo usp_human_time_diff( $message['message_time'] ); ?>
-                    &nbsp;<?php _e( 'ago', 'userspace-chat' ); ?>
+					<?php echo esc_html( usp_human_time_diff( $message['message_time'] ) ); ?>
+                    &nbsp;<?php esc_html_e( 'ago', 'userspace-chat' ); ?>
                 </div>
             </div>
             <div class="uspc-contact__text usps usps__nowrap">
 				<?php if ( $user_id == $message['author_id'] ) { ?>
-                    <div class="uspc-contact__you usps usps__shrink-0"><?php echo usp_get_avatar( $user_id, 30, false, [ 'class' => 'uspc-contact-you__img usps__radius-50' ] ); ?></div>
+                    <div class="uspc-contact__you usps usps__shrink-0">
+						<?php echo wp_kses( usp_get_avatar( $user_id, 30, false, [ 'class' => 'uspc-contact-you__img usps__radius-50' ] ), uspc_allowed_tags() ); ?>
+                    </div>
 				<?php } ?>
-                <div class="uspc-contact__excerpt usps__radius-3"><?php echo uspc_get_the_excerpt( $message['message_content'] ); ?></div>
+                <div class="uspc-contact__excerpt usps__radius-3"><?php echo wp_kses( uspc_get_the_excerpt( $message['message_content'] ), uspc_allowed_tags() ); ?></div>
             </div>
         </div>
     </div>

@@ -1,4 +1,5 @@
-/* global USP, USPUploaders, usp_beats */
+/* global USP, USPUploaders, usp_beats, ssi_modal */
+// noinspection JSUnresolvedFunction,JSUnresolvedVariable ,EqualityComparisonWithCoercionJS
 
 var uspc_last_activity = {}; //last request for new messages 
 var uspc_beat = []; //array of open chats
@@ -10,6 +11,7 @@ var uspc_max_words = 300;
 jQuery(function ($) {
     uspc_chat_inactivity_counter();
 
+    // noinspection SpellCheckingInspection
     $('.uspc-message-for-you').animateCss('tada');
 
     if (USPUploaders.isset('uspc_chat_uploader')) {
@@ -58,7 +60,7 @@ function uspc_scroll_down(token) {
 }
 
 function uspc_scroll_by_selector(html) {
-    var talk = jQuery(html);
+    let talk = jQuery(html);
 
     if (talk.length > 0) {
         jQuery(talk).scrollTop(jQuery(talk).get(0).scrollHeight);
@@ -78,6 +80,7 @@ function uspc_get_wrap_im_by_token(token) {
     return jQuery('.uspc-im[data-token="' + token + '"]');
 }
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_chat_add_message(e) {
     if (uspc_connection_is()) {
         let form = jQuery(e).parents('.uspc-im__form');
@@ -97,8 +100,8 @@ function uspc_connection_lost_message() {
 }
 
 function uspc_chat_clear_beat(token) {
-    var all_beats = usp_beats;
-    var all_chats = uspc_beat;
+    let all_beats = usp_beats;
+    let all_chats = uspc_beat;
 
     all_beats.forEach(function (beat, index, usp_beats) {
         if (beat.beat_name != 'uspc_chat_beat_core')
@@ -117,6 +120,7 @@ function uspc_chat_clear_beat(token) {
     console.log('chat beat ' + token + ' clear');
 }
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_init_chat(chat) {
     chat = usp_apply_filters('uspc_init', chat);
 
@@ -125,7 +129,7 @@ function uspc_init_chat(chat) {
     uspc_max_words = chat.max_words;
     uspc_last_activity[chat.token] = chat.open_chat;
 
-    var i = uspc_beat.length;
+    let i = uspc_beat.length;
     uspc_beat[i] = chat.token;
 
     usp_do_action('uspc_init', chat);
@@ -143,7 +147,7 @@ function uspc_enable_button(form) {
 usp_add_action('usp_uploader_after_done', 'uspc_after_upload');
 
 function uspc_after_upload(e) {
-    var form = jQuery(e.target).parents('.uspc-im__form');
+    let form = jQuery(e.target).parents('.uspc-im__form');
     uspc_enable_button(form);
 }
 
@@ -151,7 +155,7 @@ function uspc_after_upload(e) {
 usp_add_action('usp_emoji_insert', 'uspc_insert_emoji_enabled_bttn');
 
 function uspc_insert_emoji_enabled_bttn(box) {
-    var form = jQuery(box).parents('.uspc-im__form');
+    let form = jQuery(box).parents('.uspc-im__form');
     uspc_enable_button(form);
 }
 
@@ -159,7 +163,7 @@ function uspc_insert_emoji_enabled_bttn(box) {
 usp_add_action('usp_uploader_delete', 'uspc_delete_attachment_actions');
 
 function uspc_delete_attachment_actions(e) {
-    var form = jQuery(e).parents('.uspc-im__form');
+    let form = jQuery(e).parents('.uspc-im__form');
 
     if (!form.find('.uspc-im-form__textarea').val()) {
         uspc_disable_button(form);
@@ -174,7 +178,7 @@ function uspc_chat_init_beat(chat) {
 }
 
 function uspc_chat_write_status(token) {
-    var chat = uspc_get_wrap_im_by_token(token),
+    let chat = uspc_get_wrap_im_by_token(token),
         chat_status = chat.find('.uspc-im__writes');
 
     chat_status.css({
@@ -192,7 +196,7 @@ function uspc_chat_write_status(token) {
 function uspc_chat_write_status_cancel(token) {
     clearTimeout(uspc_write);
 
-    var chat = uspc_get_wrap_im_by_token(token),
+    let chat = uspc_get_wrap_im_by_token(token),
         chat_status = chat.find('.uspc-im__writes');
 
     chat_status.css({
@@ -204,7 +208,7 @@ function uspc_chat_write_status_cancel(token) {
 
 // if the attempt to send an empty message
 function uspc_mark_textarea() {
-    var field = jQuery('.uspc-im-form__textarea');
+    let field = jQuery('.uspc-im-form__textarea');
     field.css('border', '2px solid var(--uspRed-300)');
     setTimeout(() => {
         field.css('border', '');
@@ -274,6 +278,7 @@ function uspc_chat_add_new_message(form) {
     return false;
 }
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_chat_navi(page, e) {
     uspc_chat_inactivity_cancel();
 
@@ -296,7 +301,7 @@ function uspc_chat_navi(page, e) {
         },
         success: function (data) {
             if (data['content']) {
-                var imBox = jQuery(e).parents('.uspc-im__box');
+                let imBox = jQuery(e).parents('.uspc-im__box');
                 imBox.find('.uspc-im__talk, .uspc-im__footer').remove();
                 imBox.append(data['content']).animateCss('fadeIn');
 
@@ -309,6 +314,7 @@ function uspc_chat_navi(page, e) {
     return false;
 }
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_contacts_navi(page, e) {
     usp_preloader_show('.usp-subtab-content');
 
@@ -319,7 +325,7 @@ function uspc_contacts_navi(page, e) {
         },
         success: function (data) {
             if (data['content']) {
-                var list = jQuery(e).parents('.usp-subtab-content');
+                let list = jQuery(e).parents('.usp-subtab-content');
                 list.find('.uspc-contact-box, .uspc-mini__nav').remove();
                 list.append(data['nav']).find('.uspc-userlist').append(data['content']).animateCss('fadeIn');
             }
@@ -329,10 +335,12 @@ function uspc_contacts_navi(page, e) {
     return false;
 }
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_chat_words_count(e, elem) {
+    // noinspection JSDeprecatedSymbols
     let evt = e || window.event;
 
-    var key = evt.keyCode,
+    let key = evt.keyCode,
         form = jQuery(elem).parents('.uspc-im__form');
 
     if (key == 13 && evt.ctrlKey) {
@@ -340,9 +348,9 @@ function uspc_chat_words_count(e, elem) {
         return false;
     }
 
-    var words = jQuery(elem).val();
+    let words = jQuery(elem).val();
     words = jQuery.trim(words);
-    var counter = uspc_max_words - words.length,
+    let counter = uspc_max_words - words.length,
         color;
 
     if (counter > (uspc_max_words - 1)) {
@@ -367,6 +375,7 @@ function uspc_chat_words_count(e, elem) {
     jQuery(elem).parents('.uspc-im__form').find('.uspc-im-form__sign-count').css('color', color).text(counter);
 }
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_chat_remove_contact(e, chat_id) {
     usp_preloader_show('.uspc-userlist');
 
@@ -401,7 +410,7 @@ function uspc_important_load(e) {
         var content = e.result.content,
             token = jQuery(content).find('.uspc-im').data('token');
     } else {
-        var tab = usp_get_value_url_params();
+        let tab = usp_get_value_url_params();
         if (tab && tab['subtab'] === 'important-messages') {
             token = jQuery('.uspc-im').data('token');
         }
@@ -412,6 +421,7 @@ function uspc_important_load(e) {
     }
 }
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_chat_message_important(message_id) {
     usp_preloader_show('.uspc-post[data-message="' + message_id + '"] > div');
 
@@ -428,6 +438,7 @@ function uspc_chat_message_important(message_id) {
     return false;
 }
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_chat_important_manager_shift(e, status) {
     usp_preloader_show('.uspc-im__box');
 
@@ -443,7 +454,7 @@ function uspc_chat_important_manager_shift(e, status) {
         },
         success: function (data) {
             if (data['content']) {
-                var form = jQuery(e).parents('.uspc-head-box').nextAll('.uspc-im').find('.uspc-im__form');
+                let form = jQuery(e).parents('.uspc-head-box').nextAll('.uspc-im').find('.uspc-im__form');
                 status ? form.hide() : form.show();
 
                 jQuery(e).parents('.uspc-head-box').nextAll('.uspc-im').find('.uspc-im__box').html(data['content']).animateCss('fadeIn');
@@ -463,6 +474,7 @@ function uspc_chat_important_manager_shift(e, status) {
     return false;
 }
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_chat_delete_message(message_id) {
     usp_preloader_show('.uspc-post[data-message="' + message_id + '"] > div');
 
@@ -485,6 +497,7 @@ function uspc_chat_delete_message(message_id) {
     return false;
 }
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_chat_delete_attachment(e, attachment_id) {
     usp_preloader_show('.uspc-im__form');
 
@@ -495,7 +508,7 @@ function uspc_chat_delete_attachment(e, attachment_id) {
         },
         success: function (data) {
             if (data['remove']) {
-                var form = jQuery(e).parents('.uspc-im__form');
+                let form = jQuery(e).parents('.uspc-im__form');
                 form.find('.uspc-chat-uploader').show();
             }
         }
@@ -512,20 +525,18 @@ function uspc_chat_beat_core(chat) {
         }
     }
 
-    var chatBox = jQuery('.uspc-im[data-token="' + chat.token + '"]'),
-        chat_form = chatBox.find('.uspc-im__form'),
-        beat = {
-            action: 'uspc_chat_get_new_messages',
-            success: 'uspc_chat_beat_success',
-            data: {
-                last_activity: uspc_last_activity[chat.token],
-                token: chat.token,
-                update_activity: 1,
-                user_write: (chat_form.find('textarea').val()) ? 1 : 0
-            }
-        };
-
-    return beat;
+    let chatBox = jQuery('.uspc-im[data-token="' + chat.token + '"]'),
+        chat_form = chatBox.find('.uspc-im__form');
+    return {
+        action: 'uspc_chat_get_new_messages',
+        success: 'uspc_chat_beat_success',
+        data: {
+            last_activity: uspc_last_activity[chat.token],
+            token: chat.token,
+            update_activity: 1,
+            user_write: (chat_form.find('textarea').val()) ? 1 : 0
+        }
+    };
 }
 
 function uspc_chat_beat_success(data) {
@@ -580,30 +591,31 @@ function uspc_chat_beat_success(data) {
 /* Direct messages */
 
 // add in top dm status
-function uspc_status_in_chat(chat, datas) {
+function uspc_status_in_chat(chat, allData) {
     var head = chat.parents('.uspc-messenger-box').find('.uspc-head-box');
     var headStatus = head.find('.uspc-head__status');
     var users = [];
 
-    jQuery.each(datas, function (index, data) {
+    jQuery.each(allData, function (index, data) {
         users.push(+data['user_id']);
     });
 
     if (jQuery.inArray(head.data('head-id'), users) != -1) {
-        var offline = head.find('.usp-status-user.usp-offline');
+        let offline = head.find('.usp-status-user.usp-offline');
         if (offline.length) {
             offline.remove();
             head.find('.uspc-head__left > a').append('<i class="uspi fa-circle usp-status-user usp-online"></i>');
         }
         if (headStatus.html() == '') {
-            headStatus.text(USP.local.uspc_inchat);
+            headStatus.text(USP.local.uspc_in_chat);
         }
     } else {
         headStatus.text('');
     }
 }
 
-// open direct message 
+// open direct message
+// noinspection JSUnusedGlobalSymbols
 function uspc_get_chat_dm(e, user_id) {
     usp_preloader_show(jQuery(e));
 
@@ -638,7 +650,7 @@ function uspc_set_chat_button_in_menu_active(e) {
 jQuery(function ($) {
     // after leaving the communication, clear usp_beat
     $('body').on('click', '.uspc-head__bttn', function () {
-        var tok = $('.uspc-head__bttn').data('token-dm');
+        let tok = $('.uspc-head__bttn').data('token-dm');
         uspc_chat_clear_beat(tok);
     });
 
@@ -650,7 +662,7 @@ jQuery(function ($) {
             bttn = $('.uspc_js_counter_unread .usp-bttn__count');
 
         if (cnt > 1) {
-            var contactIncoming = $(this).data('unread');
+            let contactIncoming = $(this).data('unread');
             setTimeout(function () {
                 bttn.html(cnt - contactIncoming);
             }, 1000);
@@ -661,8 +673,8 @@ jQuery(function ($) {
         }
 
         // remove notify on contact panel
-        var contact = $(this).data('contact');
-        var contact_panel_user = $('.uspc-mini__contacts').find("[data-contact='" + contact + "']");
+        let contact = $(this).data('contact');
+        let contact_panel_user = $('.uspc-mini__contacts').find("[data-contact='" + contact + "']");
 
         contact_panel_user.children(' .uspc-mini-person__in').hide();
     });
@@ -673,7 +685,7 @@ usp_add_action('uspc_get_direct_message', 'uspc_logged_in_to_dm');
 
 function uspc_logged_in_to_dm() {
     // scroll posts
-    var mess = jQuery('.uspc-post');
+    let mess = jQuery('.uspc-post');
     if (mess.length >= 1) {
         setTimeout(function () {
             jQuery('.uspc-post').scrollTop(jQuery('.uspc-post').get(0).scrollHeight);
@@ -696,7 +708,7 @@ function uspc_auto_height_textarea() {
     }).on('input', function () {
 
         this.style.height = 'auto';
-        var h = this.scrollHeight + 9;
+        let h = this.scrollHeight + 9;
         if (h > 150) {
             h = 150;
             this.setAttribute('style', 'height:' + h + 'px;overflow-y:auto;');
@@ -708,19 +720,19 @@ function uspc_auto_height_textarea() {
 
 // scroll to form
 function uspc_slide_to_textarea(top = 0) {
-    var h = window.innerHeight;
-    var chatForm = jQuery('.uspc-im__form');
+    let h = window.innerHeight;
+    let chatForm = jQuery('.uspc-im__form');
 
     if (chatForm.length < 1)
         return false;
 
     //  offset to form
-    var offsetToChat = chatForm.offset().top;
+    let offsetToChat = chatForm.offset().top;
     // if the browser window is huge - not scroll
     if ((h + 150) < offsetToChat) {
-        var vw = jQuery(window).width();
+        let vw = jQuery(window).width();
         // height of the form
-        var offset = 160;
+        let offset = 160;
         if (vw <= 480) {
             offset = 200;
         }
@@ -732,6 +744,7 @@ function uspc_slide_to_textarea(top = 0) {
 
 /* end */
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_on_off_sound() {
     let mute = (+jQuery.cookie('uspc_sound_off') === 1) ? 0 : 1;
 
@@ -803,7 +816,7 @@ function uspc_run_in_chat() {
 }
 
 function uspc_max_width() {
-    var maxWidth = Math.max.apply(null, jQuery('.uspc-date__day').map(function () {
+    let maxWidth = Math.max.apply(null, jQuery('.uspc-date__day').map(function () {
             return jQuery(this).outerWidth(true);
         }).get()
     );
@@ -846,6 +859,7 @@ function uspc_hide_date() {
     return;
 }
 
+// noinspection JSUnusedGlobalSymbols
 function uspc_focus_modal_shift(i) {
     let chat = jQuery(i).parents('.uspc-messenger-js');
     let html = chat.html();
@@ -854,7 +868,7 @@ function uspc_focus_modal_shift(i) {
 
     jQuery('.uspc-messenger-js').html('');
 
-    var chatModal = ssi_modal.show({
+    let chatModal = ssi_modal.show({
         content: html,
         bodyElement: true,
         sizeClass: 'medium',

@@ -1,10 +1,10 @@
-/* global wp */
+/* global wp, USP */
 // real time preview
 
 var alpha = USP.uspc_css.alpha;
 var r = USP.uspc_css.r, g = USP.uspc_css.g, b = USP.uspc_css.b, from = USP.uspc_css.from;
 
-wp.customize('usp-customizer[uspc_theme]', function (value) {
+wp.customize('usp_customizer[uspc_theme]', function (value) {
     value.bind(function (to) {
         from = to;
         let hex = to.replace('#', '');
@@ -16,7 +16,7 @@ wp.customize('usp-customizer[uspc_theme]', function (value) {
     });
 });
 
-wp.customize('usp-customizer[uspc_alpha]', function (value) {
+wp.customize('usp_customizer[uspc_alpha]', function (value) {
     value.bind(function (to) {
         alpha = to;
 

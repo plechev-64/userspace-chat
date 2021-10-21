@@ -10,7 +10,7 @@ function uspc_get_class_contacts_panel( $unread ) {
 
 	$class[] = ( ! usp_get_option( 'uspc_set_chat_bar', 1 ) ) ? 'uspc-on-left' : 'uspc-on-right';
 
-	$class[] = ( isset( $_COOKIE['uspc_contacts_panel_full'] ) && $_COOKIE['uspc_contacts_panel_full'] ) ? '' : 'uspc-mini__hide';
+	$class[] = ( ! empty( $_COOKIE['uspc_contacts_panel_full'] ) ) ? '' : 'uspc-mini__hide';
 
 	return trim( implode( ' ', $class ) );
 }
@@ -24,8 +24,10 @@ function uspc_get_the_content( $content_in, $allowed_tags ) {
 	$oembed = usp_get_option( 'uspc_oembed', 0 );
 
 	if ( $oembed && function_exists( 'wp_oembed_get' ) ) {
-		$links = '';
+		$links = [];
+
 		preg_match_all( '/href="([^"]+)"/', $content, $links );
+
 		foreach ( $links[1] as $link ) {
 			$m_lnk = wp_oembed_get( $link, [ 'width' => 500, 'height' => 300 ] );
 			if ( $m_lnk ) {
@@ -36,7 +38,7 @@ function uspc_get_the_content( $content_in, $allowed_tags ) {
 	}
 
 	if ( function_exists( 'convert_smilies' ) ) {
-		$content = str_replace( 'style="height: 1em; max-height: 1em;"', '', convert_smilies( $content ) );
+		$content = convert_smilies( $content );
 	}
 
 	return $content;
@@ -44,17 +46,19 @@ function uspc_get_the_content( $content_in, $allowed_tags ) {
 
 // file formatting
 function uspc_get_the_attachment( $attachment_id ) {
-	if ( ! $post = get_post( $attachment_id ) ) {
-		return;
+	$post = get_post( $attachment_id );
+	if ( ! $post ) {
+		return false;
 	}
 
-	if ( ! $file = get_attached_file( $attachment_id ) ) {
-		return;
+	$file = get_attached_file( $attachment_id );
+	if ( ! $file ) {
+		return false;
 	}
 
 	$check = wp_check_filetype( $file );
 	if ( empty( $check['ext'] ) ) {
-		return;
+		return false;
 	}
 
 	$ext        = $check['ext'];
@@ -114,7 +118,7 @@ function uspc_get_the_excerpt( $string ) {
 }
 
 function uspc_get_count_unread_by_user( $count ) {
-	if ( $count == 0 ) {
+	if ( 0 == $count ) {
 		return false;
 	}
 

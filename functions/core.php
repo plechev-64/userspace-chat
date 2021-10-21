@@ -14,7 +14,7 @@ function uspc_get_the_chat_by_room( $chat_room, $args = [] ) {
 	require_once USPC_PATH . 'classes/class-uspc-chat.php';
 
 	$options = array_merge( [
-		'userslist'   => 0,
+		'user_list'   => 0,
 		'file_upload' => usp_get_option( 'uspc_file_upload', 0 ),
 		'chat_status' => 'private',
 		'chat_room'   => $chat_room,
@@ -146,7 +146,7 @@ function uspc_css_variable( $styles ) {
 // Link in to chat on userspace bar
 add_action( 'usp_dropdown_menu', 'uspc_bar_add_chat_link', 5, 2 );
 function uspc_bar_add_chat_link( $menu_id, USP_Dropdown_Menu $menu ) {
-	if ( $menu_id !== 'usp_bar_profile_menu' ) {
+	if ( 'usp_bar_profile_menu' !== $menu_id ) {
 		return;
 	}
 
@@ -159,4 +159,80 @@ function uspc_bar_add_chat_link( $menu_id, USP_Dropdown_Menu $menu ) {
 		],
 		[ 'order' => 24 ]
 	);
+}
+
+/**
+ * Verification is a direct message
+ *
+ * @param $room - private:1:3 | custom-room
+ *
+ * @return bool
+ */
+function uspc_is_private_room( $room ) {
+	return strpos( trim( $room ), 'private:' ) === 0;
+}
+
+/**
+ * Is there a $user_id in this chat
+ *
+ * @param $user_id
+ * @param $room - private:1:3
+ *
+ * @return bool
+ */
+function uspc_user_in_room( $user_id, $room ) {
+	[ $prefix, $user_1, $user_2 ] = explode( ':', trim( $room ) );
+	unset( $prefix );
+
+	return in_array( $user_id, [ $user_1, $user_2 ] );
+}
+
+/**
+ * Chat allowed tags
+ *
+ * @return array
+ */
+function uspc_allowed_tags() {
+	/**
+	 * Whitelist allowed tags in chat messages
+	 *
+	 * @param array $tags allowed tags.
+	 *
+	 * @since 1.0
+	 */
+	return apply_filters( 'uspc_allowed_tags', [
+		'div'        => [
+			'class'   => true,
+			'style'   => true,
+			'onclick' => true,
+			'data-*'  => true,
+		],
+		'a'          => [
+			'href'   => true,
+			'title'  => true,
+			'target' => true,
+			'class'  => true,
+		],
+		'img'        => [
+			'src'   => true,
+			'alt'   => true,
+			'class' => true,
+		],
+		'p'          => [
+			'class' => true,
+		],
+		'i'          => [
+			'class' => true,
+		],
+		'blockquote' => [],
+		'del'        => [],
+		'em'         => [],
+		'strong'     => [],
+		'details'    => [],
+		'summary'    => [],
+		'span'       => [
+			'class' => true,
+			'style' => true,
+		],
+	] );
 }

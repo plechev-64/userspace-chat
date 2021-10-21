@@ -43,7 +43,7 @@ class USPC_Loader {
 
 	private function init_hooks() {
 		add_action( 'template_redirect', [ $this, 'chat_filter_attachment_pages' ], 20 );
-		add_action( 'init', [ $this, 'chat_disable_oembeds' ], 9999 );
+		add_action( 'init', [ $this, 'chat_disable_oembed' ], 9999 );
 		add_action( 'uspc_chat_is_load', [ $this, 'chat_reset_oembed_filter' ] );
 		add_filter( 'usp_init_js_variables', [ $this, 'init_js_chat_variables' ] );
 
@@ -53,10 +53,10 @@ class USPC_Loader {
 			usp_include_modal_user_details();
 
 			add_action( 'usp_init', [ $this, 'init_contact_list' ] );
-			add_action( 'usp_office_setup', [ $this, 'init_direct_message_datas' ] );
-			add_action( 'usp_enqueue_scripts', [ $this, 'chat_fileupload_scripts' ] );
+			add_action( 'usp_office_setup', [ $this, 'init_direct_message_data' ] );
+			add_action( 'usp_enqueue_scripts', [ $this, 'chat_file_upload_scripts' ] );
 
-			if ( usp_get_option( 'usp_bar_show' ) ) {
+			if ( usp_get_option_customizer( 'usp_bar_show', 1 ) ) {
 				add_action( 'usp_bar_buttons', [ $this, 'usp_bar_add_chat_icon' ], 10 );
 			}
 
@@ -79,17 +79,18 @@ class USPC_Loader {
 		}
 	}
 
-	function init_direct_message_datas() {
-		require_once USPC_PATH . 'classes/class-uspc-direct-message-datas.php';
+	function init_direct_message_data() {
+		require_once USPC_PATH . 'classes/class-uspc-direct-message-data.php';
 
-		$this->private_messages_data = new USPC_Direct_Message_Datas();
+		$this->private_messages_data = new USPC_Direct_Message_Data();
 	}
 
 	// use contacts panel
 	function get_contacts_panel() {
 		require_once USPC_PATH . 'classes/class-uspc-contacts-panel.php';
 
-		echo ( new USPC_Contacts_Panel() )->get_template();
+		// WPCS: XSS ok, sanitization ok. This sanitized in: templates/uspc-contacts-panel.php
+		echo ( new USPC_Contacts_Panel() )->get_template(); // phpcs:ignore
 	}
 
 	function get_contacts_panel_resources() {
@@ -108,16 +109,18 @@ class USPC_Loader {
 			return;
 		}
 
+		// WPCS: XSS ok, sanitization ok.
+		// phpcs:ignore
 		echo usp_get_button( [
 			'type'    => 'clear',
 			'icon'    => 'fa-envelope',
 			'class'   => 'uspc-notify uspc_js_counter_unread',
-			'href'    => usp_get_tab_permalink( get_current_user_id(), 'chat' ),
-			'counter' => USPC()->private_messages_data->unread,
+			'href'    => esc_url( usp_get_tab_permalink( get_current_user_id(), 'chat' ) ),
+			'counter' => intval( USPC()->private_messages_data->unread ),
 		] );
 	}
 
-	function chat_fileupload_scripts() {
+	function chat_file_upload_scripts() {
 		if ( usp_is_office() ) {
 			usp_fileupload_scripts();
 		}
@@ -137,7 +140,7 @@ class USPC_Loader {
 
 		$data['local']['uspc_empty']        = __( 'Write something', 'userspace-chat' );
 		$data['local']['uspc_text_words']   = __( 'Exceeds the maximum message size', 'userspace-chat' );
-		$data['local']['uspc_inchat']       = __( 'In chat', 'userspace-chat' );
+		$data['local']['uspc_in_chat']      = __( 'In chat', 'userspace-chat' );
 		$data['local']['uspc_network_lost'] = __( 'Check your internet connection', 'userspace-chat' );
 
 		if ( is_user_logged_in() ) {
@@ -157,7 +160,7 @@ class USPC_Loader {
 	function chat_filter_attachment_pages() {
 		global $post;
 
-		if ( ! is_single() || ! in_array( $post->post_type, [ 'attachment' ] ) ) {
+		if ( ! is_single() || 'attachment' != $post->post_type ) {
 			return;
 		}
 
@@ -170,25 +173,27 @@ class USPC_Loader {
 		exit;
 	}
 
-	function chat_disable_oembeds() {
+	function chat_disable_oembed() {
 		remove_action( 'wp_head', 'wp_oembed_add_host_js' );
 	}
 
 	function chat_reset_oembed_filter() {
-		remove_filter( 'pre_oembed_result', 'wp_filter_pre_oembed_result', 10 );
+		remove_filter( 'pre_oembed_result', 'wp_filter_pre_oembed_result' );
 	}
 
 	/**
 	 * Builds the General Chat.
 	 *
-	 * @param array $attr {
-	 *     Attributes of the chat shortcode.
+	 * @param array $attr Attributes of the chat shortcode.
+	 * $attr = [
 	 *
 	 * @type string $chat_room (required) unique chat ID.
-	 * @type bool $userslist Display a list of users who are in the chat. 1 - show or 0 (default).
+	 * @type bool $user_list Display a list of users who are in the chat. 1 - show or 0 (default).
 	 * @type bool $file_upload Enables/disables attaching files to chat messages. Available values: 1 or 0 (default).
-	 * @type int $avatar_size the size of users ' avatars in the chat (in pixels). By default - 50
-	 * }
+	 * @type int $avatar_size The size of users avatars in the chat (in pixels). By default - 50.
+	 *
+	 * ]
+	 *
 	 * @return string   HTML content to display chat.
 	 * @since 1.0.0
 	 *

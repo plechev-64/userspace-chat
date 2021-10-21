@@ -240,6 +240,7 @@
 .uspc-post__message img.emoji,
 .uspc-post__message img.wp-smiley {
     height: 24px !important;
+    max-height: 24px !important;
     vertical-align: middle !important;
     width: 24px !important;
 }

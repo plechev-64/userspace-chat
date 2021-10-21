@@ -27,15 +27,16 @@ $data_head = '';
 $name      = '';
 if ( $user_id > 0 ) {
 	$data_head = 'data-head-id="' . $user_id . '"';
-	$name      = usp_user_get_username( $user_id, get_author_posts_url( $user_id ), [ 'class' => 'usps__text-cut' ] );
+	$name      = usp_user_get_username( $user_id, get_author_posts_url( absint( $user_id ) ), [ 'class' => 'usps__text-cut' ] );
 
 	$chatdata['user_id'] = $user_id;
 }
 
 ?>
 
-<div class="uspc-head-box usps usps__nowrap usps__as-center usps__grow" <?php echo $data_head; ?>>
-	<?php if ( isset( $chatdata['token'] ) && $args['button'] != 'hide' ) {
+<div class="uspc-head-box usps usps__nowrap usps__as-center usps__grow" <?php echo wp_kses_data( $data_head ); ?>>
+	<?php if ( isset( $chatdata['token'] ) && 'hide' != $args['button'] ) {
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo usp_get_button( [
 			'type'    => 'clear',
 			'icon'    => 'fa-arrow-left',
@@ -51,11 +52,11 @@ if ( $user_id > 0 ) {
     <div class="uspc-head__top usps usps__nowrap usps__grow usps__jc-between usps__ai-center">
         <div class="uspc-head__left">
 			<?php if ( isset( $args['left'] ) ) { ?>
-				<?php echo $args['left']; ?>
+				<?php echo $args['left']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 			<?php } else { ?>
-                <div class="uspc-head-left__link"><?php echo $name; ?></div>
+                <div class="uspc-head-left__link"><?php echo wp_kses( $name, uspc_allowed_tags() ); ?></div>
                 <div class="uspc-head-action usps">
-					<?php echo USP()->user( $user_id )->get_action( 'mixed' ); ?>
+					<?php echo wp_kses( USP()->user( $user_id )->get_action( 'mixed' ), uspc_allowed_tags() ); ?>
                     <div class="uspc-head__status"></div>
                 </div>
 			<?php } ?>
@@ -64,10 +65,10 @@ if ( $user_id > 0 ) {
         <div class="uspc-head__right usps usps__relative">
 			<?php
 			$menu = new USP_Dropdown_Menu( 'uspc_header' );
-			$icon = ( isset( $_COOKIE['uspc_sound_off'] ) && $_COOKIE['uspc_sound_off'] ) ? 'fa-volume-off' : 'fa-volume-up';
+			$icon = ( isset( $_COOKIE['uspc_sound_off'] ) && intval( wp_unslash( $_COOKIE['uspc_sound_off'] ) ) ) ? 'fa-volume-off' : 'fa-volume-up';
 
 			if ( is_user_logged_in() ) {
-				if ( isset( $chatdata['chat_status'] ) && $chatdata['chat_status'] == 'private' ) {
+				if ( isset( $chatdata['chat_status'] ) && 'private' == $chatdata['chat_status'] ) {
 					$menu->add_button( [
 						'class'   => 'uspc-menu__user-info',
 						'label'   => __( 'User info', 'userspace-chat' ),
@@ -83,8 +84,8 @@ if ( $user_id > 0 ) {
 					'onclick' => 'uspc_focus_modal_shift(this);return false;',
 				] );
 
-				$status = ( $args['important'] ) ? 0 : 1;
-				$class  = ( $args['important'] ) ? 'fa-star-fill' : 'fa-star';
+				$status = ( isset( $args['important'] ) ) ? 0 : 1;
+				$class  = ( isset( $args['important'] ) ) ? 'fa-star-fill' : 'fa-star';
 
 				$menu->add_button( [
 					'icon'    => $class,
@@ -101,7 +102,7 @@ if ( $user_id > 0 ) {
 				'onclick' => 'uspc_on_off_sound(this);return false;',
 			] );
 
-			echo $menu->get_content();
+			echo $menu->get_content(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			?>
         </div>
 

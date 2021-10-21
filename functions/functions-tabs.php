@@ -29,13 +29,13 @@ function uspc_tab_private_contacts() {
 // number of unread messages in the tab
 function uspc_counter_in_tab() {
 	if ( ! is_user_logged_in() || ! usp_is_office( get_current_user_id() ) ) {
-		return;
+		return false;
 	}
 
 	$count = USPC()->private_messages_data->unread;
 
 	if ( ! $count ) {
-		return;
+		return false;
 	}
 
 	if ( $count > 99 ) {
@@ -45,6 +45,7 @@ function uspc_counter_in_tab() {
 	return $count;
 }
 
+/** @noinspection PhpUnused */
 function uspc_chat_tab( $office_id ) {
 	if ( ! is_user_logged_in() ) {
 		$link = usp_get_button( [
@@ -89,6 +90,7 @@ function uspc_tab_important() {
 	] );
 }
 
+/** @noinspection PhpUnused */
 function uspc_get_tab_user_important( $user_id ) {
 	$content = '<div class="uspc-im" data-token="' . get_current_user_id() . '" data-important="1">';
 	$content .= '<div class="uspc-im__box usps__relative">' . uspc_important_im_talk_box( $user_id ) . '</div>';
@@ -100,7 +102,7 @@ function uspc_get_tab_user_important( $user_id ) {
 // add in subtab title number of contacts
 add_filter( 'usp_subtab_title', 'uspc_add_counter_in_subtitle', 10, 2 );
 function uspc_add_counter_in_subtitle( $title, $subtab_id ) {
-	if ( $subtab_id == 'private-contacts' && usp_is_office( get_current_user_id() ) ) {
+	if ( 'private-contacts' == $subtab_id && usp_is_office( get_current_user_id() ) ) {
 		$contacts_num = USPC()->private_messages_data->contacts;
 
 		if ( $contacts_num ) {
@@ -114,7 +116,7 @@ function uspc_add_counter_in_subtitle( $title, $subtab_id ) {
 // add class to a button in the menu
 add_filter( 'usp_tab_class_button', 'uspc_add_class_in_button_chat', 10, 2 );
 function uspc_add_class_in_button_chat( $class, $tab_id ) {
-	if ( $tab_id == 'chat' && usp_is_office( get_current_user_id() ) ) {
+	if ( 'chat' == $tab_id && usp_is_office( get_current_user_id() ) ) {
 		// uspc_js_counter_unread - special class for the common js function
 		array_push( $class, 'uspc_js_counter_unread' );
 	}

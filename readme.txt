@@ -17,7 +17,7 @@ UserSpace Chat plugin allows you to communicate in private messages (DM - direct
 
 If you're a developer and would like to contribute to the source code of the plugin you can do so via our [GitHub Repository](https://github.com/plechev-64/userspace-chat).
 
-Want to add a new language to UserSpace? Great! You can contribute via [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/userspace-chat).
+Want to add a new language to UserSpace? Great! You can contribute via [translate.WordPress.org](https://translate.wordpress.org/projects/wp-plugins/userspace-chat).
 
 == Installation ==
 

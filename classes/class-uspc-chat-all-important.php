@@ -24,7 +24,7 @@ class USPC_Chat_All_Important extends USPC_Chat {
 	function count_important_messages() {
 		return ( new USPC_Chat_Messages_Query() )
 			->join( 'message_id', ( new USPC_Chat_Messagemeta_Query() )
-				->where( [ 'meta_key' => 'important:' . $this->user_id ] )
+				->where( [ 'meta_key' => 'important:' . $this->user_id ] ) // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 			)
 			->get_count();
 	}
@@ -32,7 +32,7 @@ class USPC_Chat_All_Important extends USPC_Chat {
 	function get_important_messages( $limit ) {
 		$messagesData = ( new USPC_Chat_Messages_Query() )
 			->join( 'message_id', ( new USPC_Chat_Messagemeta_Query() )
-				->where( [ 'meta_key' => 'important:' . $this->user_id ] )
+				->where( [ 'meta_key' => 'important:' . $this->user_id ] ) // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
 			)
 			->orderby( 'message_time' )
 			->limit( $limit[1], $limit[0] )

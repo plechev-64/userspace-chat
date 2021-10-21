@@ -23,6 +23,8 @@ register_activation_hook( __FILE__, [ 'USPC_Install', 'create_tables' ] );
 
 // instance of Userspace Chat
 require_once USPC_PATH . 'classes/class-uspc-loader.php';
+
+//  phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
 function USPC() {
 	return USPC_Loader::instance();
 }
@@ -38,10 +40,11 @@ if ( in_array( 'userspace/userspace.php', apply_filters( 'active_plugins', get_o
 
 		$notice = '<div class="notice notice-error">';
 		$notice .= '<p>' . __( 'UserSpace plugin not installed!', 'userspace-chat' ) . '</p>';
-		$notice .= '<p>' . sprintf( __( 'Go to the page %sPlugins%s - install and activate the UserSpace plugin', 'userspace-chat' ), '<a href="' . $url . '">"', '"</a>' ) . '</p>';
+		/* translators: %s: opening <a> and closing </a> tag */
+		$notice .= '<p>' . sprintf( __( 'Go to the page %1$sPlugins%2$s - install and activate the UserSpace plugin', 'userspace-chat' ), '<a href="' . $url . '">"', '"</a>' ) . '</p>';
 		$notice .= '</div>';
 
-		echo $notice;
+		echo $notice; // phpcs:ignore
 	}
 
 }

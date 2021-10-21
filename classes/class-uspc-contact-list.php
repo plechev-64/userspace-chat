@@ -42,6 +42,7 @@ class USPC_Contact_List {
 
 		global $wpdb;
 
+		// phpcs:disable
 		$messages = $wpdb->get_results(
 			"SELECT mess.* FROM " . USPC_PREF . "chat_messages as mess,"
 			. "(SELECT chat_id,"
@@ -55,6 +56,8 @@ class USPC_Contact_List {
 			. "LIMIT " . $this->offset . "," . $this->in_page
 			, ARRAY_A
 		);
+
+		// phpcs:enable
 
 		return stripslashes_deep( $messages );
 	}

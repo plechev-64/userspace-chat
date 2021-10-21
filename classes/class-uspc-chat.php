@@ -13,7 +13,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	public $file_upload = 0;
 	public $user_id = 0;
 	public $paged = 1;
-	public $userslist = false;
+	public $user_list = false;
 	public $avatar_size = 50;
 	public $office_id;
 	public $delay = 0;
@@ -71,7 +71,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$this->chat = $this->get_chat_data( $this->chat_room );
 
 		if ( ! $this->user_write ) {
-			$this->user_write = ( isset( $_POST['chat']['message'] ) && $_POST['chat']['message'] ) ? 1 : 0;
+			$this->user_write = ( isset( $_POST['chat']['message'] ) && wp_kses( wp_unslash( $_POST['chat']['message'] ), uspc_allowed_tags() ) ) ? 1 : 0;
 		}
 
 		if ( ! $this->chat ) {
@@ -80,7 +80,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			$this->chat_id = $this->chat->chat_id;
 		}
 
-		$updateActivity = isset( $args['update_activity'] ) ? $args['update_activity'] : 1;
+		$updateActivity = $args['update_activity'] ?? 1;
 
 		if ( $updateActivity ) {
 			$this->set_activity();
@@ -96,37 +96,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 		$this->query = apply_filters( 'uspc_main_query', $this->query );
 
-		$this->allowed_tags = apply_filters( 'uspc_allowed_tags', [
-			'div'        => [
-				'class'   => true,
-				'style'   => true,
-				'onclick' => true,
-				'data-*'  => true,
-			],
-			'a'          => [
-				'href'   => true,
-				'title'  => true,
-				'target' => true,
-			],
-			'img'        => [
-				'src'   => true,
-				'alt'   => true,
-				'class' => true,
-			],
-			'p'          => [
-				'class' => true,
-			],
-			'blockquote' => [],
-			'del'        => [],
-			'em'         => [],
-			'strong'     => [],
-			'details'    => [],
-			'summary'    => [],
-			'span'       => [
-				'class' => true,
-				'style' => true,
-			],
-		] );
+		$this->allowed_tags = uspc_allowed_tags();
 
 		do_action( 'uspc_chat_is_load', $this );
 	}
@@ -161,15 +131,18 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	function set_activity() {
 		global $wpdb;
 
+		// phpcs:disable
 		$wpdb->query( "INSERT INTO " . USPC_PREF . "chat_users "
 		              . "(`room_place`, `chat_id`, `user_id`, `user_activity`, `user_write`, `user_status`) "
 		              . "VALUES('$this->chat_id:$this->user_id', $this->chat_id, $this->user_id, '" . current_time( 'mysql' ) . "', 0, 1) "
 		              . "ON DUPLICATE KEY UPDATE user_activity = '" . current_time( 'mysql' ) . "', user_write='$this->user_write'" );
+		// phpcs:enable
 	}
 
 	function get_users_activity() {
 		global $wpdb;
 
+		// phpcs:ignore
 		return $wpdb->get_results( "SELECT user_id,user_write FROM " . USPC_PREF . "chat_users WHERE chat_id='$this->chat_id' AND user_id!='$this->user_id' AND user_activity >= ('" . current_time( 'mysql' ) . "' - interval 1 minute)" );
 	}
 
@@ -264,7 +237,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 		$private_key = 0;
 
-		if ( $this->chat->chat_status == 'private' ) {
+		if ( 'private' == $this->chat->chat_status ) {
 			$key         = explode( ':', $this->chat->chat_room );
 			$private_key = ( $key[1] == $this->user_id ) ? $key[2] : $key[1];
 
@@ -327,27 +300,25 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		global $uspc_chat;
 
 		$content = '';
-		if ( $this->chat_id && $this->chat_status == 'private' ) {
+		if ( $this->chat_id && 'private' == $this->chat_status ) {
 			$this->read_chat( $this->chat_id );
 		}
 
 		$uspc_chat = $this;
 
-		if ( $this->chat->chat_status == 'general' ) {
+		if ( isset( $this->chat ) && 'general' == $this->chat->chat_status ) {
 			$content .= $this->get_messages_header();
 		}
 
 		if ( $this->beat ) {
-			$content .= '<script>'
-			            . 'jQuery(function($){uspc_init_chat({'
+			$content .= '<script>jQuery(function(){uspc_init_chat({'
 			            . 'token:"' . $this->chat_token . '",'
-			            . 'file_upload:' . $this->file_upload . ','
-			            . 'max_words:' . $this->max_words . ','
-			            . 'delay:' . $this->delay . ','
+			            . 'file_upload:"' . $this->file_upload . '",'
+			            . 'max_words:"' . $this->max_words . '",'
+			            . 'delay:"' . $this->delay . '",'
 			            . 'open_chat:"' . current_time( 'mysql' ) . '",'
-			            . 'timeout:' . $this->timeout
-			            . '})'
-			            . '});</script>';
+			            . 'timeout:"' . $this->timeout . '"
+			            })});</script>';
 		}
 
 		$content .= '<div class="uspc-im uspc-chat-' . $this->chat_status . ' uspc-chat__room-' . $this->chat_room . ' usps__relative" data-token="' . $this->chat_token . '" data-in_page="' . $this->query['number'] . '">';
@@ -385,6 +356,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 		$content = apply_filters( 'uspc_before_form', '', $this->chat );
 
+		$uploader = false;
 		if ( $this->file_upload ) {
 			$uploader = new USP_Uploader( 'uspc_chat_uploader', [
 				'multiple'     => 0,
@@ -440,7 +412,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			'chat[token]'       => $this->chat_token,
 			'chat[in_page]'     => $this->query['number'],
 			'chat[status]'      => $this->chat_status,
-			'chat[userslist]'   => $this->userslist,
+			'chat[user_list]'   => $this->user_list,
 			'chat[file_upload]' => $this->file_upload,
 		] );
 
@@ -457,7 +429,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		return $content;
 	}
 
-	function userslist() {
+	function user_list() {
 		return '<div class="uspc-im__online uspc-im-header__title usps__grow">'
 		       . '<span class="uspc-im-online__title">' . __( 'In chat', 'userspace-chat' ) . ':</span>'
 		       . '<div class="uspc-im-online__items usps__inline"></div>'
@@ -466,8 +438,8 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 	function get_messages_header() {
 		$args = [];
-		if ( $this->userslist ) {
-			$args['left'] = $this->userslist();
+		if ( $this->user_list ) {
+			$args['left'] = $this->user_list();
 		}
 		$args['important'] = $this->important ? '1' : '';
 
@@ -517,7 +489,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 		$content .= '<div class="uspc-im__footer usps__relative usps usps__jc-between usps__ai-center">';
 
-		if ( $this->chat_status == 'private' ) {
+		if ( 'private' == $this->chat_status ) {
 			$content .= '<div class="uspc-im__writes"><span>......<i class="uspi fa-pencil" aria-hidden="true"></i></span></div>';
 		}
 
@@ -546,13 +518,14 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$content = '';
 		foreach ( $messages as $k => $message ) {
 			$content .= $this->include_template_message_item( $message );
+			unset( $k );
 		}
 
 		return $content;
 	}
 
 	function include_template_message_item( $message ) {
-		$item_date = date( 'Y-m-d', strtotime( $message['message_time'] ) );
+		$item_date = gmdate( 'Y-m-d', strtotime( $message['message_time'] ) );
 
 		return usp_get_include_template( 'uspc-message-item.php', USPC_PATH . 'templates', [
 			'message'      => $message,

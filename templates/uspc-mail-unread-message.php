@@ -28,18 +28,17 @@ $url = usp_get_tab_permalink( $author_id, 'chat' );
 ?>
 
 <div style="overflow:hidden;clear:both;">
-    <p><?php _e( 'You were sent a private message.', 'userspace-chat' ); ?></p>
-    <div style="float:left;margin-right:18px;"><?php echo usp_get_avatar( $author_id, 60 ); ?></div>
+    <p><?php esc_html_e( 'You were sent a private message.', 'userspace-chat' ); ?></p>
+    <div style="float:left;margin-right:18px;"><?php echo wp_kses( usp_get_avatar( $author_id, 60 ), uspc_allowed_tags() ); ?></div>
 
-    <p><?php _e( 'From the user:', 'userspace-chat' ); ?>&nbsp;<?php echo usp_user_get_username( $author_id ); ?></p>
+    <p><?php esc_html_e( 'From the user:', 'userspace-chat' ); ?>&nbsp;<?php echo wp_kses( usp_user_get_username( $author_id ), uspc_allowed_tags() ); ?></p>
 
 	<?php if ( $send_text ): ?>
-        <p><b><?php _e( 'Message text', 'userspace-chat' ); ?>:</b></p>
-        <p><?php echo implode( '<br>', $message ); ?></p>
+        <p><b><?php esc_html_e( 'Message text', 'userspace-chat' ); ?>:</b></p>
+        <p><?php echo wp_kses( implode( '<br>', $message ), uspc_allowed_tags() ); ?></p>
 	<?php endif; ?>
 
     <p>
-		<?php _e( 'You can read the message by clicking on the link', 'userspace-chat' ); ?>: <a
-                href="<?php echo $url; ?>"><?php echo $url; ?></a>
+		<?php esc_html_e( 'You can read the message by clicking on the link', 'userspace-chat' ); ?>: <a href="<?php echo esc_url( $url ); ?>"><?php echo esc_url( $url ); ?></a>
     </p>
 </div>

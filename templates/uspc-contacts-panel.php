@@ -28,22 +28,22 @@
 defined( 'ABSPATH' ) || exit;
 ?>
 
-<div id="uspc-mini" class="<?php echo uspc_get_class_contacts_panel( $unread ); ?>">
+<div id="uspc-mini" class="<?php echo wp_kses_data( uspc_get_class_contacts_panel( $unread ) ); ?>">
     <div class="uspc-mini__wrap">
         <div class="uspc-mini__userlist usps usps__column usps__ai-center usps__relative">
-			<?php echo uspc_shift_contact_panel_button( $unread ); ?>
+			<?php echo uspc_shift_contact_panel_button( $unread ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
             <div class="uspc-mini__contacts">
 				<?php
 				foreach ( $users as $user_id => $data ) :
-					if ( $user_id == usp_office_id() ) {
+					if ( usp_office_id() == $user_id ) {
 						continue;
 					}
 					?>
 
-                    <div class="uspc-mini__person usps__relative" data-contact="<?php echo $user_id; ?>"
-                         onclick="uspc_get_chat_window( this, <?php echo $user_id; ?> ); return false;">
-						<?php echo usp_get_avatar( $user_id, 42 ); ?>
+                    <div class="uspc-mini__person usps__relative" data-contact="<?php echo absint( $user_id ); ?>"
+                         onclick="uspc_get_chat_window( this, <?php echo absint( $user_id ); ?> ); return false;">
+						<?php echo wp_kses( usp_get_avatar( $user_id, 42 ), uspc_allowed_tags() ); ?>
 						<?php if ( ! $data['status'] ) : ?>
                             <i class="uspi fa-comment-dots uspc-mini-person__in usps__radius-50" aria-hidden="true"></i>
 						<?php endif; ?>

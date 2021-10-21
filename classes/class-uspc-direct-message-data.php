@@ -2,7 +2,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-class USPC_Direct_Message_Datas {
+class USPC_Direct_Message_Data {
 
 	public $in_page = 6;
 	public $user_id = 0;
@@ -27,7 +27,7 @@ class USPC_Direct_Message_Datas {
 		$this->messages = $this->get_messages();
 		//}
 
-		if ( usp_is_office() || usp_get_option( 'uspc_contact_panel', 0 ) || usp_get_option( 'usp_bar_show' ) ) {
+		if ( usp_is_office() || usp_get_option( 'uspc_contact_panel', 0 ) || usp_get_option_customizer( 'usp_bar_show', 1 ) ) {
 			$this->unread = $this->count_noread_messages();
 		}
 	}
@@ -36,12 +36,14 @@ class USPC_Direct_Message_Datas {
 	private function get_user_pm_contacts() {
 		global $wpdb;
 
+		// phpcs:disable
 		$chats = $wpdb->get_col(
 			"SELECT DISTINCT (chat_id) "
 			. "FROM " . USPC_PREF . "chat_messages "
 			. "WHERE private_key != '0' "
 			. "AND (user_id='$this->user_id' OR private_key='$this->user_id');"
 		);
+		// phpcs:enable
 
 		if ( $chats ) {
 			return implode( ',', $chats );
@@ -58,6 +60,7 @@ class USPC_Direct_Message_Datas {
 
 		global $wpdb;
 
+		// phpcs:disable
 		$messages = $wpdb->get_results(
 			"SELECT mess.* FROM " . USPC_PREF . "chat_messages as mess,"
 			. "(SELECT chat_id,"
@@ -71,6 +74,8 @@ class USPC_Direct_Message_Datas {
 			. "LIMIT " . $this->in_page
 			, ARRAY_A
 		);
+
+		// phpcs:enable
 
 		return wp_unslash( $messages );
 	}
