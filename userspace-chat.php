@@ -40,6 +40,7 @@ if ( in_array( 'userspace/userspace.php', apply_filters( 'active_plugins', get_o
 
 		$notice = '<div class="notice notice-error">';
 		$notice .= '<p>' . __( 'UserSpace plugin not installed!', 'userspace-chat' ) . '</p>';
+		$notice .= '<p>' . __( 'This is required for the Userspace Chat plugin to work.', 'userspace-chat' ) . '</p>';
 		/* translators: %s: opening <a> and closing </a> tag */
 		$notice .= '<p>' . sprintf( __( 'Go to the page %1$sPlugins%2$s - install and activate the UserSpace plugin', 'userspace-chat' ), '<a href="' . $url . '">"', '"</a>' ) . '</p>';
 		$notice .= '</div>';
