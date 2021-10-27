@@ -902,3 +902,16 @@ function uspc_is_close_modal(html) {
 
     uspc_scroll_by_selector('.uspc-im__talk');
 }
+
+// pm in modal window
+// open PM in modal: 1 - this; 2 - id chat user
+function uspc_get_chat_window(e, user_id) {
+    usp_preloader_show(jQuery(e), 36);
+
+    usp_ajax({
+        data: {
+            action: 'uspc_get_ajax_chat_window',
+            user_id: user_id
+        }
+    });
+}

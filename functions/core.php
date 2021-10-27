@@ -236,3 +236,31 @@ function uspc_allowed_tags() {
 		],
 	] );
 }
+
+// add the "Send private message" button to the template user-rows.php
+add_action( 'usp_user_fields_after', 'uspc_add_button_in_user_rows', 30 );
+function uspc_add_button_in_user_rows( $user ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo uspc_add_button_in_user_template( $user );
+}
+
+// add the "Send private message" button to the template user-masonry.php
+add_action( 'usp_masonry_buttons', 'uspc_add_button_in_user_masonry', 30 );
+function uspc_add_button_in_user_masonry( $user ) {
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo uspc_add_button_in_user_template( $user, 1 );
+}
+
+function uspc_add_button_in_user_template( $user, $fullwidth = false ) {
+	if ( get_current_user_id() == $user->ID ) {
+		return false;
+	}
+	usp_fileupload_scripts();
+
+	return usp_get_button( [
+		'label'     => __( 'Send private message', 'userspace-chat' ),
+		'icon'      => 'fa-comments',
+		'onclick'   => 'uspc_get_chat_window( this, ' . $user->ID . ' ); return false;',
+		'fullwidth' => $fullwidth,
+	] );
+}
