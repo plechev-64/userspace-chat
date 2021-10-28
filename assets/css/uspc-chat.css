@@ -422,6 +422,13 @@
     opacity: 0;
 }
 
+/**/
+
+#usp-subtab-private-contacts .usp-subtab-title > span {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
 
 /**/
 .uspc-userlist {
