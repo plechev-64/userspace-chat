@@ -383,10 +383,8 @@ function uspc_chat_words_count(e, elem) {
 }
 
 // noinspection JSUnusedGlobalSymbols
-function uspc_chat_remove_contact(e, chat_id) {
+function uspc_chat_remove_contact(e, chat_id, contact) {
     usp_preloader_show('.uspc-userlist');
-
-    var contact = jQuery(e).parents('.uspc-contact-box').data('contact');
 
     usp_ajax({
         data: {
@@ -394,7 +392,6 @@ function uspc_chat_remove_contact(e, chat_id) {
             chat_id: chat_id
         },
         success: function (data) {
-
             if (data['remove']) {
                 jQuery('[data-contact="' + contact + '"]').animateCss('flipOutX', function (e) {
                     jQuery(e).remove();
@@ -912,13 +909,34 @@ function uspc_is_close_modal(html) {
 
 // pm in modal window
 // open PM in modal: 1 - this; 2 - id chat user
-function uspc_get_chat_window(e, user_id) {
+function uspc_get_chat_window(e, user_id, htmlClass) {
     usp_preloader_show(jQuery(e), 36);
 
     usp_ajax({
         data: {
             action: 'uspc_get_ajax_chat_window',
-            user_id: user_id
+            user_id: user_id,
+            class: htmlClass
         }
     });
+}
+
+// userlist in modal
+function uspc_get_userlist(e) {
+    usp_preloader_show(jQuery(e), 36);
+
+    usp_ajax({
+        data: {
+            action: 'uspc_get_userlist'
+        }
+    });
+}
+
+// reloading page if it is a personal account page where modal chat closed
+usp_add_action('usp_dialog_closed', 'uspc_reload');
+
+function uspc_reload(callback, result) {
+    if (callback == 'uspc_get_ajax_chat_window' && jQuery('.uspc-not-contacts').length > 0) {
+        location.reload();
+    }
 }

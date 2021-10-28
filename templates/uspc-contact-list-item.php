@@ -44,7 +44,7 @@ $data_contact = 'data-contact="' . $message['contact_id'] . '"';
 $onclick      = 'onclick="uspc_get_chat_dm(this,' . $message['contact_id'] . ');return false;"';
 ?>
 
-<div class="uspc-contact-wrap usps__relative">
+<div class="uspc-contact-wrap usps__relative" <?php echo wp_kses_data( $data_contact ); ?> >
 	<?php $menu = new USP_Dropdown_Menu( 'uspc_contactlist' );
 
 	$menu->add_button( [
@@ -57,13 +57,13 @@ $onclick      = 'onclick="uspc_get_chat_dm(this,' . $message['contact_id'] . ');
 	$menu->add_button( [
 		'class'   => 'uspc-contact__del',
 		'label'   => __( 'Delete contact', 'userspace-chat' ),
-		'onclick' => 'uspc_chat_remove_contact( this,' . $message['contact_id'] . ' );return false;',
+		'onclick' => 'uspc_chat_remove_contact( this,' . $message['chat_id'] . ',' . $message['contact_id'] . ' );return false;',
 		'icon'    => 'fa-times',
 	] );
 
 	echo $menu->get_content(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	?>
-    <div class="<?php echo esc_html( $class ); ?>" <?php echo wp_kses_data( $data_unread ); ?> <?php echo wp_kses_data( $data_contact ); ?> <?php echo wp_kses_data( $onclick ); ?>>
+    <div class="<?php echo esc_html( $class ); ?>" <?php echo wp_kses_data( $data_unread ); ?> <?php echo wp_kses_data( $onclick ); ?>>
         <div class="uspc-contact__ava usps usps__column usps__ai-center usps__shrink-0 usps__relative">
 			<?php echo wp_kses( usp_get_avatar( $message['contact_id'], 50, false, [ 'class' => 'uspc-contact-ava__img usps__radius-50' ] ), uspc_allowed_tags() ); ?>
 			<?php echo wp_kses( USP()->user( $message['contact_id'] )->get_action_icon(), uspc_allowed_tags() ); ?>

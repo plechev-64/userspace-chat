@@ -63,13 +63,25 @@ class USPC_Contact_List {
 	}
 
 	function get_notice() {
+		usp_enqueue_style( 'usp-users-rows', USP_URL . 'modules/users-list/assets/css/usp-users-rows.css' );
+
 		$notice = __( 'No contacts yet. Start a chat with another user on his page', 'userspace-chat' );
 
 		if ( usp_get_option( 'usp_users_page' ) ) {
-			$notice .= '. <a href="' . get_permalink( usp_get_option( 'usp_users_page' ) ) . '">' . __( 'Choose from the list of users', 'userspace-chat' ) . '</a>.';
+			$notice .= '. <a href="' . get_permalink( usp_get_option( 'usp_users_page' ) ) . '">' . __( 'Choose from the list of users', 'userspace-chat' ) . '</a>.<br>';
 		}
 
-		return usp_get_notice( [ 'text' => apply_filters( 'uspc_no_contacts_notice', $notice, $this->user_id ) ] );
+		$notice .= usp_get_button( [
+			'type'       => 'clear',
+			'label'      => __( 'Open userlist in a modal window', 'userspace-chat' ),
+			'size'       => 'no',
+			'icon'       => 'fa-window-restore',
+			'icon_align' => 'right',
+			'onclick'    => 'uspc_get_userlist(this);return false;',
+			'class'      => 'uspc-userlist',
+		] );
+
+		return usp_get_notice( [ 'text' => apply_filters( 'uspc_no_contacts_notice', $notice, $this->user_id ), 'class' => 'uspc-not-contacts' ] );
 	}
 
 	function get_box() {

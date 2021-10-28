@@ -9,6 +9,7 @@ function uspc_get_ajax_chat_window() {
 	}
 
 	$user_id = intval( $_POST['user_id'] );
+	$class   = isset( $_POST['class'] ) ? ' ' . sanitize_html_class( wp_unslash( $_POST['class'] ) ) : false;
 
 	$chatdata = uspc_get_chat_private( $user_id );
 
@@ -17,7 +18,7 @@ function uspc_get_ajax_chat_window() {
 	wp_send_json( [
 		'dialog' => [
 			'content'     => uspc_get_chat_box( $chatdata['content'], $header ),
-			'class'       => 'uspc-chat-modal ssi-dialog ssi-no-padding',
+			'class'       => 'uspc-chat-modal ssi-dialog ssi-no-padding' . $class,
 			'size'        => 'medium',
 			'buttonClose' => false,
 			'onClose'     => [ 'uspc_chat_clear_beat', [ $chatdata['token'] ] ],
@@ -323,4 +324,26 @@ function uspc_get_direct_message() {
 	$resp['content'] = uspc_get_chat_box( $chatdata['content'], $header );
 
 	wp_send_json( $resp );
+}
+
+usp_ajax_action( 'uspc_get_userlist' );
+function uspc_get_userlist() {
+	usp_verify_ajax_nonce();
+
+	USP()->use_module( 'users-list' );
+
+	$manager = new USP_Users_Manager( [ 'pagenavi' => 1, 'orderby' => 'date_action', 'custom_data' => 'posts,comments,user_registered', 'id__not_in' => get_current_user_id() ] );
+
+	$content = '<div class="usp-users-list">';
+	$content .= $manager->get_manager();
+	$content .= '</div>';
+
+	wp_send_json( [
+		'dialog' => [
+			'content'     => $content,
+			'class'       => 'uspc-chat-modal ssi-no-padding',
+			'size'        => 'medium',
+			'buttonClose' => false,
+		],
+	] );
 }
