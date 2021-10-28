@@ -63,8 +63,6 @@ class USPC_Contact_List {
 	}
 
 	function get_notice() {
-		usp_enqueue_style( 'usp-users-rows', USP_URL . 'modules/users-list/assets/css/usp-users-rows.css' );
-
 		$notice = __( 'No contacts yet. Start a chat with another user on his page', 'userspace-chat' ) . '<br>';
 
 		$notice .= usp_get_button( [
