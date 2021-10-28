@@ -338,12 +338,12 @@ function uspc_get_userlist() {
 	$content .= $manager->get_manager();
 	$content .= '</div>';
 
-	wp_send_json( [
+	return [
 		'dialog' => [
 			'content'     => $content,
 			'class'       => 'uspc-chat-modal ssi-no-padding',
 			'size'        => 'medium',
 			'buttonClose' => false,
 		],
-	] );
+	];
 }
