@@ -159,6 +159,13 @@ function uspc_insert_emoji_enabled_bttn(box) {
     uspc_enable_button(form);
 }
 
+usp_add_action('usp_get_emoji_ajax', 'uspc_auto_height_emoji_lists');
+
+function uspc_auto_height_emoji_lists() {
+    let messageBox = jQuery('.uspc-im__box').outerHeight() + 50; // +50px on top panel
+    jQuery('.usp-emoji__all').css({'max-height': messageBox});
+}
+
 // send button disabled after delete file if empty textarea
 usp_add_action('usp_uploader_delete', 'uspc_delete_attachment_actions');
 
