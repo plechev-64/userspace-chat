@@ -103,8 +103,6 @@ function uspc_get_tab_user_important( $user_id ) {
 add_filter( 'usp_subtab_title', 'uspc_add_counter_in_subtitle', 10, 2 );
 function uspc_add_counter_in_subtitle( $title, $subtab_id ) {
 	if ( 'private-contacts' == $subtab_id && usp_is_office( get_current_user_id() ) ) {
-		usp_enqueue_style( 'usp-users-rows', USP_URL . 'modules/users-list/assets/css/usp-users-rows.css' );
-
 		$contacts_num = USPC()->private_messages_data->contacts;
 
 		$number = '';

@@ -332,7 +332,13 @@ function uspc_get_userlist() {
 
 	USP()->use_module( 'users-list' );
 
-	$manager = new USP_Users_Manager( [ 'pagenavi' => 1, 'orderby' => 'date_action', 'custom_data' => 'posts,comments,user_registered', 'id__not_in' => get_current_user_id() ] );
+	$manager = new USP_Users_Manager( [
+		'style_in_content' => 1,
+		'pagenavi'         => 1,
+		'orderby'          => 'date_action',
+		'custom_data'      => 'posts,comments,user_registered',
+		'id__not_in'       => get_current_user_id()
+	] );
 
 	$content = '<div class="usp-users-list">';
 	$content .= $manager->get_manager();
