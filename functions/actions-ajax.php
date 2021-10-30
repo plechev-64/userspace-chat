@@ -59,6 +59,21 @@ function uspc_get_contacts_navi() {
 	wp_send_json( $res );
 }
 
+usp_ajax_action( 'uspc_get_contact_list' );
+function uspc_get_contact_list() {
+	usp_verify_ajax_nonce();
+
+	require_once USPC_PATH . 'classes/class-uspc-contact-list.php';
+
+	$contactlist = new USPC_Contact_List();
+
+	$res['content'] = $contactlist->get_box();
+	
+	$res['amount'] = USPC()->private_messages_data->contacts;
+
+	wp_send_json( $res );
+}
+
 usp_ajax_action( 'uspc_get_chat_page', true );
 function uspc_get_chat_page() {
 	usp_verify_ajax_nonce();

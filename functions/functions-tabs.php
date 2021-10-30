@@ -107,7 +107,7 @@ function uspc_add_counter_in_subtitle( $title, $subtab_id ) {
 
 		$number = '';
 		if ( $contacts_num ) {
-			$number = ': <span>' . $contacts_num . '</span>';
+			$number = ': <span class="uspc-amount-contacts">' . $contacts_num . '</span>';
 		}
 
 		$userlist = usp_get_button( [

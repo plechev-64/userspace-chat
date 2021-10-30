@@ -18,14 +18,12 @@ class USPC_Direct_Message_Data {
 			$this->in_page = $args['in_page'];
 		}
 
-		//if ( usp_is_office() || usp_get_option( 'uspc_contact_panel', 0 ) ) {
 		$this->chat_ids = $this->get_user_pm_contacts();
 		if ( $this->chat_ids ) {
 			$this->contacts = count( explode( ',', $this->chat_ids ) );
 		}
 
 		$this->messages = $this->get_messages();
-		//}
 
 		if ( usp_is_office() || usp_get_option( 'uspc_contact_panel', 0 ) || usp_get_option_customizer( 'usp_bar_show', 1 ) ) {
 			$this->unread = $this->count_noread_messages();
@@ -37,12 +35,15 @@ class USPC_Direct_Message_Data {
 		global $wpdb;
 
 		// phpcs:disable
-		$chats = $wpdb->get_col(
-			"SELECT DISTINCT (chat_id) "
-			. "FROM " . USPC_PREF . "chat_messages "
-			. "WHERE private_key != '0' "
-			. "AND (user_id='$this->user_id' OR private_key='$this->user_id');"
-		);
+		$chats = $wpdb->get_col( "
+			SELECT chat_id FROM " . USPC_PREF . "chat_users 
+			WHERE chat_id IN ( SELECT DISTINCT( chat_id ) 
+			FROM " . USPC_PREF . "chat_messages 
+			WHERE private_key != '0' 
+			AND ( user_id = '$this->user_id' or private_key = '$this->user_id' )) 
+			AND user_id = '$this->user_id' 
+			AND user_status !='0'
+			" );
 		// phpcs:enable
 
 		if ( $chats ) {

@@ -1,5 +1,5 @@
 /* global USP, USPUploaders, usp_beats, ssi_modal */
-// noinspection JSUnresolvedFunction,JSUnresolvedVariable ,EqualityComparisonWithCoercionJS
+// noinspection JSUnresolvedFunction,JSUnresolvedVariable ,EqualityComparisonWithCoercionJS,JSCheckFunctionSignatures,JSUnusedGlobalSymbols
 
 var uspc_last_activity = {}; //last request for new messages 
 var uspc_beat = []; //array of open chats
@@ -80,7 +80,6 @@ function uspc_get_wrap_im_by_token(token) {
     return jQuery('.uspc-im[data-token="' + token + '"]');
 }
 
-// noinspection JSUnusedGlobalSymbols
 function uspc_chat_add_message(e) {
     if (uspc_connection_is()) {
         let form = jQuery(e).parents('.uspc-im__form');
@@ -120,7 +119,6 @@ function uspc_chat_clear_beat(token) {
     console.log('chat beat ' + token + ' clear');
 }
 
-// noinspection JSUnusedGlobalSymbols
 function uspc_init_chat(chat) {
     chat = usp_apply_filters('uspc_init', chat);
 
@@ -285,7 +283,6 @@ function uspc_chat_add_new_message(form) {
     return false;
 }
 
-// noinspection JSUnusedGlobalSymbols
 function uspc_chat_navi(page, e) {
     uspc_chat_inactivity_cancel();
 
@@ -321,7 +318,6 @@ function uspc_chat_navi(page, e) {
     return false;
 }
 
-// noinspection JSUnusedGlobalSymbols
 function uspc_contacts_navi(page, e) {
     usp_preloader_show('.usp-subtab-content');
 
@@ -342,7 +338,6 @@ function uspc_contacts_navi(page, e) {
     return false;
 }
 
-// noinspection JSUnusedGlobalSymbols
 function uspc_chat_words_count(e, elem) {
     // noinspection JSDeprecatedSymbols
     let evt = e || window.event;
@@ -382,7 +377,6 @@ function uspc_chat_words_count(e, elem) {
     jQuery(elem).parents('.uspc-im__form').find('.uspc-im-form__sign-count').css('color', color).text(counter);
 }
 
-// noinspection JSUnusedGlobalSymbols
 function uspc_chat_remove_contact(e, chat_id, contact) {
     usp_preloader_show('.uspc-userlist');
 
@@ -398,6 +392,9 @@ function uspc_chat_remove_contact(e, chat_id, contact) {
                 });
 
                 usp_do_action('uspc_removed_contact', chat_id);
+
+                let count = jQuery('.uspc-amount-contacts');
+                count.html(count.text() - 1);
             }
         }
     });
@@ -425,7 +422,7 @@ function uspc_important_load(e) {
     }
 }
 
-// noinspection JSUnusedGlobalSymbols
+
 function uspc_chat_message_important(message_id) {
     usp_preloader_show('.uspc-post[data-message="' + message_id + '"] > div');
 
@@ -442,13 +439,12 @@ function uspc_chat_message_important(message_id) {
     return false;
 }
 
-// noinspection JSUnusedGlobalSymbols
 function uspc_chat_important_manager_shift(e, status) {
     usp_preloader_show('.uspc-im__box');
 
     uspc_important = status;
 
-    var token = jQuery(e).parents('.uspc-head-box').nextAll('.uspc-im').data('token');
+    let token = jQuery(e).parents('.uspc-head-box').nextAll('.uspc-im').data('token');
 
     usp_ajax({
         data: {
@@ -478,7 +474,6 @@ function uspc_chat_important_manager_shift(e, status) {
     return false;
 }
 
-// noinspection JSUnusedGlobalSymbols
 function uspc_chat_delete_message(message_id) {
     usp_preloader_show('.uspc-post[data-message="' + message_id + '"] > div');
 
@@ -501,7 +496,6 @@ function uspc_chat_delete_message(message_id) {
     return false;
 }
 
-// noinspection JSUnusedGlobalSymbols
 function uspc_chat_delete_attachment(e, attachment_id) {
     usp_preloader_show('.uspc-im__form');
 
@@ -596,9 +590,9 @@ function uspc_chat_beat_success(data) {
 
 // add in top dm status
 function uspc_status_in_chat(chat, allData) {
-    var head = chat.parents('.uspc-messenger-box').find('.uspc-head-box');
-    var headStatus = head.find('.uspc-head__status');
-    var users = [];
+    let head = chat.parents('.uspc-messenger-box').find('.uspc-head-box');
+    let headStatus = head.find('.uspc-head__status');
+    let users = [];
 
     jQuery.each(allData, function (index, data) {
         users.push(+data['user_id']);
@@ -619,7 +613,6 @@ function uspc_status_in_chat(chat, allData) {
 }
 
 // open direct message
-// noinspection JSUnusedGlobalSymbols
 function uspc_get_chat_dm(e, user_id) {
     usp_preloader_show(jQuery(e));
 
@@ -652,8 +645,9 @@ function uspc_set_chat_button_in_menu_active(e) {
 
 //
 jQuery(function ($) {
+    let body = $('body');
     // after leaving the communication, clear usp_beat
-    $('body').on('click', '.uspc-head__bttn', function () {
+    body.on('click', '.uspc-head__bttn', function () {
         let tok = $('.uspc-head__bttn').data('token-dm');
         uspc_chat_clear_beat(tok);
     });
@@ -661,8 +655,8 @@ jQuery(function ($) {
     uspc_auto_height_textarea();
 
     // click on the block with unread - we will reduce the counters
-    $('body').on('click', '.uspc-unread__incoming', function () {
-        var cnt = $('#usp-tab__chat .usp-bttn__count').text(),
+    body.on('click', '.uspc-unread__incoming', function () {
+        let cnt = $('#usp-tab__chat .usp-bttn__count').text(),
             bttn = $('.uspc_js_counter_unread .usp-bttn__count');
 
         if (cnt > 1) {
@@ -692,7 +686,7 @@ function uspc_logged_in_to_dm() {
     let mess = jQuery('.uspc-post');
     if (mess.length >= 1) {
         setTimeout(function () {
-            jQuery('.uspc-post').scrollTop(jQuery('.uspc-post').get(0).scrollHeight);
+            mess.scrollTop(mess.get(0).scrollHeight);
         }, 200);
     }
 
@@ -748,7 +742,6 @@ function uspc_slide_to_textarea(top = 0) {
 
 /* end */
 
-// noinspection JSUnusedGlobalSymbols
 function uspc_on_off_sound() {
     let mute = (+jQuery.cookie('uspc_sound_off') === 1) ? 0 : 1;
 
@@ -820,12 +813,13 @@ function uspc_run_in_chat() {
 }
 
 function uspc_max_width() {
-    let maxWidth = Math.max.apply(null, jQuery('.uspc-date__day').map(function () {
+    let day = jQuery('.uspc-date__day');
+    let maxWidth = Math.max.apply(null, day.map(function () {
             return jQuery(this).outerWidth(true);
         }).get()
     );
 
-    jQuery('.uspc-date__day').css({'min-width': maxWidth});
+    day.css({'min-width': maxWidth});
 }
 
 function uspc_date_sticky() {
@@ -859,11 +853,8 @@ function uspc_hide_date() {
             jQuery(".uspc-date-sticky").addClass('uspc-date-hide');
         }, 2000);
     }
-
-    return;
 }
 
-// noinspection JSUnusedGlobalSymbols
 function uspc_focus_modal_shift(i) {
     let chat = jQuery(i).parents('.uspc-messenger-js');
     let html = chat.html();
@@ -932,11 +923,38 @@ function uspc_get_userlist(e) {
     });
 }
 
-// reloading page if it is a personal account page where modal chat closed
+// reloading contact list if it is a personal account page where modal chat closed
 usp_add_action('usp_dialog_closed', 'uspc_reload');
 
-function uspc_reload(callback, result) {
-    if (callback == 'uspc_get_ajax_chat_window' && jQuery('.uspc-not-contacts').length > 0) {
-        location.reload();
+function uspc_reload(callback) {
+    if (callback == 'uspc_get_ajax_chat_window') {
+        // not in your personal account
+        if (USP.office_ID != USP.user_ID) {
+            return;
+        }
+
+        if (jQuery('.uspc-not-contacts').length > 0) {
+            location.reload();
+        } else {
+            uspc_get_contact_list();
+        }
     }
+}
+
+function uspc_get_contact_list() {
+    usp_preloader_show('.usp-subtab-content');
+
+    usp_ajax({
+        data: {
+            action: 'uspc_get_contact_list'
+        },
+        success: function (data) {
+            if (data['content']) {
+                jQuery('.usp-subtab-content').empty().append(data['content']);
+                jQuery('.uspc-amount-contacts').html(data['amount']);
+            }
+        }
+    });
+
+    return false;
 }
