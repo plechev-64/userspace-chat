@@ -252,7 +252,7 @@ function uspc_add_button_in_user_masonry( $user ) {
 }
 
 function uspc_add_button_in_user_template( $user, $fullwidth = false ) {
-	if ( get_current_user_id() == $user->ID ) {
+	if ( ! is_user_logged_in() || get_current_user_id() == $user->ID ) {
 		return false;
 	}
 	usp_fileupload_scripts();
