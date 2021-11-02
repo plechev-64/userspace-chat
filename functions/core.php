@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpMissingReturnTypeInspection */
 
 function uspc_get_chat_private( $user_id, $args = [] ) {
 	$chat_room = uspc_get_private_chat_room( $user_id, get_current_user_id() );
@@ -245,7 +245,7 @@ function uspc_add_button_in_user_rows( $user ) {
 }
 
 // add the "Send private message" button to the template user-masonry.php
-add_action( 'usp_masonry_buttons', 'uspc_add_button_in_user_masonry', 30 );
+add_action( 'usp_user_masonry_buttons', 'uspc_add_button_in_user_masonry', 30 );
 function uspc_add_button_in_user_masonry( $user ) {
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo uspc_add_button_in_user_template( $user, 1 );
