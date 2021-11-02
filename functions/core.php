@@ -238,8 +238,12 @@ function uspc_allowed_tags() {
 }
 
 // add the "Send private message" button to the template user-rows.php
-add_action( 'usp_user_fields_after', 'uspc_add_button_in_user_rows', 30 );
-function uspc_add_button_in_user_rows( $user ) {
+add_action( 'usp_user_fields_after', 'uspc_add_button_in_user_rows', 30, 3 );
+function uspc_add_button_in_user_rows( $user, $custom_data, $template ) {
+	if ( 'modal' === $template ) {
+		return;
+	}
+
 	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	echo uspc_add_button_in_user_template( $user );
 }
