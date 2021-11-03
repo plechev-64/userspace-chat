@@ -38,7 +38,7 @@ class USPC_Loader {
 			require_once USPC_PATH . 'admin/options.php';
 		}
 
-		usp_init_beat( 'uspc_chat_beat_core' );
+		usp_init_beat( 'uspc_chat_beat_core', [ 'uspc_chat_beat_core' ] );
 	}
 
 	private function init_hooks() {
