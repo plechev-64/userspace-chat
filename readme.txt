@@ -3,7 +3,7 @@ Contributors: wppost
 Donate link: http://user-space.com/
 Tags: private message, messaging, chat, message, personal messages
 Requires at least: 4.6
-Tested up to: 5.5
+Tested up to: 5.51
 Stable tag: 1.0
 Requires PHP: 7.0
 License: GPL v2 or later
