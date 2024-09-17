@@ -2,7 +2,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-class USPC_Chats_Query extends USP_Query {
+class USPC_Chats_Query extends QueryBuilder {
 	function __construct() {
 
 		$table = [
@@ -20,7 +20,7 @@ class USPC_Chats_Query extends USP_Query {
 
 }
 
-class USPC_Chat_Users_Query extends USP_Query {
+class USPC_Chat_Users_Query extends QueryBuilder {
 	function __construct() {
 
 		$table = [
@@ -41,7 +41,7 @@ class USPC_Chat_Users_Query extends USP_Query {
 
 }
 
-class USPC_Chat_Messages_Query extends USP_Query {
+class USPC_Chat_Messages_Query extends QueryBuilder {
 	function __construct() {
 
 		$table = [
@@ -63,7 +63,7 @@ class USPC_Chat_Messages_Query extends USP_Query {
 
 }
 
-class USPC_Chat_Messagemeta_Query extends USP_Query {
+class USPC_Chat_Messagemeta_Query extends QueryBuilder {
 	function __construct() {
 
 		$table = [
