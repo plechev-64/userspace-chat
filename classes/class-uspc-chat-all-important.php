@@ -55,7 +55,7 @@ class USPC_Chat_All_Important extends USPC_Chat {
 			return $this->message_no_important();
 		}
 
-		$pagenavi = new USP_Pager( [
+		$pagenavi = new Pager( [
 			'total'   => $this->count_important,
 			'current' => $this->current_page,
 			'class'   => 'uspc-im__nav',

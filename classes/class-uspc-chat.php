@@ -453,7 +453,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$content_messages = '';
 		$class            = '';
 		if ( $amount_messages ) {
-			$pagenavi = new USP_Pager( [
+			$pagenavi = new Pager( [
 				'total'   => $amount_messages,
 				'number'  => $this->query['number'],
 				'current' => $this->paged,

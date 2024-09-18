@@ -121,7 +121,7 @@ class USPC_Contact_List {
 	}
 
 	function get_pagination() {
-		$pagenavi = new USP_Pager( [
+		$pagenavi = new Pager( [
 			'total'   => USPC()->private_messages_data->contacts,
 			'number'  => $this->in_page,
 			'current' => $this->current,
