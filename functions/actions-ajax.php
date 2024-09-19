@@ -347,7 +347,7 @@ function uspc_get_userlist() {
 
 	USP()->use_module( 'users-list' );
 
-	$manager = new USP_Users_Manager( [
+	$manager = new UsersManager( [
 		'style_in_content' => 1,
 		'pagenavi'         => 1,
 		'orderby'          => 'date_action',
