@@ -64,7 +64,7 @@ if ( $user_id > 0 ) {
 
         <div class="uspc-head__right usps usps__relative">
 			<?php
-			$menu = new USP_Dropdown_Menu( 'uspc_header' );
+			$menu = new DropdownMenu( 'uspc_header' );
 			$icon = ( isset( $_COOKIE['uspc_sound_off'] ) && intval( wp_unslash( $_COOKIE['uspc_sound_off'] ) ) ) ? 'fa-volume-off' : 'fa-volume-up';
 
 			if ( is_user_logged_in() ) {

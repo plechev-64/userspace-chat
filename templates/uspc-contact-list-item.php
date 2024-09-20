@@ -45,7 +45,7 @@ $onclick      = 'onclick="uspc_get_chat_dm(this,' . $message['contact_id'] . ');
 ?>
 
 <div class="uspc-contact-wrap usps__relative" <?php echo wp_kses_data( $data_contact ); ?> >
-	<?php $menu = new USP_Dropdown_Menu( 'uspc_contactlist' );
+	<?php $menu = new DropdownMenu( 'uspc_contactlist' );
 
 	$menu->add_button( [
 		'class'   => 'uspc-menu__user-info',

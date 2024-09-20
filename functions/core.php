@@ -145,7 +145,7 @@ function uspc_css_variable( $styles ) {
 
 // Link in to chat on userspace bar
 add_action( 'usp_dropdown_menu', 'uspc_bar_add_chat_link', 5, 2 );
-function uspc_bar_add_chat_link( $menu_id, USP_Dropdown_Menu $menu ) {
+function uspc_bar_add_chat_link( $menu_id, DropdownMenu $menu ) {
 	if ( 'usp_bar_profile_menu' !== $menu_id ) {
 		return;
 	}

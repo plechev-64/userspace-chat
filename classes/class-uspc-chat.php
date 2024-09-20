@@ -358,7 +358,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 		$uploader = false;
 		if ( $this->file_upload ) {
-			$uploader = new USP_Uploader( 'uspc_chat_uploader', [
+			$uploader = new Uploader( 'uspc_chat_uploader', [
 				'multiple'     => 0,
 				'max_files'    => 1,
 				'crop'         => 0,
