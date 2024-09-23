@@ -345,8 +345,6 @@ usp_ajax_action( 'uspc_get_userlist' );
 function uspc_get_userlist() {
 	usp_verify_ajax_nonce();
 
-	USP()->use_module( 'users-list' );
-
 	$manager = new UsersManager( [
 		'style_in_content' => 1,
 		'pagenavi'         => 1,

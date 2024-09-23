@@ -21,7 +21,6 @@ class USPC_Loader {
 	}
 
 	private function includes() {
-		USP()->use_module( 'uploader' );
 
 		require_once USPC_PATH . 'classes/class-uspc-query-tables.php';
 		require_once USPC_PATH . 'functions/core.php';
@@ -94,7 +93,6 @@ class USPC_Loader {
 	}
 
 	function get_contacts_panel_resources() {
-		USP()->use_module( 'fields' );
 		usp_dialog_scripts();
 		$this->chat_resources();
 

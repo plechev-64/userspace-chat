@@ -62,8 +62,6 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 			return;
 		}
 
-		USP()->use_module( 'forms' );
-
 		$this->load_resources();
 
 		$this->chat_token = base64_encode( $this->chat_room );
