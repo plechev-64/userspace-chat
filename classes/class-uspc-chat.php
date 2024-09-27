@@ -100,8 +100,8 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 	}
 
 	public function load_resources() {
-		usp_enqueue_style( 'uspc-chat', USPC_URL . 'assets/css/uspc-chat.css' );
-		usp_enqueue_script( 'uspc-chat', USPC_URL . 'assets/js/uspc-chat.js' );
+		wp_enqueue_style( 'uspc-chat', USPC_URL . 'assets/css/uspc-chat.css' );
+		wp_enqueue_script( 'uspc-chat', USPC_URL . 'assets/js/uspc-chat.js' );
 	}
 
 	function init_properties( $args ) {

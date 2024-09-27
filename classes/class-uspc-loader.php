@@ -96,8 +96,8 @@ class USPC_Loader {
 		usp_dialog_scripts();
 		$this->chat_resources();
 
-		usp_enqueue_style( 'uspc-contacts-panel', USPC_URL . 'assets/css/uspc-contacts-panel.css' );
-		usp_enqueue_script( 'uspc-contacts-panel', USPC_URL . 'assets/js/uspc-contacts-panel.js' );
+		wp_enqueue_style( 'uspc-contacts-panel', USPC_URL . 'assets/css/uspc-contacts-panel.css' );
+		wp_enqueue_script( 'uspc-contacts-panel', USPC_URL . 'assets/js/uspc-contacts-panel.js' );
 	}
 
 	// Chat icon with unread messages
@@ -126,8 +126,8 @@ class USPC_Loader {
 
 	// load direct messages & chat js & css
 	public function chat_resources() {
-		usp_enqueue_style( 'uspc-chat', USPC_URL . 'assets/css/uspc-chat.css' );
-		usp_enqueue_script( 'uspc-chat', USPC_URL . 'assets/js/uspc-chat.js' );
+		wp_enqueue_style( 'uspc-chat', USPC_URL . 'assets/css/uspc-chat.css' );
+		wp_enqueue_script( 'uspc-chat', USPC_URL . 'assets/js/uspc-chat.js' );
 	}
 
 	function init_js_chat_variables( $data ) {
