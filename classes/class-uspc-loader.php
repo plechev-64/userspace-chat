@@ -6,7 +6,7 @@ class USPC_Loader {
 
 	protected static $_instance = null;
 	public $private_messages_data;
-
+    private $container;
 	public static function instance() {
 		if ( is_null( self::$_instance ) ) {
 			self::$_instance = new self();
@@ -15,9 +15,19 @@ class USPC_Loader {
 		return self::$_instance;
 	}
 
+    /**
+     * @param mixed $container
+     */
+    public function setContainer($container): void
+    {
+        $this->container = $container;
+    }
+
 	public function __construct() {
 		$this->includes();
-		$this->init_hooks();
+        add_action('plugins_loaded', function(){
+            $this->init_hooks();
+        });
 	}
 
 	private function includes() {

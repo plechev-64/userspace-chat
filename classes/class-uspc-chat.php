@@ -356,7 +356,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 
 		$uploader = false;
 		if ( $this->file_upload ) {
-			$uploader = new Uploader( 'uspc_chat_uploader', [
+			$uploader = new \USP\Core\Module\Fields\FieldUploader( 'uspc_chat_uploader', [
 				'multiple'     => 0,
 				'max_files'    => 1,
 				'crop'         => 0,
@@ -451,7 +451,7 @@ class USPC_Chat extends USPC_Chat_Messages_Query {
 		$content_messages = '';
 		$class            = '';
 		if ( $amount_messages ) {
-			$pagenavi = new Pager( [
+			$pagenavi = new \USP\Core\Pager( [
 				'total'   => $amount_messages,
 				'number'  => $this->query['number'],
 				'current' => $this->paged,

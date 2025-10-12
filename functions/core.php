@@ -1,6 +1,8 @@
 <?php /** @noinspection PhpMissingReturnTypeInspection */
 
-function uspc_get_chat_private( $user_id, $args = [] ) {
+use USP\Core\Module\DropdownMenu\DropdownMenu;
+
+function uspc_get_chat_private($user_id, $args = [] ) {
 	$chat_room = uspc_get_private_chat_room( $user_id, get_current_user_id() );
 
 	return uspc_get_the_chat_by_room( $chat_room, $args );

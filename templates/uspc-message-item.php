@@ -80,7 +80,7 @@ $class .= ( isset( $message['important'] ) && $message['important'] ) ? ' uspc-p
 	<?php if ( $user_id ) : ?>
         <div class="uspc-post__do usps usps__column usps__ai-center">
 			<?php
-			$menu = new DropdownMenu( 'uspc_dialog' );
+			$menu = new \USP\Core\Module\DropdownMenu\DropdownMenu( 'uspc_dialog' );
 
 			$menu->add_button( [
 				'class'   => 'uspc-post-do__bttn uspc-post-do__important',

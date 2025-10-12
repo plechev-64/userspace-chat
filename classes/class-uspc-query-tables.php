@@ -1,5 +1,7 @@
 <?php
 
+use USP\Core\Query\QueryBuilder;
+
 defined( 'ABSPATH' ) || exit;
 
 class USPC_Chats_Query extends QueryBuilder {
