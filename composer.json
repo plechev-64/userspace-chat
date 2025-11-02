@@ -1,0 +1,20 @@
+{
+  "name" : "your-vendor/userspace-chat",
+  "description" : "Чат для плагина UserSpace",
+  "type" : "wordpress-plugin",
+  "license" : "GPL-2.0-or-later",
+  "authors" : [
+    {
+      "name" : "Your Name",
+      "homepage" : "https://example.com/"
+    }
+  ],
+  "require" : {
+    "php" : ">=8.1"
+  },
+  "autoload" : {
+    "psr-4" : {
+      "UserSpace\\Chat\\" : "src/"
+    }
+  }
+}
