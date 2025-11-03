@@ -81,6 +81,23 @@
     font-weight: 600;
 }
 
+.usp-chat-list-item-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.usp-chat-contact-status {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #ccc; /* Offline by default */
+}
+
+.usp-chat-contact-status--online {
+    background-color: #28a745; /* Green for online */
+}
+
 .usp-chat-list p {
     padding: 15px;
     color: #666;

@@ -8,6 +8,7 @@ use UserSpace\Chat\Controller\ChatController;
 use UserSpace\Chat\Integration\ChatShortcode;
 use UserSpace\Chat\Integration\PrivateChatTab;
 use UserSpace\Chat\Settings\ChatSettingsConfigurator;
+use UserSpace\Chat\SSE\ActivityEventSource;
 use UserSpace\Chat\SSE\ChatEventSource;
 use UserSpace\Common\Module\Settings\Src\Domain\Configurator\SettingsConfigRegistryInterface;
 use UserSpace\Core\Addon\AddonInterface;
@@ -135,5 +136,6 @@ class Chat implements AddonInterface
     {
         $sseRegistry = $container->get(SseEventSourceRegistryInterface::class);
         $sseRegistry->register(ChatEventSource::class);
+        $sseRegistry->register(ActivityEventSource::class);
     }
 }

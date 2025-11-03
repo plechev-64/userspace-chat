@@ -37,13 +37,16 @@ class ChatRepository implements ChatRepositoryInterface
     {
         $participantsTable = $this->db->getPrefix() . 'userspace_chat_participants';
         $usersTable = $this->db->getPrefix() . 'users';
+        $activityTable = $this->db->getPrefix() . 'userspace_users_activity';
 
         return $this->db->queryBuilder()
             ->select(
                 'c.id as chat_id',
                 'c.type',
-                // Для приватных чатов выбираем имя собеседника, для групповых - название чата
-                'IF(c.type = "private", u.display_name, c.title) as title'
+                // For private chats, title is the other user's name. For group chats, it's the chat title.
+                "IF(c.type = 'private', u.display_name, c.title) as title",
+                'p_other.user_id as contact_user_id',
+                'ua.last_activity_timestamp'
             )
             ->from($this->getTableName(), 'c')
             // Присоединяем участников, чтобы найти чаты текущего пользователя
@@ -51,6 +54,7 @@ class ChatRepository implements ChatRepositoryInterface
             // Для приватных чатов присоединяем участников еще раз, чтобы найти собеседника
             ->addJoin('LEFT', $participantsTable, 'p_other', 'c.id = p_other.chat_id AND p_other.user_id != ' . (int)$userId)
             ->addJoin('LEFT', $usersTable, 'u', 'p_other.user_id = u.ID')
+            ->addJoin('LEFT', $activityTable, 'ua', 'p_other.user_id = ua.user_id')
             ->where('p_current.user_id', '=', $userId)
             ->where('c.type', '=', 'private') // Добавляем фильтр только для приватных чатов
             ->groupBy('c.id')

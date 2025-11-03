@@ -16,6 +16,16 @@ class ChatEventSource implements SseEventSourceInterface
     {
     }
 
+    public function getConnectionLifeTime(): int
+    {
+        return 5;
+    }
+
+    public function getMaxTimeRetry(): int
+    {
+        return 20000;
+    }
+
     public function getChannelName(): string
     {
         return self::CHANNEL_NAME;
@@ -45,11 +55,21 @@ class ChatEventSource implements SseEventSourceInterface
             $eventType = 'private_message';
         }
 
+        return $this->mapMessagesToEvents($messages, $eventType);
+    }
+
+    /**
+     * @param object[] $messages
+     * @param string   $eventType
+     * @return SseEventDto[]
+     */
+    private function mapMessagesToEvents(array $messages, string $eventType): array
+    {
         if (empty($messages)) {
             return [];
         }
 
-        return array_map(function (object $message) use ($eventType) {
+        return array_map(static function (object $message) use ($eventType) {
             return new SseEventDto(
                 (int)$message->id,
                 $eventType,

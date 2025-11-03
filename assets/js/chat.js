@@ -105,9 +105,8 @@ const initializeChat = () => {
     const loadChatList = async () => {
         try {
             const response = await UspCore.api.get('/chat/list');
-            if (response) {
+            if(response)
                 renderChatList(response);
-            }
         } catch (error) {
             console.error('Failed to load chat list:', error);
             elements.chatList.innerHTML = `<p>${l10n.errorLoadingChats}</p>`;
@@ -129,12 +128,19 @@ const initializeChat = () => {
             elements.chatList.innerHTML = `<p>${l10n.noChats}</p>`;
             return;
         }
-        elements.chatList.innerHTML = chats.map(chat => `
-            <div class="usp-chat-list-item" data-chat-id="${chat.chat_id}" data-chat-title="${escapeHtml(chat.title || l10n.defaultChatTitle)}">
-                <span class="usp-chat-list-item-title">${escapeHtml(chat.title || l10n.defaultChatTitle)}</span>
+        elements.chatList.innerHTML = chats.map(chat => {
+            const isOnline = isUserOnline(chat.last_activity_timestamp, chat.contact_user_id);
+            const statusClass = isOnline ? 'usp-chat-contact-status--online' : '';
+
+            return `
+            <div class="usp-chat-list-item" data-chat-id="${chat.chat_id}" data-user-id="${chat.contact_user_id}" data-chat-title="${escapeHtml(chat.title || l10n.defaultChatTitle)}">
+                 <div class="usp-chat-list-item-title">
+                    <span class="usp-chat-contact-status ${statusClass}"></span>
+                    <span>${escapeHtml(chat.title || l10n.defaultChatTitle)}</span>
+                </div>
                 <span class="usp-chat-notification-badge" style="display: none;"></span>
             </div>
-        `).join('');
+        `}).join('');
 
         // Обновляем активный чат в списке, если он есть
         if (state.currentChatId) {
@@ -145,7 +151,18 @@ const initializeChat = () => {
         }
     };
 
-
+    /**
+     * Проверяет, онлайн ли пользователь, на основе времени последней активности.
+     * @param {string|null} lastActivityTimestamp - UNIX-время последней активности.
+     * @param {string|number|null} userId - ID пользователя.
+     * @returns {boolean}
+     */
+    const isUserOnline = (lastActivityTimestamp, userId = null) => {
+        if (!lastActivityTimestamp) return false;
+        const lastActivity = parseInt(lastActivityTimestamp, 10) || 0;
+        const now = Math.floor(Date.now() / 1000);
+        return (now - lastActivity) < 300; // Считаем онлайн, если активность была в течение 5 минут
+    };
 
     /**
      * Переключается на указанный чат и загружает его сообщения.
@@ -277,8 +294,16 @@ const initializeChat = () => {
             }
         });
 
-        UspCore.sse.addEventListener('chat_messages', 'last_message', (message) => {
-            console.log('Received last_message to sync SSE state:', message);
+        // Отдельный канал для обновления статусов активности
+        UspCore.sse.addEventListener('chat_activity', 'activity_update', (activityData) => {
+            for (const userId in activityData) {
+                const contactItem = elements.chatList.querySelector(`.usp-chat-list-item[data-user-id="${userId}"]`);
+                if (contactItem) {
+                    const statusIndicator = contactItem.querySelector('.usp-chat-contact-status');
+                    const isOnline = activityData[userId] === 'online';
+                    statusIndicator.classList.toggle('usp-chat-contact-status--online', isOnline); // true добавит класс, false - удалит
+                }
+            }
         });
     };
 

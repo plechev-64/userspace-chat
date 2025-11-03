@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: userspace\n"
-"POT-Creation-Date: 2025-11-03 12:58+0400\n"
-"PO-Revision-Date: 2025-11-03 12:59+0400\n"
+"POT-Creation-Date: 2025-11-03 19:21+0400\n"
+"PO-Revision-Date: 2025-11-03 19:21+0400\n"
 "Last-Translator: \n"
 "Language-Team: userspace.com\n"
 "Language: ru\n"
@@ -16,37 +16,33 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-0: .idea\n"
 "X-Poedit-SearchPathExcluded-1: vendor\n"
 
-#: src/Chat.php:44 src/Chat.php:98
+#: src/Chat.php:45 src/Chat.php:99
 msgid "Chat"
 msgstr "Чат"
 
-#: src/Chat.php:93
+#: src/Chat.php:94
 msgid "Loading messages..."
 msgstr "Загрузка сообщений..."
 
-#: src/Chat.php:94
+#: src/Chat.php:95
 msgid "Error loading messages."
 msgstr "Ошибка загрузки сообщений."
 
-#: src/Chat.php:95
+#: src/Chat.php:96
 msgid "No messages in this chat yet."
 msgstr "В этом чате еще нет сообщений."
 
-#: src/Chat.php:96
+#: src/Chat.php:97
 msgid "Error loading chats."
 msgstr "Ошибка загрузки чатов."
 
-#: src/Chat.php:97
+#: src/Chat.php:98
 msgid "No chats yet."
 msgstr "Чатов пока нет."
 
-#: src/Chat.php:99
+#: src/Chat.php:100
 msgid "Topic Chat"
 msgstr "Тематический чат"
-
-#: src/Integration/ContactsTab.php:22
-msgid "Contacts"
-msgstr "Контакты"
 
 #: src/Integration/PrivateChatTab.php:26
 msgid "Private Chat"
@@ -55,6 +51,22 @@ msgstr "Личный чат"
 #: src/Integration/PrivateChatTab.php:43
 msgid "You have no contacts yet. Start a conversation from another user's profile."
 msgstr "У вас еще нет контактов. Начните диалог из профиля другого пользователя."
+
+#: src/Settings/ChatSettingsConfigurator.php:19
+msgid "Chat Settings"
+msgstr ""
+
+#: src/Settings/ChatSettingsConfigurator.php:20
+msgid "Display Options"
+msgstr ""
+
+#: src/Settings/ChatSettingsConfigurator.php:24
+msgid "Messages Per Page"
+msgstr ""
+
+#: src/Settings/ChatSettingsConfigurator.php:25
+msgid "How many messages to display per page in the chat window."
+msgstr ""
 
 #: views/chat-main.php:13
 msgid "Chats"
@@ -79,3 +91,6 @@ msgstr "Поле для ввода сообщения"
 #: views/chat-main.php:35
 msgid "Send"
 msgstr "Отправить"
+
+#~ msgid "Contacts"
+#~ msgstr "Контакты"
