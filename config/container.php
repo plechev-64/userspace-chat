@@ -2,7 +2,6 @@
 
 
 use UserSpace\Chat\Repository\AttachmentRepository;
-use UserSpace\Chat\Grid\ContactListGrid;
 use UserSpace\Chat\Repository\AttachmentRepositoryInterface;
 use UserSpace\Chat\Repository\ChatRepository;
 use UserSpace\Chat\Repository\ChatRepositoryInterface;
@@ -18,7 +17,7 @@ return [
             'chat-main' => __DIR__ . '/../views/chat-main.php',
         ],
         'app.grids' => [
-            'chat-contacts' => ContactListGrid::class,
+            //
         ],
     ],
     'definitions' => [

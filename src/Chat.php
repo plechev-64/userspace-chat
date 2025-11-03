@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace UserSpace\Chat;
 
 use UserSpace\Chat\Controller\ChatController;
-use UserSpace\Chat\Grid\ContactListGrid;
 use UserSpace\Chat\Integration\ChatShortcode;
-use UserSpace\Chat\Integration\ContactsTab;
 use UserSpace\Chat\Integration\PrivateChatTab;
 use UserSpace\Chat\SSE\ChatEventSource;
 use UserSpace\Core\Addon\AddonInterface;
@@ -119,11 +117,7 @@ class Chat implements AddonInterface
         add_shortcode(ChatShortcode::TAG, [$chatShortcode, 'render']);
 
         $itemRegistry = $container->get(ItemRegistryInterface::class);
-        $itemRegistry->registerItem(ContactsTab::class);
         $itemRegistry->registerItem(PrivateChatTab::class);
-
-        $gridRegistry = $container->get(GridRegistryInterface::class);
-        $gridRegistry->register('chat-contacts', ContactListGrid::class);
     }
 
     /**
