@@ -14,6 +14,7 @@ const initializeChat = () => {
     const state = {
         currentChatId: null,
         currentUserId: UspCore.userId, // Получаем ID текущего пользователя
+        profileOwnerId: null, // ID владельца профиля, на котором открыт чат
         chats: {}, // Хранилище состояний для каждого чата
         isLoadingMore: false,
     };
@@ -33,10 +34,18 @@ const initializeChat = () => {
         // Обработчик отправки сообщения
         elements.messagesWindow.addEventListener('scroll', onScrollMessages);
         elements.messageForm.addEventListener('submit', onSendMessage);
+        elements.chatList.addEventListener('click', onChatListItemClick);
 
-        // Если в шорткод передан user_id, инициируем приватный чат
+        // Определяем, какой чат инициализировать
         const initialUserId = parseInt(chatContainer.dataset.userId, 10);
-        if (!isNaN(initialUserId) && initialUserId > 0) {
+        const initialTopicId = chatContainer.dataset.topicId;
+
+        state.profileOwnerId = !isNaN(initialUserId) && initialUserId > 0 ? initialUserId : null;
+
+        if (initialTopicId) {
+            chatContainer.classList.add('usp-chat-container--topic');
+            await findOrCreateTopicChat(initialTopicId, chatContainer.dataset.title);
+        } else if (!isNaN(initialUserId) && initialUserId > 0) {
             await findOrCreatePrivateChat(initialUserId);
         } else {
             // Иначе просто загружаем список чатов
@@ -48,10 +57,34 @@ const initializeChat = () => {
     };
 
     /**
+     * Находит или создает тематический чат и загружает его.
+     * @param {string} topicId
+     * @param {string} title
+     */
+    const findOrCreateTopicChat = async (topicId, title) => {
+        try {
+            const response = await UspCore.api.post('/chat/topic', { 'topic-id': topicId, title: title });
+            if (response.chat_id) {
+                await switchToChat(response.chat_id, title || 'Topic Chat');
+            } else {
+                console.error('Error creating or finding topic chat:', response.message);
+            }
+        } catch (error) {
+            console.error('API call failed:', error);
+        }
+    };
+
+    /**
      * Находит или создает приватный чат и загружает его.
      * @param {number} userId
      */
     const findOrCreatePrivateChat = async (userId) => {
+        // Предотвращаем создание чата с самим собой
+        if (userId === state.currentUserId) {
+            console.warn('Attempted to create a chat with oneself. Aborting.');
+            return;
+        }
+
         try {
             const response = await UspCore.api.post('/chat/private', { user_id: userId });
             if (response.chat_id) {
@@ -96,19 +129,22 @@ const initializeChat = () => {
             return;
         }
         elements.chatList.innerHTML = chats.map(chat => `
-            <div class="usp-chat-list-item" data-chat-id="${chat.chat_id}" data-chat-title="${escapeHtml(chat.title)}">
-                ${escapeHtml(chat.title)}
+            <div class="usp-chat-list-item" data-chat-id="${chat.chat_id}" data-chat-title="${escapeHtml(chat.title || 'Chat')}">
+                <span class="usp-chat-list-item-title">${escapeHtml(chat.title || 'Chat')}</span>
+                <span class="usp-chat-notification-badge" style="display: none;"></span>
             </div>
         `).join('');
 
-        // Навешиваем обработчики кликов
-        elements.chatList.querySelectorAll('.usp-chat-list-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const chatId = parseInt(item.dataset.chatId, 10);
-                switchToChat(chatId, item.dataset.chatTitle);
-            });
-        });
+        // Обновляем активный чат в списке, если он есть
+        if (state.currentChatId) {
+            const activeItem = elements.chatList.querySelector(`.usp-chat-list-item[data-chat-id="${state.currentChatId}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+        }
     };
+
+
 
     /**
      * Переключается на указанный чат и загружает его сообщения.
@@ -119,7 +155,15 @@ const initializeChat = () => {
         state.currentChatId = chatId;
 
         // Управление активным классом в списке чатов
-        elements.chatList.querySelectorAll('.usp-chat-list-item.active').forEach(el => el.classList.remove('active'));
+        const chatItem = elements.chatList.querySelector(`.usp-chat-list-item[data-chat-id="${chatId}"]`);
+        if (chatItem) {
+            // Сбрасываем и скрываем счетчик при открытии чата
+            const badge = chatItem.querySelector('.usp-chat-notification-badge');
+            badge.textContent = '';
+            badge.style.display = 'none';
+        }
+
+        elements.chatList.querySelector('.usp-chat-list-item.active')?.classList.remove('active');
         const activeChatItem = elements.chatList.querySelector(`.usp-chat-list-item[data-chat-id="${chatId}"]`);
         if (activeChatItem) activeChatItem.classList.add('active');
 
@@ -140,7 +184,7 @@ const initializeChat = () => {
                 state.chats[chatId].messages = response.messages;
                 state.chats[chatId].has_more = response.has_more;
                 state.chats[chatId].offset = response.messages.length;
-                renderMessages(response.messages);
+                renderMessages(response.messages, false);
             } else {
                 elements.messagesWindow.innerHTML = `<p>${response.message}</p>`;
             }
@@ -148,6 +192,20 @@ const initializeChat = () => {
             console.error('Failed to load messages:', error);
             elements.messagesWindow.innerHTML = '<p>Error loading messages.</p>';
         }
+    };
+
+    /**
+     * Обработчик клика по элементу списка чатов (делегирование).
+     * @param {Event} e
+     */
+    const onChatListItemClick = (e) => {
+        const chatItem = e.target.closest('.usp-chat-list-item');
+        if (!chatItem) {
+            return;
+        }
+
+        const chatId = parseInt(chatItem.dataset.chatId, 10);
+        switchToChat(chatId, chatItem.dataset.chatTitle);
     };
 
     /**
@@ -171,7 +229,7 @@ const initializeChat = () => {
             content: content,
             created_at: new Date().toISOString(),
         };
-        renderMessages([optimisticMessage], true);
+        appendMessages([optimisticMessage]);
         elements.messageInput.value = '';
 
         // 2. Отправляем сообщение на сервер в фоновом режиме
@@ -205,7 +263,16 @@ const initializeChat = () => {
 
             // Отображаем сообщение, если оно для текущего чата
             if (parseInt(message.chat_id, 10) === state.currentChatId) {
-                renderMessages([message], true);
+                appendMessages([message]);
+            } else {
+                // Иначе показываем уведомление в списке чатов
+                const chatItem = elements.chatList.querySelector(`.usp-chat-list-item[data-chat-id="${message.chat_id}"]`);
+                if (chatItem) {
+                    const badge = chatItem.querySelector('.usp-chat-notification-badge');
+                    const currentCount = parseInt(badge.textContent, 10) || 0;
+                    badge.textContent = currentCount + 1;
+                    badge.style.display = 'flex';
+                }
             }
         });
 
@@ -215,81 +282,91 @@ const initializeChat = () => {
     };
 
     /**
-     * Рендерит сообщения в окне чата.
-     * @param {Array} messages Массив объектов сообщений.
-     * @param {boolean} append Добавить в конец или переписать.
+     * Создает HTML-разметку для одного сообщения.
+     * @param {object} msg - Объект сообщения.
+     * @param {string|null} prevSenderId - ID предыдущего отправителя для группировки.
+     * @returns {string} HTML-строка сообщения.
      */
-    const renderMessages = (messages, append = false) => {
-        if (!append && messages.length === 0 && !state.chats[state.currentChatId]?.messages.length) {
-            elements.messagesWindow.innerHTML = '<p>No messages in this chat yet.</p>';
-            return;
-        }
-        let lastSenderId = append ? (elements.messagesWindow.querySelector('.usp-chat-message:last-child')?.dataset.senderId ?? null) : null;
+    const createMessageHtml = (msg, prevSenderId = null) => {
+        // Сравниваем ID отправителя с ID текущего пользователя, приводя их к числовому типу
+        const messageClass = parseInt(msg.sender_id, 10) === parseInt(state.currentUserId, 10) ? 'usp-chat-message--sent' : 'usp-chat-message--received';
+        const groupClass = String(prevSenderId) === String(msg.sender_id) ? 'usp-chat-message--grouped' : '';
 
-        const messagesHtml = messages.map(msg => {
-            const messageClass = parseInt(msg.sender_id) === parseInt(state.currentUserId) ? 'usp-chat-message--sent' : 'usp-chat-message--received';
-            let groupClass = '';
-
-            // Если отправитель тот же, что и у предыдущего сообщения, добавляем класс для группировки
-            if (String(lastSenderId) === String(msg.sender_id)) {
-                groupClass = 'usp-chat-message--grouped';
-            }
-
-            lastSenderId = msg.sender_id; // Обновляем ID последнего отправителя
-
-            return `
+        return `
              <div class="usp-chat-message ${messageClass} ${groupClass}" data-sender-id="${msg.sender_id}">
                  <div class="usp-chat-message-sender">${escapeHtml(msg.sender_name)}</div>
                  <div class="usp-chat-message-content">${escapeHtml(msg.content)}</div>
-                 <div class="usp-chat-message-time">${new Date(msg.created_at.replace(' ', 'T')).toLocaleTimeString()}</div>
-             </div>`}).join('');
-
-        if (append) {
-            elements.messagesWindow.insertAdjacentHTML('beforeend', messagesHtml);
-        } else {
-            elements.messagesWindow.innerHTML = messagesHtml;
-        }
-
-        if (append) {
-            // При добавлении нового сообщения (SSE) - скроллим вниз
-            elements.messagesWindow.scrollTop = elements.messagesWindow.scrollHeight;
-        } else {
-            // При первоначальной загрузке - скроллим вниз
-            setTimeout(() => {
-                elements.messagesWindow.scrollTop = elements.messagesWindow.scrollHeight;
-            }, 0);
-        }
+                 <div class="usp-chat-message-time">${formatMessageTime(msg.created_at)}</div>
+             </div>
+         `;
     };
 
+    /**
+     * Полностью перерисовывает окно сообщений.
+     * @param {Array} messages - Массив объектов сообщений.
+     */
+    const renderMessages = (messages) => {
+        if (messages.length === 0) {
+            elements.messagesWindow.innerHTML = '<p>No messages in this chat yet.</p>';
+            return;
+        }
+
+        let lastSenderId = null;
+        const messagesHtml = messages.map(msg => {
+            const html = createMessageHtml(msg, lastSenderId);
+            lastSenderId = msg.sender_id;
+            return html;
+        }).join('');
+
+        elements.messagesWindow.innerHTML = messagesHtml;
+
+        // При первоначальной загрузке - скроллим вниз
+        setTimeout(() => {
+            elements.messagesWindow.scrollTop = elements.messagesWindow.scrollHeight;
+        }, 0);
+    };
+
+    /**
+     * Добавляет сообщения в конец списка.
+     * @param {Array} messages - Массив объектов сообщений.
+     */
+    const appendMessages = (messages) => {
+        let lastSenderId = elements.messagesWindow.querySelector('.usp-chat-message:last-child')?.dataset.senderId ?? null;
+
+        const messagesHtml = messages.map(msg => {
+            const html = createMessageHtml(msg, lastSenderId);
+            lastSenderId = msg.sender_id;
+            return html;
+        }).join('');
+
+        elements.messagesWindow.insertAdjacentHTML('beforeend', messagesHtml);
+        elements.messagesWindow.scrollTop = elements.messagesWindow.scrollHeight;
+    };
+
+    /**
+     * Добавляет старые сообщения в начало списка.
+     * @param {Array} messages - Массив объектов сообщений.
+     */
     const prependMessages = (messages) => {
+        if (messages.length === 0) return;
+
         const oldScrollHeight = elements.messagesWindow.scrollHeight;
         const oldScrollTop = elements.messagesWindow.scrollTop;
 
         // Проверяем, нужно ли сгруппировать первое из *уже существующих* сообщений
         const firstExistingMessage = elements.messagesWindow.querySelector('.usp-chat-message:first-child');
-        const lastPrependingMessage = messages[0]; // Самое новое из подгружаемых
+        const lastPrependingMessage = messages[messages.length - 1]; // Самое "новое" из подгружаемых
         if (firstExistingMessage && String(firstExistingMessage.dataset.senderId) === String(lastPrependingMessage.sender_id)) {
             firstExistingMessage.classList.add('usp-chat-message--grouped');
         }
 
         let lastSenderId = null;
-        const messagesHtml = messages.map(msg => {
-            const messageClass = parseInt(msg.sender_id) === parseInt(state.currentUserId) ? 'usp-chat-message--sent' : 'usp-chat-message--received';
-            let groupClass = '';
-
-            if (String(lastSenderId) === String(msg.sender_id)) {
-                groupClass = 'usp-chat-message--grouped';
-            }
-
+        // Рендерим в обратном порядке для правильной группировки
+        const messagesHtml = [...messages].reverse().map(msg => {
+            const html = createMessageHtml(msg, lastSenderId);
             lastSenderId = msg.sender_id;
-
-            return `
-             <div class="usp-chat-message ${messageClass} ${groupClass}" data-sender-id="${msg.sender_id}">
-                 <div class="usp-chat-message-sender">${escapeHtml(msg.sender_name)}</div>
-                 <div class="usp-chat-message-content">${escapeHtml(msg.content)}</div>
-                 <div class="usp-chat-message-time">${new Date(msg.created_at.replace(' ', 'T')).toLocaleTimeString()}</div>
-             </div>
-         `}).join('');
+            return html;
+        }).reverse().join('');
 
         elements.messagesWindow.insertAdjacentHTML('afterbegin', messagesHtml);
 
@@ -308,10 +385,14 @@ const initializeChat = () => {
 
             state.isLoadingMore = true;
             const response = await UspCore.api.get(`/chat/messages/${state.currentChatId}/offset/${chatState.offset}`);
-            chatState.has_more = response.has_more;
-            chatState.offset += response.messages.length;
-            prependMessages(response.messages);
-
+            if (response.messages && response.messages.length > 0) {
+                chatState.has_more = response.has_more;
+                chatState.offset += response.messages.length;
+                // Сообщения приходят отсортированными от новых к старым, для prepend их нужно развернуть
+                prependMessages(response.messages.reverse());
+            } else {
+                chatState.has_more = false;
+            }
             state.isLoadingMore = false;
         }
     };
@@ -320,6 +401,16 @@ const initializeChat = () => {
         return unsafe
             .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
             .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+    };
+
+    /**
+     * Форматирует время сообщения.
+     * @param {string} dateString - Строка даты/времени.
+     * @returns {string} - Локализованное время.
+     */
+    const formatMessageTime = (dateString) => {
+        // '2023-10-27 15:04:05' -> '2023-10-27T15:04:05'
+        return new Date(dateString.replace(' ', 'T')).toLocaleTimeString();
     };
 
     init(); // Запускаем основную логику

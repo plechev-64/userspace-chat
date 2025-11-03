@@ -14,6 +14,6 @@ class GetUserChatsUseCase
 
     public function handle(int $userId): array
     {
-        return $this->chatRepository->getUserChats($userId);
+        return $this->chatRepository->getUserPrivateChats($userId);
     }
 }

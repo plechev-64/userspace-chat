@@ -12,11 +12,6 @@ class ChatRepository implements ChatRepositoryInterface
     {
     }
 
-    protected function getTableName(): string
-    {
-        return $this->db->getPrefix() . 'userspace_chats';
-    }
-
     public function findPrivateChatIdBetweenUsers(int $userOneId, int $userTwoId): ?int
     {
         $participantTable = $this->db->getPrefix() . 'userspace_chat_participants';
@@ -38,7 +33,7 @@ class ChatRepository implements ChatRepositoryInterface
         return $result ? (int)$result->chat_id : null;
     }
 
-    public function getUserChats(int $userId): array
+    public function getUserPrivateChats(int $userId): array
     {
         $participantsTable = $this->db->getPrefix() . 'userspace_chat_participants';
         $usersTable = $this->db->getPrefix() . 'users';
@@ -57,6 +52,7 @@ class ChatRepository implements ChatRepositoryInterface
             ->addJoin('LEFT', $participantsTable, 'p_other', 'c.id = p_other.chat_id AND p_other.user_id != ' . (int)$userId)
             ->addJoin('LEFT', $usersTable, 'u', 'p_other.user_id = u.ID')
             ->where('p_current.user_id', '=', $userId)
+            ->where('c.type', '=', 'private') // Добавляем фильтр только для приватных чатов
             ->groupBy('c.id')
             ->orderBy('c.id', 'DESC') // Пример сортировки
             ->get();
@@ -71,5 +67,34 @@ class ChatRepository implements ChatRepositoryInterface
         ]);
 
         return $this->db->getInsertId();
+    }
+
+    public function findChatByTopicId(string $topicId): ?int
+    {
+        $result = $this->db->queryBuilder()
+            ->select('id')
+            ->from($this->getTableName())
+            ->where('topic_id', '=', $topicId)
+            ->first();
+
+        return $result ? (int)$result->id : null;
+    }
+
+    public function createTopicChat(string $topicId, int $creatorId, string $title = ''): int
+    {
+        $this->db->insert($this->getTableName(), [
+            'type' => 'topic',
+            'topic_id' => $topicId,
+            'title' => $title,
+            'creator_id' => $creatorId,
+            'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
+        ]);
+
+        return $this->db->getInsertId();
+    }
+
+    protected function getTableName(): string
+    {
+        return $this->db->getPrefix() . 'userspace_chats';
     }
 }

@@ -51,11 +51,30 @@
     border-bottom: 1px solid #eee;
     cursor: pointer;
     transition: background-color 0.2s;
-    font-weight: 400;
+    font-size: 14px; /* Уменьшаем размер шрифта */
+    font-weight: 500; /* Делаем шрифт чуть жирнее для читаемости */
+    position: relative; /* Для позиционирования значка уведомлений */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .usp-chat-list-item.active, .usp-chat-list-item:hover {
     background-color: #e9e9eb;
+}
+
+.usp-chat-notification-badge {
+    background-color: #0b93f6;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
 }
 
 .usp-chat-list-item.active {
@@ -80,6 +99,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
+    background: #fff;
 }
 
 .usp-chat-message-form-container {
@@ -188,4 +208,12 @@
 
 .usp-chat-message--sent .usp-chat-message-time {
     color: rgba(255, 255, 255, 0.7);
+}
+
+/* Стили для тематического чата (без сайдбара) */
+.usp-chat-container--topic .usp-chat-sidebar {
+    display: none;
+}
+.usp-chat-container--topic .usp-chat-main {
+    width: 100%;
 }

@@ -13,11 +13,6 @@ class MessageRepository implements MessageRepositoryInterface
     {
     }
 
-    protected function getTableName(): string
-    {
-        return $this->db->getPrefix() . 'userspace_chat_messages';
-    }
-
     public function createMessage(int $chatId, int $senderId, string $content): int
     {
         $this->db->insert($this->getTableName(), [
@@ -69,26 +64,19 @@ class MessageRepository implements MessageRepositoryInterface
         $participantsTable = $this->db->getPrefix() . 'userspace_chat_participants';
         $usersTable = $this->db->getPrefix() . 'users';
 
-        // 1. Получаем ID всех чатов, в которых состоит пользователь
-        $chatIdRows = $this->db->queryBuilder()
-            ->select('chat_id')
-            ->from($participantsTable)
-            ->where('user_id', '=', $userId)
-            ->get();
-
-        if (empty($chatIdRows)) {
-            return null;
-        }
-
-        $chatIds = array_map(fn($row) => (int)$row->chat_id, $chatIdRows);
-
-        // 2. Получаем последнее сообщение из этих чатов
+        // Получаем последнее сообщение из всех чатов, где состоит пользователь, одним запросом
         return $this->db->queryBuilder()
             ->select('m.id, m.chat_id, m.sender_id, m.content, m.created_at', 'u.display_name as sender_name')
             ->from($this->getTableName(), 'm')
+            ->addJoin('INNER', $participantsTable, 'p', 'm.chat_id = p.chat_id')
             ->addJoin('INNER', $usersTable, 'u', 'm.sender_id = u.ID')
-            ->where('m.chat_id', 'IN', $chatIds)
+            ->where('p.user_id', '=', $userId)
             ->orderBy('m.id', 'DESC')
             ->first();
+    }
+
+    protected function getTableName(): string
+    {
+        return $this->db->getPrefix() . 'userspace_chat_messages';
     }
 }

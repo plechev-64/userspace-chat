@@ -24,7 +24,9 @@ class ChatShortcode
     public function render(array $attributes): string
     {
         $defaultAttributes = [
-            'user_id' => null, // Для открытия чата с конкретным пользователем
+            'user_id' => null,  // Для открытия приватного чата
+            'topic-id' => null, // Для открытия тематического чата
+            'title' => '',      // Заголовок для нового тематического чата
         ];
 
         $this->assetRegistry->enqueueStyle('usp-chat');

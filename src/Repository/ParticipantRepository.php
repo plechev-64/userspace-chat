@@ -12,11 +12,6 @@ class ParticipantRepository implements ParticipantRepositoryInterface
     {
     }
 
-    protected function getTableName(): string
-    {
-        return $this->db->getPrefix() . 'userspace_chat_participants';
-    }
-
     public function findParticipantByChatAndUser(int $chatId, int $userId): ?array
     {
         $result = $this->db->queryBuilder()
@@ -39,5 +34,10 @@ class ParticipantRepository implements ParticipantRepositoryInterface
         ]);
 
         return $this->db->getInsertId();
+    }
+
+    protected function getTableName(): string
+    {
+        return $this->db->getPrefix() . 'userspace_chat_participants';
     }
 }

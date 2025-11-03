@@ -23,11 +23,13 @@ class PluginLifecycle
 
         $sql = "CREATE TABLE {$chatsTable} (
             id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-            type ENUM('private', 'group') NOT NULL,
+            type ENUM('private', 'group', 'topic') NOT NULL,
             title VARCHAR(255) NULL,
+            topic_id VARCHAR(255) NULL,
             creator_id BIGINT(20) UNSIGNED NOT NULL,
             created_at DATETIME NOT NULL,
             PRIMARY KEY (id),
+            UNIQUE KEY (topic_id),
             FOREIGN KEY (creator_id) REFERENCES {$wpdb->users}(ID) ON DELETE CASCADE
         ) {$charsetCollate};
 

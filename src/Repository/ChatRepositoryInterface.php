@@ -24,9 +24,9 @@ interface ChatRepositoryInterface
     public function createPrivateChat(int $creatorId): int;
 
     /**
-     * Получает список чатов пользователя.
+     * Получает список приватных чатов пользователя.
      * @param int $userId
      * @return array
      */
-    public function getUserChats(int $userId): array;
+    public function getUserPrivateChats(int $userId): array;
 }

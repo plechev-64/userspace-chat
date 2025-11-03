@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace UserSpace\Chat\Controller;
 
 use UserSpace\Chat\UseCase\FindOrCreatePrivateChat\FindOrCreatePrivateChatRequest;
+use UserSpace\Chat\UseCase\FindOrCreateTopicChat\FindOrCreateTopicChatRequest;
+use UserSpace\Chat\UseCase\FindOrCreateTopicChat\FindOrCreateTopicChatUseCase;
 use UserSpace\Chat\UseCase\FindOrCreatePrivateChat\FindOrCreatePrivateChatUseCase;
 use UserSpace\Chat\UseCase\GetChatMessages\GetChatMessagesRequest;
 use UserSpace\Chat\UseCase\GetChatMessages\GetChatMessagesUseCase;
@@ -23,10 +25,13 @@ use UserSpace\Core\Sanitizer\SanitizerRule;
 #[Route(path: '/chat')]
 class ChatController extends AbstractController
 {
+    private const MESSAGES_PER_PAGE = 10;
+
     public function __construct(
         private readonly GetUserChatsUseCase $getUserChatsUseCase,
         private readonly GetChatMessagesUseCase $getChatMessagesUseCase,
         private readonly FindOrCreatePrivateChatUseCase $findOrCreatePrivateChatUseCase,
+        private readonly FindOrCreateTopicChatUseCase $findOrCreateTopicChatUseCase,
         private readonly SendMessageUseCase $sendMessageUseCase,
         private readonly SanitizerInterface $sanitizer,
         private readonly UserApiInterface $userApi
@@ -59,6 +64,42 @@ class ChatController extends AbstractController
 
         try {
             $chatId = $this->findOrCreatePrivateChatUseCase->handle($useCaseRequest);
+            return $this->success(['chat_id' => $chatId]);
+        } catch (UspException $e) {
+            return $this->error(['message' => $e->getMessage()], $e->getCode());
+        }
+    }
+
+    /**
+     * Находит или создает чат по строковому идентификатору (теме).
+     */
+    #[Route(path: '/topic', method: 'POST')]
+    public function findOrCreateTopic(Request $request): JsonResponse
+    {
+        $currentUser = $this->userApi->getCurrentUser();
+        if (!$currentUser) {
+            return $this->error(['message' => 'User not authenticated.'], 401);
+        }
+
+        $sanitizationConfig = [
+            'topic-id' => SanitizerRule::SLUG,
+            'title' => SanitizerRule::TEXT_FIELD,
+        ];
+        $clearedData = $this->sanitizer->sanitize($request->getPostParams(), $sanitizationConfig);
+
+        $topicId = $clearedData->get('topic-id');
+        if (empty($topicId)) {
+            return $this->error(['message' => 'Invalid topic_id provided.'], 400);
+        }
+
+        $useCaseRequest = new FindOrCreateTopicChatRequest(
+            $topicId,
+            $currentUser->getId(),
+            $clearedData->get('title', 'Topic Chat')
+        );
+
+        try {
+            $chatId = $this->findOrCreateTopicChatUseCase->handle($useCaseRequest);
             return $this->success(['chat_id' => $chatId]);
         } catch (UspException $e) {
             return $this->error(['message' => $e->getMessage()], $e->getCode());
@@ -123,8 +164,6 @@ class ChatController extends AbstractController
             return $this->error(['message' => 'User not authenticated.'], 401);
         }
 
-        $limit = 10;
-
         $clearedData = $this->sanitizer->sanitize([
             'chatId' => $request->getRouteParam('chatId'),
             'offset' => $request->getRouteParam('offset')
@@ -136,7 +175,7 @@ class ChatController extends AbstractController
         $useCaseRequest = new GetChatMessagesRequest(
             $currentUser->getId(),
             $clearedData->get('chatId'),
-            $limit,
+            self::MESSAGES_PER_PAGE,
             $clearedData->get('offset', 0)
         );
 
