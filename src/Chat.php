@@ -7,7 +7,9 @@ namespace UserSpace\Chat;
 use UserSpace\Chat\Controller\ChatController;
 use UserSpace\Chat\Integration\ChatShortcode;
 use UserSpace\Chat\Integration\PrivateChatTab;
+use UserSpace\Chat\Settings\ChatSettingsConfigurator;
 use UserSpace\Chat\SSE\ChatEventSource;
+use UserSpace\Common\Module\Settings\Src\Domain\Configurator\SettingsConfigRegistryInterface;
 use UserSpace\Core\Addon\AddonInterface;
 use UserSpace\Common\Module\Locations\Src\Domain\ItemRegistryInterface;
 use UserSpace\Core\Asset\AssetRegistryInterface;
@@ -116,8 +118,14 @@ class Chat implements AddonInterface
         $chatShortcode = $container->get(ChatShortcode::class);
         add_shortcode(ChatShortcode::TAG, [$chatShortcode, 'render']);
 
+        // Регистрируем вкладки
         $itemRegistry = $container->get(ItemRegistryInterface::class);
         $itemRegistry->registerItem(PrivateChatTab::class);
+
+        // Регистрируем опции
+        $settingsRegistry =    $container->get(SettingsConfigRegistryInterface::class);
+        $configurator = $container->get(ChatSettingsConfigurator::class);
+        $settingsRegistry->register($configurator);
     }
 
     /**

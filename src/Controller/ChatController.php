@@ -13,6 +13,7 @@ use UserSpace\Chat\UseCase\GetChatMessages\GetChatMessagesUseCase;
 use UserSpace\Chat\UseCase\GetUserChats\GetUserChatsUseCase;
 use UserSpace\Chat\UseCase\SendMessage\SendMessageRequest;
 use UserSpace\Chat\UseCase\SendMessage\SendMessageUseCase;
+use UserSpace\Common\Module\Settings\Src\Domain\PluginSettingsInterface;
 use UserSpace\Common\Module\User\Src\Domain\UserApiInterface;
 use UserSpace\Core\Exception\UspException;
 use UserSpace\Core\Http\JsonResponse;
@@ -25,24 +26,21 @@ use UserSpace\Core\Sanitizer\SanitizerRule;
 #[Route(path: '/chat')]
 class ChatController extends AbstractController
 {
-    private const MESSAGES_PER_PAGE = 10;
-
     public function __construct(
-        private readonly GetUserChatsUseCase $getUserChatsUseCase,
-        private readonly GetChatMessagesUseCase $getChatMessagesUseCase,
-        private readonly FindOrCreatePrivateChatUseCase $findOrCreatePrivateChatUseCase,
-        private readonly FindOrCreateTopicChatUseCase $findOrCreateTopicChatUseCase,
-        private readonly SendMessageUseCase $sendMessageUseCase,
         private readonly SanitizerInterface $sanitizer,
-        private readonly UserApiInterface $userApi
-    ) {
+        private readonly UserApiInterface   $userApi
+    )
+    {
     }
 
     /**
      * Находит или создает приватный чат между текущим пользователем и указанным.
      */
     #[Route(path: '/private', method: 'POST')]
-    public function findOrCreatePrivate(Request $request): JsonResponse
+    public function findOrCreatePrivate(
+        Request                        $request,
+        FindOrCreatePrivateChatUseCase $findOrCreatePrivateChatUseCase
+    ): JsonResponse
     {
         $currentUser = $this->userApi->getCurrentUser();
         if (!$currentUser) {
@@ -63,7 +61,7 @@ class ChatController extends AbstractController
         );
 
         try {
-            $chatId = $this->findOrCreatePrivateChatUseCase->handle($useCaseRequest);
+            $chatId = $findOrCreatePrivateChatUseCase->handle($useCaseRequest);
             return $this->success(['chat_id' => $chatId]);
         } catch (UspException $e) {
             return $this->error(['message' => $e->getMessage()], $e->getCode());
@@ -74,7 +72,10 @@ class ChatController extends AbstractController
      * Находит или создает чат по строковому идентификатору (теме).
      */
     #[Route(path: '/topic', method: 'POST')]
-    public function findOrCreateTopic(Request $request): JsonResponse
+    public function findOrCreateTopic(
+        Request                      $request,
+        FindOrCreateTopicChatUseCase $findOrCreateTopicChatUseCase
+    ): JsonResponse
     {
         $currentUser = $this->userApi->getCurrentUser();
         if (!$currentUser) {
@@ -99,7 +100,7 @@ class ChatController extends AbstractController
         );
 
         try {
-            $chatId = $this->findOrCreateTopicChatUseCase->handle($useCaseRequest);
+            $chatId = $findOrCreateTopicChatUseCase->handle($useCaseRequest);
             return $this->success(['chat_id' => $chatId]);
         } catch (UspException $e) {
             return $this->error(['message' => $e->getMessage()], $e->getCode());
@@ -110,7 +111,10 @@ class ChatController extends AbstractController
      * Отправляет сообщение в чат.
      */
     #[Route(path: '/message', method: 'POST')]
-    public function sendMessage(Request $request): JsonResponse
+    public function sendMessage(
+        Request            $request,
+        SendMessageUseCase $sendMessageUseCase
+    ): JsonResponse
     {
         $currentUser = $this->userApi->getCurrentUser();
         if (!$currentUser) {
@@ -130,9 +134,9 @@ class ChatController extends AbstractController
         );
 
         try {
-            $messageId = $this->sendMessageUseCase->handle($useCaseRequest);
+            $messageId = $sendMessageUseCase->handle($useCaseRequest);
             return $this->success(['message_id' => $messageId]);
-        } catch (UspException | \RuntimeException $e) {
+        } catch (UspException|\RuntimeException $e) {
             return $this->error(['message' => $e->getMessage()], 403);
         }
     }
@@ -141,14 +145,14 @@ class ChatController extends AbstractController
      * Получает список чатов текущего пользователя.
      */
     #[Route(path: '/list', method: 'GET')]
-    public function getChatList(): JsonResponse
+    public function getChatList(GetUserChatsUseCase $getUserChatsUseCase): JsonResponse
     {
         $currentUser = $this->userApi->getCurrentUser();
         if (!$currentUser) {
             return $this->error(['message' => 'User not authenticated.'], 401);
         }
 
-        $chats = $this->getUserChatsUseCase->handle($currentUser->getId());
+        $chats = $getUserChatsUseCase->handle($currentUser->getId());
         return $this->success($chats);
     }
 
@@ -157,12 +161,19 @@ class ChatController extends AbstractController
      * Получает сообщения для указанного чата.
      */
     #[Route(path: '/messages/(?P<chatId>[0-9]+)/offset/(?P<offset>[0-9]+)', method: 'GET')]
-    public function getMessages(Request $request): JsonResponse
+    public function getMessages(
+        Request                 $request,
+        GetChatMessagesUseCase  $getChatMessagesUseCase,
+        PluginSettingsInterface $pluginSettings
+    ): JsonResponse
     {
         $currentUser = $this->userApi->getCurrentUser();
         if (!$currentUser) {
             return $this->error(['message' => 'User not authenticated.'], 401);
         }
+
+        /** @todo создать enum опций */
+        $messagesPerPage = $pluginSettings->get('chat_messages_per_page', 20);
 
         $clearedData = $this->sanitizer->sanitize([
             'chatId' => $request->getRouteParam('chatId'),
@@ -175,12 +186,12 @@ class ChatController extends AbstractController
         $useCaseRequest = new GetChatMessagesRequest(
             $currentUser->getId(),
             $clearedData->get('chatId'),
-            self::MESSAGES_PER_PAGE,
+            $messagesPerPage,
             $clearedData->get('offset', 0)
         );
 
         try {
-            $messages = $this->getChatMessagesUseCase->handle($useCaseRequest);
+            $messages = $getChatMessagesUseCase->handle($useCaseRequest);
             return $this->success($messages);
         } catch (UspException $e) {
             return $this->error(['message' => $e->getMessage()], $e->getCode());
