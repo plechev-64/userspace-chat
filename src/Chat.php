@@ -15,9 +15,11 @@ use UserSpace\Common\Module\Locations\Src\Domain\ItemRegistryInterface;
 use UserSpace\Core\Asset\AssetRegistryInterface;
 use UserSpace\Core\Container\ContainerInterface;
 use UserSpace\Common\Module\Grid\Src\Infrastructure\GridRegistryInterface;
+use UserSpace\Core\Localization\LocalizationApiInterface;
 use UserSpace\Core\Rest\Registry\ControllerRegistryInterface;
 use UserSpace\Core\Hooks\HookManagerInterface;
 use UserSpace\Common\Module\SSE\Src\Domain\Source\SseEventSourceRegistryInterface;
+use UserSpace\Core\String\StringFilterInterface;
 
 
 class Chat implements AddonInterface
@@ -64,12 +66,38 @@ class Chat implements AddonInterface
     private function registerAssets(ContainerInterface $container): void
     {
         $assetRegistry = $container->get(AssetRegistryInterface::class);
+        $localizationApi = $container->get(LocalizationApiInterface::class);
+        $str = $container->get(StringFilterInterface::class);
         $hookManager = $container->get(HookManagerInterface::class);
-        $hookManager->addAction('init', function () use ($assetRegistry) {
+        $hookManager->addAction('init', function () use (
+            $assetRegistry,
+            $str,
+            $localizationApi
+        ) {
             $pluginUrl = plugin_dir_url(dirname(__FILE__));
+            $localizationApi->loadPluginTextdomain('usp-chat', 'userspace-chat/languages');
             $assetRegistry->registerScript('usp-chat', $pluginUrl . 'assets/js/chat.js', ['usp-core'], USERSPACE_VERSION);
+            $assetRegistry->localizeScript('usp-chat', 'uspChatL10n', $this->getScriptTranslations($str));
             $assetRegistry->registerStyle('usp-chat', $pluginUrl . 'assets/css/chat.css', [], USERSPACE_VERSION);
         });
+    }
+
+    /**
+     * Возвращает массив строк для локализации в JavaScript.
+     *
+     * @return array
+     */
+    private function getScriptTranslations(StringFilterInterface $str): array
+    {
+        return [
+            'loadingMessages' => $str->translate('Loading messages...', 'usp-chat'),
+            'errorLoadingMessages' => $str->translate('Error loading messages.', 'usp-chat'),
+            'noMessages' => __('No messages in this chat yet.', 'usp-chat'),
+            'errorLoadingChats' => $str->translate('Error loading chats.', 'usp-chat'),
+            'noChats' => $str->translate('No chats yet.', 'usp-chat'),
+            'defaultChatTitle' => $str->translate('Chat', 'usp-chat'),
+            'defaultTopicTitle' => $str->translate('Topic Chat', 'usp-chat'),
+        ];
     }
 
     /**
@@ -90,12 +118,10 @@ class Chat implements AddonInterface
         $chatShortcode = $container->get(ChatShortcode::class);
         add_shortcode(ChatShortcode::TAG, [$chatShortcode, 'render']);
 
-        /** @var ItemRegistryInterface $itemRegistry */
         $itemRegistry = $container->get(ItemRegistryInterface::class);
         $itemRegistry->registerItem(ContactsTab::class);
         $itemRegistry->registerItem(PrivateChatTab::class);
 
-        /** @var GridRegistryInterface $gridRegistry */
         $gridRegistry = $container->get(GridRegistryInterface::class);
         $gridRegistry->register('chat-contacts', ContactListGrid::class);
     }
@@ -105,7 +131,6 @@ class Chat implements AddonInterface
      */
     private function registerSse(ContainerInterface $container): void
     {
-        /** @var SseEventSourceRegistryInterface $sseRegistry */
         $sseRegistry = $container->get(SseEventSourceRegistryInterface::class);
         $sseRegistry->register(ChatEventSource::class);
     }

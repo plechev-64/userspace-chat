@@ -11,6 +11,7 @@ const initializeChat = () => {
     }
     chatContainer.dataset.initialized = 'true'; // Помечаем как инициализированный
 
+    const l10n = window.uspChatL10n || {};
     const state = {
         currentChatId: null,
         currentUserId: UspCore.userId, // Получаем ID текущего пользователя
@@ -65,7 +66,7 @@ const initializeChat = () => {
         try {
             const response = await UspCore.api.post('/chat/topic', { 'topic-id': topicId, title: title });
             if (response.chat_id) {
-                await switchToChat(response.chat_id, title || 'Topic Chat');
+                await switchToChat(response.chat_id, title || l10n.defaultTopicTitle);
             } else {
                 console.error('Error creating or finding topic chat:', response.message);
             }
@@ -109,7 +110,7 @@ const initializeChat = () => {
             }
         } catch (error) {
             console.error('Failed to load chat list:', error);
-            elements.chatList.innerHTML = '<p>Error loading chats.</p>';
+            elements.chatList.innerHTML = `<p>${l10n.errorLoadingChats}</p>`;
         }
     };
 
@@ -125,12 +126,12 @@ const initializeChat = () => {
                 elements.chatList.innerHTML = '';
                 return;
             }
-            elements.chatList.innerHTML = '<p>No chats yet.</p>';
+            elements.chatList.innerHTML = `<p>${l10n.noChats}</p>`;
             return;
         }
         elements.chatList.innerHTML = chats.map(chat => `
-            <div class="usp-chat-list-item" data-chat-id="${chat.chat_id}" data-chat-title="${escapeHtml(chat.title || 'Chat')}">
-                <span class="usp-chat-list-item-title">${escapeHtml(chat.title || 'Chat')}</span>
+            <div class="usp-chat-list-item" data-chat-id="${chat.chat_id}" data-chat-title="${escapeHtml(chat.title || l10n.defaultChatTitle)}">
+                <span class="usp-chat-list-item-title">${escapeHtml(chat.title || l10n.defaultChatTitle)}</span>
                 <span class="usp-chat-notification-badge" style="display: none;"></span>
             </div>
         `).join('');
@@ -167,8 +168,8 @@ const initializeChat = () => {
         const activeChatItem = elements.chatList.querySelector(`.usp-chat-list-item[data-chat-id="${chatId}"]`);
         if (activeChatItem) activeChatItem.classList.add('active');
 
-        elements.chatTitle.textContent = title || 'Chat';
-        elements.messagesWindow.innerHTML = '<p>Loading messages...</p>';
+        elements.chatTitle.textContent = title || l10n.defaultChatTitle;
+        elements.messagesWindow.innerHTML = `<p>${l10n.loadingMessages}</p>`;
         elements.messageInput.disabled = false;
         elements.messageForm.querySelector('button').disabled = false;
 
@@ -190,7 +191,7 @@ const initializeChat = () => {
             }
         } catch (error) {
             console.error('Failed to load messages:', error);
-            elements.messagesWindow.innerHTML = '<p>Error loading messages.</p>';
+            elements.messagesWindow.innerHTML = `<p>${l10n.errorLoadingMessages}</p>`;
         }
     };
 
@@ -307,7 +308,7 @@ const initializeChat = () => {
      */
     const renderMessages = (messages) => {
         if (messages.length === 0) {
-            elements.messagesWindow.innerHTML = '<p>No messages in this chat yet.</p>';
+            elements.messagesWindow.innerHTML = `<p>${l10n.noMessages}</p>`;
             return;
         }
 

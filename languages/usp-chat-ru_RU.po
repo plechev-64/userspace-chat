@@ -1,0 +1,81 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: userspace\n"
+"POT-Creation-Date: 2025-11-03 12:39+0400\n"
+"PO-Revision-Date: 2025-11-03 12:40+0400\n"
+"Last-Translator: \n"
+"Language-Team: userspace.com\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.8\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-KeywordsList: __;_e;esc_attr;esc_attr_e;translate\n"
+"X-Poedit-SearchPath-0: .\n"
+"X-Poedit-SearchPathExcluded-0: .idea\n"
+"X-Poedit-SearchPathExcluded-1: vendor\n"
+
+#: src/Chat.php:44 src/Chat.php:98
+msgid "Chat"
+msgstr "Чат"
+
+#: src/Chat.php:93
+msgid "Loading messages..."
+msgstr "Загрузка сообщений..."
+
+#: src/Chat.php:94
+msgid "Error loading messages."
+msgstr "Ошибка загрузки сообщений."
+
+#: src/Chat.php:95
+msgid "No messages in this chat yet."
+msgstr "В этом чате еще нет сообщений."
+
+#: src/Chat.php:96
+msgid "Error loading chats."
+msgstr "Ошибка загрузки чатов."
+
+#: src/Chat.php:97
+msgid "No chats yet."
+msgstr "Чатов пока нет."
+
+#: src/Chat.php:99
+msgid "Topic Chat"
+msgstr "Тематический чат"
+
+#: src/Integration/ContactsTab.php:22
+msgid "Contacts"
+msgstr "Контакты"
+
+#: src/Integration/PrivateChatTab.php:26
+msgid "Private Chat"
+msgstr "Личный чат"
+
+#: src/Integration/PrivateChatTab.php:43
+msgid "You have no contacts yet. Start a conversation from another user's profile."
+msgstr "У вас еще нет контактов. Начните диалог из профиля другого пользователя."
+
+#: views/chat-main.php:13
+msgid "Chats"
+msgstr "Чаты"
+
+#: views/chat-main.php:17
+msgid "Loading chats..."
+msgstr "Загрузка чатов..."
+
+#: views/chat-main.php:22
+msgid "Select a chat"
+msgstr "Выберите чат"
+
+#: views/chat-main.php:31
+msgid "Type a message..."
+msgstr "Введите сообщение..."
+
+#: views/chat-main.php:32
+msgid "Message input"
+msgstr "Поле для ввода сообщения"
+
+#: views/chat-main.php:35
+msgid "Send"
+msgstr "Отправить"
