@@ -23,7 +23,7 @@ class PrivateChatTab extends AbstractTab
     ) {
         parent::__construct($templateManager);
         $this->id = 'usp-private-chat';
-        $this->title = $str->translate('Private Chat', 'userspace-chat');
+        $this->title = $str->translate('Private Chat', 'usp-chat');
         $this->location = 'sidebar';
         $this->order = 5;
         $this->icon = 'dashicons-format-chat';
@@ -40,7 +40,7 @@ class PrivateChatTab extends AbstractTab
             if (empty($chats)) {
                 return sprintf(
                     '<p>%s</p>',
-                    $this->str->translate('You have no contacts yet. Start a conversation from another user\'s profile.', 'userspace-chat')
+                    $this->str->translate('You have no contacts yet. Start a conversation from another user\'s profile.', 'usp-chat')
                 );
             }
         }

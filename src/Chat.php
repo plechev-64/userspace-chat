@@ -41,7 +41,7 @@ class Chat implements AddonInterface
 
     public function getName(): string
     {
-        return __('Chat', 'userspace-chat');
+        return __('Chat', 'usp-chat');
     }
 
     public function getPath(): string
@@ -75,7 +75,7 @@ class Chat implements AddonInterface
             $localizationApi
         ) {
             $pluginUrl = plugin_dir_url(dirname(__FILE__));
-            $localizationApi->loadPluginTextdomain('usp-chat', 'userspace-chat/languages');
+            $localizationApi->loadPluginTextdomain('usp-chat', dirname(plugin_basename(USERSPACE_CHAT_PLUGIN_FILE)) . '/languages');
             $assetRegistry->registerScript('usp-chat', $pluginUrl . 'assets/js/chat.js', ['usp-core'], USERSPACE_VERSION);
             $assetRegistry->localizeScript('usp-chat', 'uspChatL10n', $this->getScriptTranslations($str));
             $assetRegistry->registerStyle('usp-chat', $pluginUrl . 'assets/css/chat.css', [], USERSPACE_VERSION);
@@ -92,7 +92,7 @@ class Chat implements AddonInterface
         return [
             'loadingMessages' => $str->translate('Loading messages...', 'usp-chat'),
             'errorLoadingMessages' => $str->translate('Error loading messages.', 'usp-chat'),
-            'noMessages' => __('No messages in this chat yet.', 'usp-chat'),
+            'noMessages' => $str->translate('No messages in this chat yet.', 'usp-chat'),
             'errorLoadingChats' => $str->translate('Error loading chats.', 'usp-chat'),
             'noChats' => $str->translate('No chats yet.', 'usp-chat'),
             'defaultChatTitle' => $str->translate('Chat', 'usp-chat'),

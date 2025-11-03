@@ -19,7 +19,7 @@ class ContactsTab extends AbstractTab
     ) {
         parent::__construct($templateManager);
         $this->id = 'usp-chat-contacts';
-        $this->title = $str->translate('Contacts', 'userspace-chat');
+        $this->title = $str->translate('Contacts', 'usp-chat');
         $this->location = 'sidebar'; // или другая локация
         $this->order = 50;
         $this->icon = 'dashicons-format-chat';
