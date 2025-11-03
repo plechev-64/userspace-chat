@@ -54,7 +54,7 @@ const initializeChat = () => {
         }
 
         // Подключаемся к SSE
-        initChatSse();
+        initMessagesSse();
     };
 
     /**
@@ -105,8 +105,10 @@ const initializeChat = () => {
     const loadChatList = async () => {
         try {
             const response = await UspCore.api.get('/chat/list');
-            if(response)
+            if(response) {
                 renderChatList(response);
+                initActivitySse(); // Запускаем подписку на активность только если список чатов есть
+            }
         } catch (error) {
             console.error('Failed to load chat list:', error);
             elements.chatList.innerHTML = `<p>${l10n.errorLoadingChats}</p>`;
@@ -271,7 +273,7 @@ const initializeChat = () => {
     /**
      * Инициализирует SSE-клиент и подписывается на события чата.
      */
-    const initChatSse = () => {
+    const initMessagesSse = () => {
         UspCore.sse.addEventListener('chat_messages', 'private_message', (message) => {
             // Игнорируем собственное сообщение, которое пришло по SSE,
             // так как мы уже отобразили его оптимистично.
@@ -293,7 +295,12 @@ const initializeChat = () => {
                 }
             }
         });
+    };
 
+    /**
+     * Инициализирует подписку на канал активности пользователей.
+     */
+    const initActivitySse = () => {
         // Отдельный канал для обновления статусов активности
         UspCore.sse.addEventListener('chat_activity', 'activity_update', (activityData) => {
             for (const userId in activityData) {
