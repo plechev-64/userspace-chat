@@ -15,7 +15,6 @@ use UserSpace\Core\Addon\AddonInterface;
 use UserSpace\Common\Module\Locations\Src\Domain\ItemRegistryInterface;
 use UserSpace\Core\Asset\AssetRegistryInterface;
 use UserSpace\Core\Container\ContainerInterface;
-use UserSpace\Common\Module\Grid\Src\Infrastructure\GridRegistryInterface;
 use UserSpace\Core\Localization\LocalizationApiInterface;
 use UserSpace\Core\Rest\Registry\ControllerRegistryInterface;
 use UserSpace\Core\Hooks\HookManagerInterface;

@@ -27,15 +27,6 @@ if (file_exists($autoloader)) {
 add_action('userspace_loaded', function (AddonManagerInterface $addonManager) {
     // Проверяем, существует ли класс перед регистрацией
     $addonClass = Chat::class;
-
-    if ( ! class_exists($addonClass)) {
-        // Подключаем автозагрузчик, если он есть
-        $autoloader = __DIR__ . '/vendor/autoload.php';
-        if (file_exists($autoloader)) {
-            require_once $autoloader;
-        }
-    }
-
     // Регистрируем дополнение
     $addonManager->register($addonClass);
 }, 10, 1);
